@@ -1,0 +1,20 @@
+<div class="content">
+  <app-calendar
+    *ngIf="selectedDay"
+    [dayList]="days"
+    [initializeCalendar]="selectedDay.date"
+    (dateChange)="dateChange($event)"
+  ></app-calendar>
+
+  <span class="hidden"
+    >Select from {{ days.length }} {{ days.length === 1 ? "day" : "days" }} in
+    saved data:</span
+  >
+  <input type="date" id="date" class="hidden" (change)="dateChange($event)" />
+  <div class="arrows" *ngIf="selectedDay && minDate && maxDate">
+    <button (click)="onPrev()" [disabled]="!existsPrev"><-</button>
+    <button (click)="onNext()" [disabled]="!existsNext">-></button>
+  </div>
+
+  <app-day-list-item [day]="selectedDay" [editable]="false"></app-day-list-item>
+</div>

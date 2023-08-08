@@ -1,0 +1,11 @@
+::ng-deep :root {
+  --primary-color: #37176d;
+  --secondary-color: #ffb750;
+  --accent-color-1: #421475;
+  --accent-color-2: #531774;
+  --accent-color-3: #479adb;
+  --accent-color-4: #196bab;
+  --success-color: #28a745;
+  --warn-color: #f44336;
+  --mat-accent-color: #ff4081;
+}

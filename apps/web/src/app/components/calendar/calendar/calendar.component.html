@@ -1,0 +1,36 @@
+<div class="months" *ngIf="selectedDate">
+  <div class="month" *ngFor="let month of monthList">
+    <p class="name">{{ month.name }} {{ month.year }}</p>
+    <table>
+      <tr>
+        <th>Sun</th>
+        <th>Mon</th>
+        <th>Tue</th>
+        <th>Wed</th>
+        <th>Thu</th>
+        <th>Fri</th>
+        <th>Sat</th>
+      </tr>
+      <tr *ngFor="let week of month.weeks">
+        <td
+          *ngFor="let day of week.days"
+          [class.differentMonth]="month.monthOfYear !== day.month"
+          [class.isSelected]="
+            +((selectedDate | date : 'dd') || '') === day.date &&
+            +((selectedDate | date : 'MM') || '') === day.month
+          "
+          [class.hasEvent]="day.day.events.length > 0"
+          matTooltipPosition="before"
+          matTooltipClass="custom-tooltip"
+          (click)="selectDay(day)"
+        >
+          <span>
+            <p>
+              {{ day.date }}
+            </p>
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
