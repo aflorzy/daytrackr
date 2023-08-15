@@ -170,8 +170,10 @@ export class CalendarComponent {
     return month;
   }
 
-  selectDay(day: Day) {
-    console.log(day.day);
+  selectDay(day: Day, month: Month) {
+    if (day.day.events.length <= 0) return;
+    if (day.month !== month.monthOfYear) return;
+
     const value = day.day.date;
     this.initializeCalendar = value;
     this.dateChange.emit({

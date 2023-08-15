@@ -1,0 +1,32 @@
+nav {
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  flex-direction: row;
+  position: sticky;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f4f4f4;
+  max-width: 100%;
+  border-bottom: 0.5px solid #bbb;
+  padding: 0 10%;
+}
+
+.tabs {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 20%;
+  max-width: 500px;
+}
+.tab a {
+  text-decoration: none;
+  color: #000;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.tab a:hover {
+  color: #444;
+  text-decoration-color: #444;
+}
