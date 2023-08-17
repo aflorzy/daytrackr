@@ -14,18 +14,16 @@
   <app-date-input
     [setInitialDate]="initialDate"
     (initialDateEmitter)="initialDate = $event"
-    (invalidDateEmitter)="invalidDate = $event"
-  ></app-date-input>
+    (invalidDateEmitter)="invalidDate = $event"></app-date-input>
   <textarea cols="130" rows="20" [(ngModel)]="value" name="inputBox"></textarea>
 
-  <button [disabled]="invalidDate">Parse</button>
+  <button [disabled]="invalidDate || !value">Parse</button>
 </form>
 
 <ng-container *ngIf="error$ | async as errorObsv">
   <app-day-list
     *ngIf="!errorObsv.isError; else error"
-    [days]="days"
-  ></app-day-list>
+    [days]="days"></app-day-list>
 
   <ng-template #error>
     <div class="error">

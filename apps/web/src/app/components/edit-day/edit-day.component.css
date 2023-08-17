@@ -1,0 +1,45 @@
+.index {
+  font-size: 1.3em;
+  width: 1.5rem;
+}
+
+.arrow {
+  padding: 5px;
+  border-radius: 5px;
+}
+.arrow:hover {
+  cursor: pointer;
+  background-color: #eee;
+}
+.arrow.up {
+  color: green;
+  border-left: 1px solid #777;
+  margin-left: 10px;
+}
+.arrow.down {
+  color: red;
+  border-right: 1px solid #777;
+  margin-right: 10px;
+}
+
+.hidden,
+.hidden:hover {
+  color: transparent !important;
+  background-color: transparent;
+  cursor: default;
+}
+
+.event {
+  padding: 10px;
+  border-bottom: 1px solid #777;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.event:last-child {
+  border-bottom: none;
+}
+
+.events {
+  margin: 20px;
+}

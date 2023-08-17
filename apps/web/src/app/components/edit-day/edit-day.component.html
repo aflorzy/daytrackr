@@ -1,0 +1,27 @@
+<div class="events" *ngIf="day$ | async as day">
+  <h2>{{ day.date | date : "mediumDate" }}</h2>
+  <div class="event" *ngFor="let event of day.events; trackBy: identify">
+    <span class="index">{{ event.index + 1 }}</span>
+    <span
+      class="arrow up"
+      [class.hidden]="event.index === 0"
+      (click)="moveUp(event, day)"
+      ><fa-icon [icon]="['fas', 'chevron-up']"></fa-icon
+    ></span>
+    <span
+      class="arrow down"
+      [class.hidden]="event.index === day.events.length - 1"
+      (click)="moveDown(event, day)"
+      ><fa-icon [icon]="['fas', 'chevron-down']"></fa-icon
+    ></span>
+    <span class="text">{{ event.name }}</span>
+  </div>
+</div>
+
+<button
+  *ngIf="day$ | async as day"
+  (click)="saveChanges(day)"
+  [disabled]="!compare(day, day$_original | async)">
+  Save Changes
+</button>
+<button (click)="onCancel.emit(true)">Cancel</button>

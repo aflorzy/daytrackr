@@ -30,6 +30,8 @@
   line-height: 36px;
   font-weight: 600;
   text-decoration: underline;
+  display: flex;
+  align-items: center;
 }
 
 .gap {
@@ -47,4 +49,21 @@
   color: transparent;
   cursor: default;
   background-color: transparent;
+}
+
+.editDay {
+  font-size: 18px;
+  margin-left: 5px;
+  padding: 0 8px;
+  border-radius: 5px;
+  color: #000;
+}
+.editDay:hover {
+  cursor: pointer;
+  color: #444;
+  background-color: #eee;
+}
+.editDay:active {
+  color: #222;
+  background-color: #ddd;
 }

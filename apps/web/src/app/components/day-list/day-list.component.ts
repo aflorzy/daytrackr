@@ -11,6 +11,5 @@ export class DayListComponent {
 
   editDay(day: Day, index: number) {
     this.days.splice(index, 1, day);
-    console.log(this.days);
   }
 }
