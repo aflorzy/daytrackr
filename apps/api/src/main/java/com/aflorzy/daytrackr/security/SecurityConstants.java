@@ -1,8 +1,16 @@
 package com.aflorzy.daytrackr.security;
 
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+@Getter
 public class SecurityConstants {
 
-  public static final long JWT_EXPIRATION = 7000000L;
+  @Value("${jwt.expiration}")
+  public long JWT_EXPIRATION;
 
-  public static final String JWT_SECRET = "secret";
+  @Value("${jwt.secret}")
+  public String JWT_SECRET;
 }
