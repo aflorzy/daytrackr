@@ -1,4 +1,4 @@
-<div class="login-container">
+<div class="auth-container">
   <h2>Login</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -16,8 +16,8 @@
     <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
 
   </form>
-  <p class="register-now">
-    Don't have an account? <a routerLink="/auth/register">Register Now</a>
+  <p class="auth-alt">
+    Don't have an account? <a routerLink="/register">Register Now</a>
   </p>
 
   <div *ngIf="loginError" class="error-message">

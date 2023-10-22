@@ -1,5 +1,5 @@
 /* Center the login form container */
-.login-container {
+.auth-container {
   margin: 0 auto; /* Center the container horizontally */
   max-width: 400px; /* Set a maximum width for the container */
   padding: 20px;
@@ -20,8 +20,8 @@ label {
   text-align: left;
 }
 
-input[type="text"],
-input[type="password"] {
+input[type='text'],
+input[type='password'] {
   width: 100%;
   padding: 10px;
   border: 1px solid #009688; /* Soft green border for input fields */
@@ -32,8 +32,8 @@ input[type="password"] {
 }
 
 /* Add a hover effect to the input fields */
-input[type="text"]:hover,
-input[type="password"]:hover {
+input[type='text']:hover,
+input[type='password']:hover {
   border: 1px solid #007d71; /* Slightly darker green border on hover */
 }
 
@@ -76,19 +76,19 @@ button:disabled:hover {
 }
 
 /* Style the "Register Now" link */
-.register-now {
+.auth-alt {
   text-align: center; /* Center-align the link text */
   margin-top: 10px; /* Add some top margin for separation */
 }
 
-.register-now a {
+.auth-alt a {
   color: #009688; /* Set the link text color */
   text-decoration: none; /* Remove the default underline */
   font-weight: bold; /* Make the link text bold */
   transition: color 0.3s; /* Add a color transition effect on hover */
+}
 
-  /* Change link color on hover */
-  &:hover {
-    color: #007d71;
-  }
+/* Change link color on hover */
+.auth-alt a:hover {
+  color: #007d71;
 }

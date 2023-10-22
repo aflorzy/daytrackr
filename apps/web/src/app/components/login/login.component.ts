@@ -37,10 +37,14 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     const registerCredentials = this.storageService.getItemFromStorage('credentials');
     if (registerCredentials) {
-      console.log("Got creds");
+      // Credentials set if routing from Register
       this.username = registerCredentials.username;
       this.password = registerCredentials.password;
       this.onSubmit();
+    } else if (this.authService.tokenValid) {
+      // Check for existing token
+      this.authService.isAuthenticatedUser = true;
+      this.router.navigate(['']);
     }
   }
 
@@ -52,11 +56,13 @@ export class LoginComponent implements OnInit {
       this.authService.login(username, password).subscribe(
         (response: AccessToken) => {
           this.authService.token = response;
+          this.authService.isAuthenticatedUser = true;
           this.loginForm.reset();
           this.router.navigate(['']);
         },
         (error) => {
-          this.loginError = error.error.message;
+          this.authService.isAuthenticatedUser = false;
+          this.loginError = error?.error?.message;
         }
       );
     }

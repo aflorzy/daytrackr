@@ -1,4 +1,4 @@
-<div class="register-container">
+<div class="auth-container">
   <h2>Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -23,7 +23,7 @@
     <button type="submit" [disabled]="!registerForm.valid || password !== confirmPassword">Register</button>
   </form>
 
-  <p class="login-now"> Already have an account? <a routerLink="/auth/login">Login Now</a> </p>
+  <p class="auth-alt"> Already have an account? <a routerLink="/login">Login Now</a> </p>
 
   <div *ngIf="errorMessage">
     <p class="error-message">{{ errorMessage }}</p>

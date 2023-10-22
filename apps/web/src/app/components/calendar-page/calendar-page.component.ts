@@ -33,13 +33,15 @@ export class CalendarPageComponent implements OnInit {
       this.minDate = new Date(days[0].date);
       this.maxDate = new Date(days[days.length - 1].date);
 
-      dateInput.setAttribute('min', this.datePipe.transform(days[0].date, 'yyyy-MM-dd') || '');
-      dateInput.setAttribute('max', this.datePipe.transform(days[days.length - 1].date, 'yyyy-MM-dd') || '');
-
       this.selectedDay = days[days.length - 1];
-      dateInput.value = this.datePipe.transform(this.selectedDay?.date, 'yyyy-MM-dd') || '';
       this.existsPrev = days.length > 1;
       this.existsNext = false;
+
+      if (dateInput) {
+        dateInput.setAttribute('max', this.datePipe.transform(days[days.length - 1].date, 'yyyy-MM-dd') || '');
+        dateInput.value = this.datePipe.transform(this.selectedDay?.date, 'yyyy-MM-dd') || '';
+      }
+
     });
   }
 

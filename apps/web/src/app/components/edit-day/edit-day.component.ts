@@ -36,7 +36,7 @@ export class EditDayComponent implements OnInit {
     day.events[newIndex] = { ...event, idx: newIndex };
     day.events[index] = { ...temp, idx: index };
 
-    this.day = {...day};
+    this.day = { ...day };
 
     this.checkIsModified();
   }
@@ -51,13 +51,12 @@ export class EditDayComponent implements OnInit {
     day.events[newIndex] = { ...event, idx: newIndex };
     day.events[index] = { ...temp, idx: index };
 
-    this.day = {...day};
+    this.day = { ...day };
 
     this.checkIsModified();
   }
 
   checkIsModified() {
-    console.log(this.day_original.events, this.day.events)
     this.isModified = JSON.stringify(this.day_original) !== JSON.stringify(this.day);
   }
 

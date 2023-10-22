@@ -12,18 +12,7 @@
         <th>Sat</th>
       </tr>
       <tr *ngFor="let week of month.weeks">
-        <td
-          *ngFor="let day of week.days"
-          [class.differentMonth]="month.monthOfYear !== day.month"
-          [class.isSelected]="
-            +((selectedDate | date : 'dd') || '') === day.date &&
-            +((selectedDate | date : 'MM') || '') === day.month
-          "
-          [class.hasEvent]="day.day.events.length > 0"
-          matTooltipPosition="before"
-          matTooltipClass="custom-tooltip"
-          (click)="selectDay(day, month)"
-        >
+        <td *ngFor="let day of week.days" [class.differentMonth]="month.monthOfYear !== day.month" [class.isSelected]="+((selectedDate | date : 'dd') || '') === day.date && +((selectedDate | date : 'MM') || '') === day.month" [class.hasEvent]="day.day.events.length > 0" matTooltipPosition="before" matTooltipClass="custom-tooltip" (click)="selectDay(day, month)">
           <span>
             <p>
               {{ day.date }}

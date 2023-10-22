@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+  styleUrls: ['../login/login.component.css', './register.component.css'],
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -52,15 +52,13 @@ export class RegisterComponent {
 
     this.authService.register(this.username, this.password).subscribe({
       next: (res: string) => {
-        console.log("Register success!", res);
         this.successMessage = res;
         this.errorMessage = '';
         // Set credentials in storage. Will remove immediatly after using in Login
         this.storageService.setItemInStorage('credentials', { username: this.username, password: this.password });
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/login']);
       },
       error: (e: HttpErrorResponse) => {
-        console.log('Error', e)
         this.successMessage = '';
         this.errorMessage = e.error;
         console.error('Could not register user', e.error);

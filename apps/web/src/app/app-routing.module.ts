@@ -5,17 +5,19 @@ import { CalendarPageComponent } from './components/calendar-page/calendar-page.
 import { EditDayComponent } from './components/edit-day/edit-day.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', component: InputBoxComponent, title: 'DayTrackr | Home'},
-  { path: 'calendar', pathMatch: 'full', component: CalendarPageComponent, title: 'DayTrackr | Calendar'},
-  { path: 'edit/:date', pathMatch: 'full', component: EditDayComponent, title: 'DayTrackr | Edit'},
-  { path: 'auth/login', pathMatch: 'full', component: LoginComponent, title: 'DayTrackr | Login'},
-  { path: 'auth/register', pathMatch: 'full', component: RegisterComponent, title: 'DayTrackr | Register'},
+  { path: '', pathMatch: 'full', component: InputBoxComponent, title: 'DayTrackr | Home', canActivate: [AuthGuard] },
+  { path: 'calendar', pathMatch: 'full', component: CalendarPageComponent, title: 'DayTrackr | Calendar', canActivate: [AuthGuard] },
+  { path: 'edit/:date', pathMatch: 'full', component: EditDayComponent, title: 'DayTrackr | Edit', canActivate: [AuthGuard] },
+  { path: 'login', pathMatch: 'full', component: LoginComponent, title: 'DayTrackr | Login' },
+  { path: 'register', pathMatch: 'full', component: RegisterComponent, title: 'DayTrackr | Register' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [AuthGuard],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
