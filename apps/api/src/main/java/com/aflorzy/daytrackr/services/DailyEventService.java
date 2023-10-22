@@ -1,0 +1,70 @@
+package com.aflorzy.daytrackr.services;
+
+import com.aflorzy.daytrackr.controllers.DailyEventController;
+import com.aflorzy.daytrackr.domain.DailyEvent;
+import com.aflorzy.daytrackr.domain.Event;
+import com.aflorzy.daytrackr.exceptions.DailyEventSaveFailureException;
+import com.aflorzy.daytrackr.repositories.DailyEventRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class DailyEventService {
+
+    @Autowired
+    DailyEventRepository dailyEventRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(DailyEventService.class);
+
+    public DailyEvent save(DailyEvent dailyEvent) {
+        try {
+            return dailyEventRepository.save(dailyEvent);
+        } catch (Exception e) {
+            throw new DailyEventSaveFailureException("Could not save DailyEvent of date: " + dailyEvent.getDate());
+        }
+    }
+
+    public DailyEvent update(DailyEvent dailyEvent) {
+        // Retrieve the existing DailyEvent from the database
+        Optional<DailyEvent> existingDailyEventOptional = dailyEventRepository.findById(dailyEvent.getId());
+
+        if (existingDailyEventOptional.isPresent()) {
+            DailyEvent existingDailyEvent = existingDailyEventOptional.get();
+
+            // Update the properties of the existing DailyEvent
+            existingDailyEvent.setDate(dailyEvent.getDate());
+
+            // Update the associated events
+            for (Event updatedEvent : dailyEvent.getEvents()) {
+                // Find the corresponding existing event by ID
+                Event existingEvent = existingDailyEvent.getEvents().stream()
+                        .filter(event -> event.getId().equals(updatedEvent.getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (existingEvent != null) {
+                    // Update the properties of the existing event
+                    existingEvent.setName(updatedEvent.getName());
+                    existingEvent.setIdx(updatedEvent.getIdx());
+                }
+            }
+
+            // Save the updated DailyEvent back to the database
+            try {
+                return dailyEventRepository.save(existingDailyEvent);
+            } catch (Exception e) {
+                throw new DailyEventSaveFailureException("Could not save DailyEvent of date: " + dailyEvent.getDate());
+            }
+        } else {
+            try {
+                return dailyEventRepository.save(dailyEvent);
+            } catch (Exception e) {
+                throw new DailyEventSaveFailureException("Could not save DailyEvent of date: " + dailyEvent.getDate());
+            }
+        }
+    }
+}
