@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['../login/login.component.css', './register.component.css'],
+  styleUrls: ['../login/login.component.css'],
 })
 export class RegisterComponent {
   registerForm: FormGroup;
