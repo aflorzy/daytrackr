@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AccessToken } from 'src/common/interfaces';
 import { StorageService } from './storage.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private base_url = 'http://localhost:8082/api';
+  private base_url = environment.baseUrl;
   private isAuthenticated: boolean = false;
 
   constructor(private http: HttpClient, private storageService: StorageService) {}
