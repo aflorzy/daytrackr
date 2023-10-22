@@ -40,7 +40,7 @@ public class Application implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/api/**") // Specify the URL patterns to allow
-				.allowedOrigins("http://localhost:4200", "http://192.168.1.15:82"); // Allow requests from this origin
+				.allowedOrigins("http://localhost:4200", "http://localhost:82", "http://192.168.1.15:82"); // Allow requests from this origin
 	}
 
 }
