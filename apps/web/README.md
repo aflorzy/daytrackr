@@ -16,6 +16,32 @@ View saved days by clicking through the calendar
 Add event to a day
 Move event position in a day
 Assign tags to events (ex. 'Performed with', location (City, State))
+Add notes to events (ex. '2 fish caught', 'bought laptop')
+
+Day {
+  id?: string,
+  date: Date,
+  events: Event[],
+  created: date,
+  updated: date,
+}
+
+Event {
+  name: string,
+  index: number,
+  tags: string[],
+  notes: string[],
+  location: Location
+  created: date,
+  updated: date,
+}
+Location {
+  latitude: number,
+  longitude: number,
+  city: string,
+  state: string,
+  zip: string
+}
 
 
 ## Known Issues

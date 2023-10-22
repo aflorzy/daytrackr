@@ -8,9 +8,10 @@ import { Day, Event } from "../input-box/input-box.component";
 })
 export class DayListItemComponent {
   @Input() day?: Day;
+  @Input() editable!: boolean;
+  @Input() hideEditIcon!: boolean;
   @Output() edited = new EventEmitter<Day>();
   @Output() onEdit = new EventEmitter<boolean>();
-  @Input() editable!: boolean;
   editingEvent: string = "";
   originalEvent: string = "";
 
@@ -43,7 +44,7 @@ export class DayListItemComponent {
     } else {
       this.day.events.splice(index, 1, {
         name: this.editingEvent,
-        index,
+        idx: index,
       });
     }
 
@@ -57,7 +58,7 @@ export class DayListItemComponent {
     const combinedEvent: Event = {
       name:
         this.day.events[index].name + ", " + this.day.events[index + 1].name,
-      index,
+      idx: index,
     };
 
     // Insert combined event
@@ -74,7 +75,7 @@ export class DayListItemComponent {
     if (!this.day) return;
 
     for (let i = index + 1; i < this.day.events.length; i++) {
-      this.day.events[i].index--;
+      this.day.events[i].idx--;
     }
   }
 }

@@ -1,66 +1,76 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Observable } from "rxjs";
-import { DayService } from "src/app/services/day.service";
-import { Day, Event } from "../input-box/input-box.component";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DayService } from 'src/app/services/day.service';
+import { Day, Event } from '../input-box/input-box.component';
 
 @Component({
-  selector: "app-edit-day",
-  templateUrl: "./edit-day.component.html",
-  styleUrls: ["./edit-day.component.css"],
+  selector: 'app-edit-day',
+  templateUrl: './edit-day.component.html',
+  styleUrls: ['./edit-day.component.css'],
 })
 export class EditDayComponent implements OnInit {
-  day$!: Observable<Day>;
-  day$_original!: Observable<Day>;
-  day_original!: Day;
+  // day$_original!: Observable<Day>;
+  @Input() day!: Day;
   @Output() onSave = new EventEmitter<Day>();
   @Output() onCancel = new EventEmitter<boolean>();
-  @Input() date!: Date;
-
-  identify(index: number, event: Event) {
-    return event.index;
-  }
+  isModified: boolean = false;
+  day_original!: Day;
+  errorMessage: string = '';
 
   constructor(private dayService: DayService) {}
 
   ngOnInit(): void {
-    this.day$ = this.dayService.getDay(this.date);
-    this.day$_original = this.day$;
+    this.day_original = JSON.parse(JSON.stringify(this.day));
+  }
+
+  identify(index: number, event: Event) {
+    return event.idx;
   }
 
   moveUp(event: Event, day: Day) {
-    const index: number = event.index;
+    const index: number = event.idx;
     const newIndex: number = index - 1;
 
     if (index <= 0) return;
 
     const temp: Event = day.events[newIndex];
-    day.events[newIndex] = { ...event, index: newIndex };
-    day.events[index] = { ...temp, index };
+    day.events[newIndex] = { ...event, idx: newIndex };
+    day.events[index] = { ...temp, idx: index };
+
+    this.day = {...day};
+
+    this.checkIsModified();
   }
 
   moveDown(event: Event, day: Day) {
-    const index: number = event.index;
+    const index: number = event.idx;
     const newIndex: number = index + 1;
 
-    if (event.index >= day.events.length - 1) return;
+    if (event.idx >= day.events.length - 1) return;
 
     const temp: Event = day.events[newIndex];
-    day.events[newIndex] = { ...event, index: newIndex };
-    day.events[index] = { ...temp, index };
+    day.events[newIndex] = { ...event, idx: newIndex };
+    day.events[index] = { ...temp, idx: index };
+
+    this.day = {...day};
+
+    this.checkIsModified();
   }
 
-  compare(day1: Day | null, day2: Day | null) {
-    if (!day1 || !day2) return;
-
-    if (!this.day_original)
-      this.day_original = JSON.parse(JSON.stringify(day2));
-
-    return JSON.stringify(day1) !== JSON.stringify(this.day_original);
+  checkIsModified() {
+    console.log(this.day_original.events, this.day.events)
+    this.isModified = JSON.stringify(this.day_original) !== JSON.stringify(this.day);
   }
 
-  saveChanges(day: Day) {
-    this.day$ = this.dayService.saveDay(day);
-    this.day_original = JSON.parse(JSON.stringify(day));
-    this.onSave.emit(this.day_original);
+  saveChanges() {
+    this.dayService.saveDay(this.day).subscribe({
+      next: (res: Day) => {
+        this.errorMessage = '';
+        this.onSave.emit(res);
+      },
+      error: (e: any) => {
+        this.errorMessage = 'Could not save day';
+        console.error('Could not save day', e);
+      },
+    });
   }
 }

@@ -3,6 +3,7 @@
     *ngFor="let day of days; let i = index"
     [day]="day"
     [editable]="true"
+    [hideEditIcon]="true"
     (edited)="editDay($event, i)"
   ></app-day-list-item>
 </div>

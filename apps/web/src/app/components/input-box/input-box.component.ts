@@ -1,15 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { DayService } from 'src/app/services/day.service';
 
 export interface Day {
+  id?: string;
   date: Date;
   events: Event[];
 }
 
 export interface Event {
+  id?: string;
   name: string;
-  index: number;
+  idx: number;
 }
 
 @Component({
@@ -24,20 +27,12 @@ export class InputBoxComponent implements OnInit {
   invalidDate: boolean = true;
   date?: Date;
   days: Day[] = [];
-  DAYS_OF_WEEK: string[] = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
+  DAYS_OF_WEEK: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   daysSaved: boolean = false;
 
   error$: Subject<any> = new BehaviorSubject({ isError: false, errorMsg: '' });
 
-  constructor(private datePipe: DatePipe) {}
+  constructor(private datePipe: DatePipe, private dayService: DayService) {}
 
   ngOnInit(): void {
     this.initFields();
@@ -65,9 +60,7 @@ export class InputBoxComponent implements OnInit {
 
   reset() {
     this.days = [];
-    this.initialDate = this.realInitialDate
-      ? this.realInitialDate
-      : this.initialDate;
+    this.initialDate = this.realInitialDate ? this.realInitialDate : this.initialDate;
     this.date = undefined;
   }
 
@@ -84,9 +77,7 @@ export class InputBoxComponent implements OnInit {
       }
 
       // Check if line starts with DAY_OF_WEEK
-      let dayOfWeek = this.DAYS_OF_WEEK.find((day, index) =>
-        line.startsWith(day + '-')
-      );
+      let dayOfWeek = this.DAYS_OF_WEEK.find((day, index) => line.startsWith(day + '-'));
 
       if (!dayOfWeek) {
         // Did not find 'Saturday-'... at beginning of line
@@ -95,19 +86,8 @@ export class InputBoxComponent implements OnInit {
         throw new Error(errorMsg);
       }
 
-      if (
-        dayOfWeekIdx !== -1 &&
-        this.DAYS_OF_WEEK.indexOf(dayOfWeek) !== dayOfWeekIdx + 1 &&
-        !(
-          this.DAYS_OF_WEEK.indexOf(dayOfWeek) === 0 &&
-          dayOfWeekIdx === this.DAYS_OF_WEEK.length - 1
-        )
-      ) {
-        errorMsg = `Dates out of order at line ${index1}. Expected ${
-          this.DAYS_OF_WEEK[
-            dayOfWeekIdx + 1 >= this.DAYS_OF_WEEK.length ? 0 : dayOfWeekIdx + 1
-          ]
-        } but got ${dayOfWeek}. '${line}'`;
+      if (dayOfWeekIdx !== -1 && this.DAYS_OF_WEEK.indexOf(dayOfWeek) !== dayOfWeekIdx + 1 && !(this.DAYS_OF_WEEK.indexOf(dayOfWeek) === 0 && dayOfWeekIdx === this.DAYS_OF_WEEK.length - 1)) {
+        errorMsg = `Dates out of order at line ${index1}. Expected ${this.DAYS_OF_WEEK[dayOfWeekIdx + 1 >= this.DAYS_OF_WEEK.length ? 0 : dayOfWeekIdx + 1]} but got ${dayOfWeek}. '${line}'`;
         this.setError(true, errorMsg);
         throw new Error(errorMsg);
       }
@@ -132,9 +112,7 @@ export class InputBoxComponent implements OnInit {
 
       const day: Day = {
         date: this.date,
-        events: line
-          .split(',')
-          .map((event, index) => ({ name: event.trim(), index: index })),
+        events: line.split(',').map((event, index) => ({ name: event.trim(), idx: index })),
       };
 
       // Remove empty events
@@ -154,10 +132,7 @@ export class InputBoxComponent implements OnInit {
     this.setError(false, errorMsg);
 
     // If all success, save input to localStorage
-    localStorage.setItem(
-      'fields',
-      JSON.stringify({ date: this.realInitialDate, text: this.value })
-    );
+    localStorage.setItem('fields', JSON.stringify({ date: this.realInitialDate, text: this.value }));
   }
 
   saveData() {
@@ -172,5 +147,14 @@ export class InputBoxComponent implements OnInit {
 
     localStorage.setItem('days', JSON.stringify(daysFinal));
     this.daysSaved = true;
+
+    this.dayService.saveMulti(this.days).subscribe({
+      next: (result: Day[]) => {
+        this.days = result;
+      },
+      error: (e: any) => {
+        console.error('Could not save days', e);
+      },
+    });
   }
 }

@@ -1,7 +1,7 @@
 <div class="content" *ngIf="day">
   <div class="date">
     {{ day.date | date : "EEEE, MMMM d, y" }}
-    <span class="editDay" (click)="onEdit.emit(true)">
+    <span class="editDay" *ngIf="!hideEditIcon" (click)="onEdit.emit(true)">
       <fa-icon [icon]="['fas', 'pencil']"></fa-icon
     ></span>
   </div>
@@ -14,12 +14,14 @@
         (input)="editEvent($event)"
         (keydown.Enter)="submit($event, i)"
         (blur)="submit($event, i)"
-        [innerHTML]="event.name"></span>
+        [innerHTML]="event.name"
+        title="Edit event"></span>
       <span
         class="gap"
         [class.hidden]="!editable"
         *ngIf="i !== day.events.length - 1"
-        (click)="combineEvents(i)">
+        (click)="combineEvents(i)"
+        title="Combine events">
         <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
       </span>
     </div>

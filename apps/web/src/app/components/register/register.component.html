@@ -1,0 +1,34 @@
+<div class="register-container">
+  <h2>Register</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" formControlName="username" />
+      <div *ngIf="usernameField?.hasError('required') && usernameField?.touched" class="error-message"> Username is required. </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" formControlName="password" />
+      <div *ngIf="passwordField?.hasError('required') && passwordField?.touched" class="error-message"> Password is required. </div>
+      <div *ngIf="passwordField?.hasError('minlength') && passwordField?.touched" class="error-message"> Password must be at least 6 characters long. </div>
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" formControlName="confirmPassword" />
+      <div *ngIf="confirmPasswordField?.hasError('required') && confirmPasswordField?.touched" class="error-message"> Confirm Password is required. </div>
+    </div>
+
+    <button type="submit" [disabled]="!registerForm.valid || password !== confirmPassword">Register</button>
+  </form>
+
+  <p class="login-now"> Already have an account? <a routerLink="/auth/login">Login Now</a> </p>
+
+  <div *ngIf="errorMessage">
+    <p class="error-message">{{ errorMessage }}</p>
+  </div>
+
+  <app-banner *ngIf="successMessage" type="success" [dismissable]="true" [message]="successMessage"></app-banner>
+  <app-banner *ngIf="errorMessage" type="error" [dismissable]="true" [message]="errorMessage"></app-banner>
+</div>
