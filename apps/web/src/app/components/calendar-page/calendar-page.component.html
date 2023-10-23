@@ -17,4 +17,4 @@
   <app-edit-day *ngIf="editing && selectedDay" [day]="selectedDay" (onSave)="handleSave($event); editing = false" (onCancel)="editing = false"></app-edit-day>
 </div>
 
-<ng-template #noData><app-banner type="warning" message="No days to display!" [dismissable]="true"></app-banner></ng-template>
+<ng-template #noData><app-banner type="warning" message="No days to display!" [dismissable]="false"></app-banner></ng-template>

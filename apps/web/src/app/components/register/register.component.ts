@@ -60,7 +60,7 @@ export class RegisterComponent {
       },
       error: (e: HttpErrorResponse) => {
         this.successMessage = '';
-        this.errorMessage = e.error;
+        this.errorMessage = e.error.error;
         console.error('Could not register user', e.error);
       },
     });

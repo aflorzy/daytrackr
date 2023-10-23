@@ -1,14 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-banner',
   templateUrl: './banner.component.html',
-  styleUrls: ['./banner.component.css']
+  styleUrls: ['./banner.component.css'],
 })
 export class BannerComponent implements OnInit {
   @Input() message: string = '';
   @Input() type: 'info' | 'success' | 'warning' | 'error' = 'info';
   @Input() dismissable: boolean = true;
+  @Output() dismissed = new EventEmitter<void>();
 
   bannerClass: string = '';
 
@@ -21,6 +22,6 @@ export class BannerComponent implements OnInit {
   }
 
   dismissBanner(): void {
-    // You can implement a dismiss action here, or emit an event to parent component
+    this.dismissed.emit();
   }
 }

@@ -25,10 +25,6 @@
 
   <p class="auth-alt"> Already have an account? <a routerLink="/login">Login Now</a> </p>
 
-  <div *ngIf="errorMessage">
-    <p class="error-message">{{ errorMessage }}</p>
-  </div>
-
-  <app-banner *ngIf="successMessage" type="success" [dismissable]="true" [message]="successMessage"></app-banner>
-  <app-banner *ngIf="errorMessage" type="error" [dismissable]="true" [message]="errorMessage"></app-banner>
+  <app-banner *ngIf="successMessage" type="success" [dismissable]="true" [message]="successMessage" (dismissed)="successMessage = ''"></app-banner>
+  <app-banner *ngIf="errorMessage" type="error" [dismissable]="true" [message]="errorMessage" (dismissed)="errorMessage = ''"></app-banner>
 </div>
