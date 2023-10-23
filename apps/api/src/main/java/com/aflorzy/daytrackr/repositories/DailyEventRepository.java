@@ -14,5 +14,9 @@ public interface DailyEventRepository extends JpaRepository<DailyEvent, UUID> {
 
   DailyEvent findByUserAndIdOrderByDateAsc(UserEntity user, UUID id);
 
+  DailyEvent findTopByUserOrderByDateDesc(UserEntity user);
+
   List<DailyEvent> findByUserOrderByDateAsc(UserEntity user);
+
+  List<DailyEvent> findByUserAndDateBetweenOrderByDateAsc(UserEntity user, LocalDate date1, LocalDate date2);
 }

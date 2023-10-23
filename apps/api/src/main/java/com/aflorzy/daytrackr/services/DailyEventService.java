@@ -3,6 +3,7 @@ package com.aflorzy.daytrackr.services;
 import com.aflorzy.daytrackr.controllers.DailyEventController;
 import com.aflorzy.daytrackr.domain.DailyEvent;
 import com.aflorzy.daytrackr.domain.Event;
+import com.aflorzy.daytrackr.domain.UserEntity;
 import com.aflorzy.daytrackr.exceptions.DailyEventSaveFailureException;
 import com.aflorzy.daytrackr.repositories.DailyEventRepository;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,6 +22,20 @@ public class DailyEventService {
     DailyEventRepository dailyEventRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(DailyEventService.class);
+
+    public DailyEvent findTodayOrLatest(UserEntity user) {
+        LocalDate today = LocalDate.now();
+        DailyEvent todayOrLatest = dailyEventRepository.findByUserAndDateOrderByDateAsc(user, today);
+        if (todayOrLatest == null) {
+            todayOrLatest = dailyEventRepository.findTopByUserOrderByDateDesc(user);
+        }
+
+        return todayOrLatest;
+    }
+
+    public List<DailyEvent> findDaysBetween(UserEntity user, LocalDate date1, LocalDate date2) {
+        return dailyEventRepository.findByUserAndDateBetweenOrderByDateAsc(user, date1, date2);
+    }
 
     public DailyEvent save(DailyEvent dailyEvent) {
         try {
