@@ -1,8 +1,5 @@
 pipeline {
-  agent {
-    dockerfile { filename 'Dockerfile' }
-    reuseNode true
-  }
+  agent { dockerfile true }
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
