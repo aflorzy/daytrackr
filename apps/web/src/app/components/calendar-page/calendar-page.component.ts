@@ -33,7 +33,7 @@ export class CalendarPageComponent implements OnInit {
         // date2 = last date of next month
         const previousMonth: Date = new Date(day.date);
         previousMonth.setMonth(previousMonth.getMonth() - 1);
-        previousMonth.setDate(0);
+        previousMonth.setDate(1);
         const nextMonth: Date = new Date(day.date);
         nextMonth.setMonth(nextMonth.getMonth() + 2);
         nextMonth.setDate(0);
