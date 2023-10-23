@@ -29,45 +29,24 @@
 //     }
 //   }
 // }
-pipeline {
-    agent {
-        label 'docker' // Use the 'docker' label for running in a Docker container
+
+node {
+  // Define the agent block with the Docker image
+  docker.image('gradle:8.2.0-jdk17-alpine').inside {
+    try {
+      // Your pipeline steps
+      stage('Build') {
+        sh 'docker build -t aflorzy/daytrackr-frontend .'
+      }
+      stage('Login') {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
+      stage('Push') {
+        sh 'docker push aflorzy/daytrackr-frontend'
+      }
+    } finally {
+      // Ensure Docker logout
+      sh 'docker logout'
     }
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-    }
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('a31f8410-5536-438f-ab05-65bb5b548864')
-    }
-    stages {
-        stage('Build') {
-            steps {
-                script {
-                    // Use Docker commands within the script block
-                    sh 'docker build -t aflorzy/daytrackr-frontend .'
-                }
-            }
-        }
-        stage('Login') {
-            steps {
-                script {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
-            }
-        }
-        stage('Push') {
-            steps {
-                script {
-                    sh 'docker push aflorzy/daytrackr-frontend'
-                }
-            }
-        }
-    }
-    post {
-        always {
-            script {
-                sh 'docker logout'
-            }
-        }
-    }
+  }
 }
