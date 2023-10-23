@@ -18,3 +18,4 @@
 </div>
 
 <ng-template #noData><app-banner type="warning" message="No days to display!" [dismissable]="false"></app-banner></ng-template>
+<app-banner *ngIf="errorMessage" type="error" [message]="errorMessage" [dismissable]="true" (dismissed)="errorMessage = ''"></app-banner>

@@ -32,9 +32,27 @@ export class DayService {
     );
   }
 
+  public getTodayOrLatest(): Observable<Day> {
+    return this.http.get<Day>(`${this.base_url}/daily-events/find/today`).pipe(
+      tap((day: Day) => console.log('Got today or latest', day)),
+      switchMap((day: Day) => of({ ...day, events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx) }))
+    );
+  }
+
   public getAllDays(): Observable<Day[]> {
     return this.http.get<Day[]>(`${this.base_url}/daily-events/find/all`).pipe(
       tap((list) => console.log('Retrieved all days', list)),
+      // Sorting events by index ASC
+      switchMap((list: Day[]) => of(list.map((day: Day) => ({ ...day, events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx) }))))
+    );
+  }
+
+  public getDaysBetween(date1: Date, date2: Date): Observable<Day[]> {
+    const dateStr1: string = this.datePipe.transform(date1, 'yyyy-MM-dd') ?? '';
+    const dateStr2: string = this.datePipe.transform(date2, 'yyyy-MM-dd') ?? '';
+
+    return this.http.get<Day[]>(`${this.base_url}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`).pipe(
+      tap((list) => console.log(`Retrieved ${list.length} days beetween ${dateStr1} and ${dateStr2}`, list)),
       // Sorting events by index ASC
       switchMap((list: Day[]) => of(list.map((day: Day) => ({ ...day, events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx) }))))
     );
