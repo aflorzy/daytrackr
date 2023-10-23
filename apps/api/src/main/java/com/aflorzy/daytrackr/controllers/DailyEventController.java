@@ -82,13 +82,19 @@ public class DailyEventController {
 
     @GetMapping("/find/between")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public List<DailyEvent> getDailyEventsBetweenDates(
+    public List<DailyEventDto> getDailyEventsBetweenDates(
             Principal principal,
             @RequestParam LocalDate date1,
             @RequestParam LocalDate date2
     ) {
       UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-      return dailyEventService.findDaysBetween(user, date1, date2);
+      List<DailyEvent> dailyEvents = dailyEventService.findDaysBetween(user, date1, date2);
+
+        List<DailyEventDto> dailyEventsDto = new ArrayList<>();
+        for (DailyEvent event : dailyEvents) {
+            dailyEventsDto.add(new DailyEventDto().fromDailyEvent(event));
+        }
+        return dailyEventsDto;
     }
 
     @Transactional
