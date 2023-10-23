@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Bean;
 import com.aflorzy.daytrackr.domain.Role;
 import com.aflorzy.daytrackr.repositories.RoleRepository;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,30 +19,35 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class Application implements WebMvcConfigurer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	@Bean
-	CommandLineRunner runner(RoleRepository roleRepository) {
-		return args -> {
-			if (!roleRepository.findByName("ROLE_ADMIN").isPresent()) {
-				Role roleAdmin = new Role();
-				roleAdmin.setName("ROLE_ADMIN");
-				roleRepository.save(roleAdmin);
-			}
-			if (!roleRepository.findByName("ROLE_USER").isPresent()) {
-				Role roleUser = new Role();
-				roleUser.setName("ROLE_USER");
-				roleRepository.save(roleUser);
-			}
-		};
-	}
+    @Bean
+    CommandLineRunner runner(RoleRepository roleRepository) {
+        return args -> {
+            if (!roleRepository.findByName("ROLE_ADMIN").isPresent()) {
+                Role roleAdmin = new Role();
+                roleAdmin.setName("ROLE_ADMIN");
+                roleRepository.save(roleAdmin);
+            }
+            if (!roleRepository.findByName("ROLE_USER").isPresent()) {
+                Role roleUser = new Role();
+                roleUser.setName("ROLE_USER");
+                roleRepository.save(roleUser);
+            }
+        };
+    }
 
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/api/**") // Specify the URL patterns to allow
-				.allowedOrigins("http://localhost:4200", "http://localhost:82", "http://192.168.1.15:82"); // Allow requests from this origin
-	}
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.applyPermitDefaultValues(); // Allows all origins, headers, and methods. You can customize this as needed.
+        source.registerCorsConfiguration("/**", config);
+        CorsFilter corsFilter = new CorsFilter(source);
+        return corsFilter;
+    }
+
 
 }
