@@ -1,31 +1,73 @@
+// pipeline {
+//   agent { dockerfile true }
+//   options {
+//     buildDiscarder(logRotator(numToKeepStr: '5'))
+//   }
+//   environment {
+//     DOCKERHUB_CREDENTIALS = credentials('a31f8410-5536-438f-ab05-65bb5b548864')
+//   }
+//   stages {
+//     stage('Build') {
+//       steps {
+//         sh 'docker build -t aflorzy/daytrackr-frontend .'
+//       }
+//     }
+//     stage('Login') {
+//       steps {
+//         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+//       }
+//     }
+//     stage('Push') {
+//       steps {
+//         sh 'docker push aflorzy/daytrackr-frontend'
+//       }
+//     }
+//   }
+//   post {
+//     always {
+//       sh 'docker logout'
+//     }
+//   }
+// }
 pipeline {
-  agent { dockerfile true }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  environment {
-    DOCKERHUB_CREDENTIALS = credentials('a31f8410-5536-438f-ab05-65bb5b548864')
-  }
-  stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -t aflorzy/daytrackr-frontend .'
-      }
+    agent {
+        label 'docker' // Use the 'docker' label for running in a Docker container
     }
-    stage('Login') {
-      steps {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
     }
-    stage('Push') {
-      steps {
-        sh 'docker push aflorzy/daytrackr-frontend'
-      }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('a31f8410-5536-438f-ab05-65bb5b548864')
     }
-  }
-  post {
-    always {
-      sh 'docker logout'
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Use Docker commands within the script block
+                    sh 'docker build -t aflorzy/daytrackr-frontend .'
+                }
+            }
+        }
+        stage('Login') {
+            steps {
+                script {
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                }
+            }
+        }
+        stage('Push') {
+            steps {
+                script {
+                    sh 'docker push aflorzy/daytrackr-frontend'
+                }
+            }
+        }
     }
-  }
+    post {
+        always {
+            script {
+                sh 'docker logout'
+            }
+        }
+    }
 }
