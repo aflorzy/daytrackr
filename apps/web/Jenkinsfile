@@ -7,10 +7,6 @@ pipeline {
     DOCKERHUB_CREDENTIALS = credentials('a31f8410-5536-438f-ab05-65bb5b548864')
   }
   stages {
-     stage('Initialize'){
-        def dockerHome = tool 'docker'
-        env.PATH = "${dockerHome}/bin:${env.PATH}"
-    }
     stage('Build') {
       steps {
         sh 'docker build -t aflorzy/daytrackr-frontend .'
