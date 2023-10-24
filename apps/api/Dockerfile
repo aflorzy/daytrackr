@@ -1,36 +1,19 @@
-#### Stage 1: Build the application
-FROM openjdk:17-jdk-slim-buster as build
- 
-# Set the current working directory inside the image
+FROM maven:3.8.3-openjdk-17 as build
 WORKDIR /app
- 
-# Copy maven executable to the image
-COPY mvnw .
-COPY .mvn .mvn
- 
-# Copy the pom.xml file
+
 COPY pom.xml .
- 
-# Build all the dependencies in preparation to go offline. 
-# This is a separate step so the dependencies will be cached unless 
-# the pom.xml file has changed.
-RUN ./mvnw dependency:go-offline -B
- 
-# Copy the project source
-COPY src src
- 
-# Package the application
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
- 
-#### Stage 2: A minimal docker image with command to run the app 
-FROM openjdk:11-jre-slim
- 
-ARG DEPENDENCY=/app/target/dependency
- 
-# Copy project dependencies from the build stage
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
- 
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.aflorzy.daytrackr.Application"]
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+FROM maven:3.8.3-openjdk-17
+WORKDIR /app
+
+# Copy the JAR file from the build stage to the runtime image
+COPY --from=build /app/target/daytrackr*.jar ./app.jar
+
+# Expose the port your Spring Boot application is listening on
+EXPOSE 8082
+
+# Command to run the Spring Boot application
+CMD ["java", "-jar", "app.jar"]
+
