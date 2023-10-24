@@ -11,12 +11,6 @@ WORKDIR /app
 # will be cached unless changes to one of those two files
 # are made.
 COPY package*.json ./
-
-RUN curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-17.04.0-ce.tgz \
-  && tar xzvf docker-17.04.0-ce.tgz \
-  && mv docker/docker /usr/local/bin \
-  && rm -r docker docker-17.04.0-ce.tgz
-
 RUN npm install
 
 # Copy the main application
@@ -40,6 +34,6 @@ COPY /nginx-custom.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 to the Docker host, so we can access it
 # from the outside.
-EXPOSE 81
+EXPOSE 80
 
 ENTRYPOINT ["nginx","-g","daemon off;"]
