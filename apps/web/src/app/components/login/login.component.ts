@@ -62,6 +62,7 @@ export class LoginComponent implements OnInit {
         },
         (error) => {
           this.authService.isAuthenticatedUser = false;
+          console.error('Could not log in', error);
           this.loginError = error?.error?.message;
         }
       );

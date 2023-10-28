@@ -145,7 +145,6 @@ export class InputBoxComponent implements OnInit {
       return { ...day, events };
     });
 
-    localStorage.setItem('days', JSON.stringify(daysFinal));
     this.daysSaved = true;
 
     this.dayService.saveMulti(this.days).subscribe({
