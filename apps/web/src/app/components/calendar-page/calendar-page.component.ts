@@ -17,6 +17,7 @@ export class CalendarPageComponent implements OnInit {
   firstCalendarDate!: Date;
   lastCalendarDate!: Date;
   firstLastDate$ = new Subject<{ first: Date; last: Date }>();
+  deletedDay$ = new Subject<Day>();
   existsPrev: boolean = false;
   existsNext: boolean = false;
   editing: boolean = false;
@@ -121,10 +122,42 @@ export class CalendarPageComponent implements OnInit {
     if (!deleted || !this.selectedDay || !this.selectedDay.id) return;
 
     this.dayService.deleteById(this.selectedDay.id).subscribe({
-      next: (res) => {
-        console.log('Deleted day', res, this.selectedDay);
+      next: (_) => {
+        if (!this.selectedDay) return;
+        // Trigger calendar to remove day's events
+        this.deletedDay$.next(this.selectedDay);
+
+        // Filter out of list
+        let tempSelectedDay: Day | undefined;
+        let deletedFirst: boolean;
+        this.days = this.days.filter((day: Day) => {
+          const found: boolean = day.id === this.selectedDay?.id;
+
+          if (deletedFirst && !tempSelectedDay) {
+            // Deleted first day in list. Others exist
+            tempSelectedDay = day;
+            this.selectedDay = day;
+          }
+
+          if (found && tempSelectedDay) {
+            this.selectedDay = tempSelectedDay;
+          } else if (found) {
+            // Deleted first day in list. Others may or may not exist
+            deletedFirst = true;
+          } else {
+            tempSelectedDay = day;
+          }
+
+          // Do not want to keep deleted day
+          return !found;
+        });
+
+        if (!tempSelectedDay) {
+          // Delete only item in list
+          this.selectedDay = undefined;
+        }
       },
-      error: (e) => {
+      error: (_) => {
         console.error('Could not delete day');
       },
     });

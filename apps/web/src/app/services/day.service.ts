@@ -74,6 +74,6 @@ export class DayService {
   }
 
   public deleteById(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.base_url}/daily-events/delete/${id}`).pipe(tap((result) => console.log('Deleted day by ID', result)));
+    return this.http.delete(`${this.base_url}/daily-events/delete/${id}`);
   }
 }

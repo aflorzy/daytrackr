@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Day as DayObj } from 'src/common/interfaces';
 import { CalendarDay, CalendarMonth, CalendarWeek } from 'src/common/interfaces';
 
@@ -8,8 +9,9 @@ import { CalendarDay, CalendarMonth, CalendarWeek } from 'src/common/interfaces'
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
   monthList: CalendarMonth[] = [];
+  monthListInitial: CalendarMonth[] = [];
   selectedDate?: Date;
 
   /* CALENDAR DATA FROM HOLDINGS PAGE */
@@ -43,15 +45,13 @@ export class CalendarComponent {
     year: -1,
   };
 
-  constructor(private datePipe: DatePipe) {}
-
   @Output() dayChange = new EventEmitter<CalendarDay>();
   @Output() firstLastDate = new EventEmitter<{ first: Date; last: Date }>();
-
+  @Input() deletedDay$ = new Subject<DayObj>();
   @Input() set dayList(dayList: DayObj[]) {
     // Loop through dayList and set on appropriate calendar day
     dayList.forEach((day: DayObj) => {
-      this.monthList = this.monthList.map((calendarMonth: CalendarMonth) => ({
+      this.monthList = this.monthListInitial.map((calendarMonth: CalendarMonth) => ({
         ...calendarMonth,
         weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
           ...calendarWeek,
@@ -77,7 +77,6 @@ export class CalendarComponent {
 
     if (!shouldEmitFirstLast) return;
 
-
     const currentMonth: CalendarMonth = {
       ...this.monthFromDate(date),
     };
@@ -95,11 +94,39 @@ export class CalendarComponent {
     const nextMonth: CalendarMonth = { ...this.monthFromDate(nextMonthDate) };
 
     this.monthList = [previousMonth, currentMonth, nextMonth];
+    this.monthListInitial = [...this.monthList];
 
     // Only emit these when month has changed
     if (shouldEmitFirstLast) {
       this.firstLastDate.emit({ first: previousMonth.weeks[0].days[0].day.date, last: nextMonth.weeks[5].days[6].day.date });
     }
+  }
+
+  constructor(private datePipe: DatePipe) {}
+  ngOnInit(): void {
+    this.subscribeDeletedDay();
+  }
+
+  subscribeDeletedDay() {
+    this.deletedDay$.subscribe((deletedDay: DayObj) => {
+      // Set day's events to []
+      this.monthList = this.monthListInitial.map((calendarMonth: CalendarMonth) => ({
+        ...calendarMonth,
+        weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
+          ...calendarWeek,
+          days: calendarWeek.days.map((calendarDay: CalendarDay) => {
+            const yearNum: number = +(this.datePipe.transform(deletedDay.date, 'yyyy') ?? '');
+            const monthNum: number = +(this.datePipe.transform(deletedDay.date, 'MM') ?? '');
+            const dayNum: number = +(this.datePipe.transform(deletedDay.date, 'dd') ?? '');
+            if (calendarDay.year == yearNum && calendarDay.month == monthNum && calendarDay.date == dayNum) {
+              calendarDay.day.events = [];
+            }
+
+            return calendarDay;
+          }),
+        })),
+      }));
+    });
   }
 
   /* Calendar Methods */
