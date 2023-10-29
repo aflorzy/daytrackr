@@ -1,30 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Day as DayObj } from '../../input-box/input-box.component';
-
-interface Month {
-  weeks: Week[];
-  name: string;
-  monthOfYear: number;
-  year: number;
-}
-interface Week {
-  days: Day[];
-  weekOfYear: number;
-  weekOfMonth: number;
-}
-interface Day {
-  date: number;
-  month: number;
-  year: number;
-  dayOfWeek: number;
-  dayOfWeekStr: string;
-  weekOfMonth: number;
-  weekOfYear: number;
-  monthStrAbbv: string;
-  monthStr: string;
-  day: DayObj;
-}
+import { Day as DayObj } from 'src/common/interfaces';
+import { CalendarDay, CalendarMonth, CalendarWeek } from 'src/common/interfaces';
 
 @Component({
   selector: 'app-calendar',
@@ -32,7 +9,7 @@ interface Day {
   styleUrls: ['./calendar.component.css'],
 })
 export class CalendarComponent {
-  monthList: Month[] = [];
+  monthList: CalendarMonth[] = [];
   selectedDate?: Date;
 
   /* CALENDAR DATA FROM HOLDINGS PAGE */
@@ -40,7 +17,7 @@ export class CalendarComponent {
     date: new Date(),
     events: [],
   };
-  INITIAL_DAY: Day = {
+  INITIAL_DAY: CalendarDay = {
     date: -1,
     month: -1,
     year: -1,
@@ -53,13 +30,13 @@ export class CalendarComponent {
     day: this.INITIAL_DAY_OBJ,
   };
 
-  INITIAL_WEEK: Week = {
+  INITIAL_WEEK: CalendarWeek = {
     days: Array(7).fill(this.INITIAL_DAY),
     weekOfYear: -1,
     weekOfMonth: -1,
   };
 
-  INITIAL_MONTH: Month = {
+  INITIAL_MONTH: CalendarMonth = {
     weeks: Array(6).fill(this.INITIAL_WEEK),
     name: '',
     monthOfYear: -1,
@@ -68,33 +45,65 @@ export class CalendarComponent {
 
   constructor(private datePipe: DatePipe) {}
 
-  @Output() dateChange = new EventEmitter<{ target: { value: string } }>();
+  @Output() dayChange = new EventEmitter<CalendarDay>();
+  @Output() firstLastDate = new EventEmitter<{ first: Date; last: Date }>();
 
-  @Input() dayList: DayObj[] = [];
+  @Input() set dayList(dayList: DayObj[]) {
+    // Loop through dayList and set on appropriate calendar day
+    dayList.forEach((day: DayObj) => {
+      this.monthList = this.monthList.map((calendarMonth: CalendarMonth) => ({
+        ...calendarMonth,
+        weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
+          ...calendarWeek,
+          days: calendarWeek.days.map((calendarDay: CalendarDay) => {
+            const yearNum: number = +(this.datePipe.transform(day.date, 'yyyy') ?? '');
+            const monthNum: number = +(this.datePipe.transform(day.date, 'MM') ?? '');
+            const dayNum: number = +(this.datePipe.transform(day.date, 'dd') ?? '');
+            if (calendarDay.year == yearNum && calendarDay.month == monthNum && calendarDay.date == dayNum) {
+              calendarDay.day = day;
+            }
+
+            return calendarDay;
+          }),
+        })),
+      }));
+    });
+  }
 
   @Input() set initializeCalendar(date: Date) {
+    const monthChanged: boolean = this.datePipe.transform(this.selectedDate, 'MM') !== this.datePipe.transform(date, 'MM');
+    const shouldEmitFirstLast: boolean = !this.selectedDate || monthChanged;
     this.selectedDate = date;
-    const currentMonth: Month = {
+
+    if (!shouldEmitFirstLast) return;
+
+
+    const currentMonth: CalendarMonth = {
       ...this.monthFromDate(date),
     };
 
-    let previousMaturityDate: Date = new Date(date);
-    previousMaturityDate.setDate(15);
-    previousMaturityDate.setMonth(previousMaturityDate.getMonth() - 1);
-    const previousMonth: Month = {
-      ...this.monthFromDate(previousMaturityDate),
+    let previousMonthDate: Date = new Date(date);
+    previousMonthDate.setDate(15);
+    previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
+    const previousMonth: CalendarMonth = {
+      ...this.monthFromDate(previousMonthDate),
     };
 
-    let nextMaturityDate: Date = new Date(date);
-    nextMaturityDate.setDate(15);
-    nextMaturityDate.setMonth(nextMaturityDate.getMonth() + 1);
-    const nextMonth: Month = { ...this.monthFromDate(nextMaturityDate) };
+    let nextMonthDate: Date = new Date(date);
+    nextMonthDate.setDate(15);
+    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    const nextMonth: CalendarMonth = { ...this.monthFromDate(nextMonthDate) };
 
     this.monthList = [previousMonth, currentMonth, nextMonth];
+
+    // Only emit these when month has changed
+    if (shouldEmitFirstLast) {
+      this.firstLastDate.emit({ first: previousMonth.weeks[0].days[0].day.date, last: nextMonth.weeks[5].days[6].day.date });
+    }
   }
 
   /* Calendar Methods */
-  dayFromDate(dateObj: Date): Day {
+  dayFromDate(dateObj: Date): CalendarDay {
     let date = this.datePipe.transform(dateObj, 'd');
     let month = this.datePipe.transform(dateObj, 'M');
     let year = this.datePipe.transform(dateObj, 'y');
@@ -105,7 +114,7 @@ export class CalendarComponent {
     let monthStr = this.datePipe.transform(dateObj, 'LLL');
     let monthStrAbbv = this.datePipe.transform(dateObj, 'LLLL');
 
-    let day: Day = {
+    let day: CalendarDay = {
       date: date ? +date : -1,
       month: month ? +month : -1,
       year: year ? +year : -1,
@@ -115,31 +124,22 @@ export class CalendarComponent {
       weekOfYear: weekOfYear ? +weekOfYear : -1,
       monthStr: monthStr ? monthStr : '',
       monthStrAbbv: monthStrAbbv ? monthStrAbbv : '',
-      day:
-        this.dayList.find((dayObj: DayObj) => {
-          return (
-            +(this.datePipe.transform(dayObj.date, 'dd')?.toString() || '') ===
-              +(date?.toString() || '') &&
-            +(this.datePipe.transform(dayObj.date, 'MM')?.toString() || '') ===
-              +(month?.toString() || '') &&
-            +(
-              this.datePipe.transform(dayObj.date, 'yyyy')?.toString() || ''
-            ) === +(year?.toString() || '')
-          );
-        }) || this.INITIAL_DAY_OBJ,
+      day: this.INITIAL_DAY_OBJ,
     };
+
+    day.day.date = new Date(`${day.year}/${day.month}/${day.date}`);
 
     return day;
   }
 
-  weekFromDate(dateObj: Date): Week {
-    let day: Day = this.dayFromDate(dateObj);
+  weekFromDate(dateObj: Date): CalendarWeek {
+    let day: CalendarDay = this.dayFromDate(dateObj);
 
     let firstDayOfWeekObj: Date = new Date(dateObj);
     firstDayOfWeekObj.setDate(firstDayOfWeekObj.getDate() - day.dayOfWeek);
 
-    let week: Week = this.INITIAL_WEEK;
-    week.days = week.days.map((dayTemp: Day, dayOfWeek: number) => {
+    let week: CalendarWeek = this.INITIAL_WEEK;
+    week.days = week.days.map((dayTemp: CalendarDay, dayOfWeek: number) => {
       let dayOfWeekTemp: Date = new Date(firstDayOfWeekObj);
       dayOfWeekTemp.setDate(dayOfWeekTemp.getDate() + dayOfWeek);
       return this.dayFromDate(dayOfWeekTemp);
@@ -150,15 +150,15 @@ export class CalendarComponent {
     return week;
   }
 
-  monthFromDate(dateObj: Date): Month {
-    let month: Month = this.INITIAL_MONTH;
+  monthFromDate(dateObj: Date): CalendarMonth {
+    let month: CalendarMonth = this.INITIAL_MONTH;
     let firstDayOfMonthObj: Date = new Date(dateObj);
     firstDayOfMonthObj.setDate(1);
 
-    month.weeks = month.weeks.map((weekTemp: Week, weekOfMonth: number) => {
+    month.weeks = month.weeks.map((weekTemp: CalendarWeek, weekOfMonth: number) => {
       let dayOfWeekTemp: Date = new Date(firstDayOfMonthObj);
       dayOfWeekTemp.setDate(dayOfWeekTemp.getDate() + 7 * weekOfMonth);
-      let week: Week = this.weekFromDate(new Date(dayOfWeekTemp));
+      let week: CalendarWeek = this.weekFromDate(new Date(dayOfWeekTemp));
       return JSON.parse(JSON.stringify(week));
     });
 
@@ -170,14 +170,10 @@ export class CalendarComponent {
     return month;
   }
 
-  selectDay(day: Day, month: Month) {
+  selectDay(day: CalendarDay, month: CalendarMonth) {
     if (day.day.events.length <= 0) return;
     if (day.month !== month.monthOfYear) return;
 
-    const value = day.day.date;
-    this.initializeCalendar = value;
-    this.dateChange.emit({
-      target: { value: this.datePipe.transform(value, 'yyyy-MM-dd') || '' },
-    });
+    this.dayChange.emit(day);
   }
 }

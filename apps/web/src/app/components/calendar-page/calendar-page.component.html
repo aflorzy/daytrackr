@@ -1,8 +1,8 @@
-<div class="content" *ngIf="days && days.length; else noData">
-  <app-calendar *ngIf="selectedDay && !editing" [dayList]="days" [initializeCalendar]="selectedDay.date" (dateChange)="dateChange($event)"></app-calendar>
+<div class="content">
+  <app-calendar *ngIf="selectedDay && !editing" [dayList]="days" [initializeCalendar]="selectedDay.date" (dayChange)="dayChange($event)" (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
 
   <span class="hidden" *ngIf="!editing">Select from {{ days.length }} {{ days.length === 1 ? 'day' : 'days' }} in saved data:</span>
-  <input type="date" id="date" class="hidden" (change)="dateChange($event)" />
+  <!-- <input type="date" id="date" class="hidden" (change)="dateChange($event)" /> -->
   <div class="arrows" *ngIf="selectedDay && minDate && maxDate && !editing">
     <button (click)="onPrev()" [disabled]="!existsPrev">
       <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon>
@@ -12,7 +12,7 @@
     </button>
   </div>
 
-  <app-day-list-item *ngIf="!editing" [day]="selectedDay" [editable]="false" (onEdit)="editing = true"></app-day-list-item>
+  <app-day-list-item *ngIf="!editing" [day]="selectedDay" [editable]="false" (onEdit)="editing = true" (onDelete)="onDelete($event)"></app-day-list-item>
 
   <app-edit-day *ngIf="editing && selectedDay" [day]="selectedDay" (onSave)="handleSave($event); editing = false" (onCancel)="editing = false"></app-edit-day>
 </div>

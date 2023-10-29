@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { Day, Event } from "../input-box/input-box.component";
+import { Event } from 'src/common/interfaces';
+import { Day } from "src/common/interfaces";
 
 @Component({
   selector: "app-day-list-item",
@@ -12,6 +13,7 @@ export class DayListItemComponent {
   @Input() hideEditIcon!: boolean;
   @Output() edited = new EventEmitter<Day>();
   @Output() onEdit = new EventEmitter<boolean>();
+  @Output() onDelete = new EventEmitter<boolean>();
   editingEvent: string = "";
   originalEvent: string = "";
 

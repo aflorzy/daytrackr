@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Day } from '../input-box/input-box.component';
+import { Day } from 'src/common/interfaces';
 
 @Component({
   selector: 'app-day-list',

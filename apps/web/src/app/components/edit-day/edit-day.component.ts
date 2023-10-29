@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DayService } from 'src/app/services/day.service';
-import { Day, Event } from '../input-box/input-box.component';
+import { Event } from 'src/common/interfaces';
+import { Day } from 'src/common/interfaces';
 
 @Component({
   selector: 'app-edit-day',

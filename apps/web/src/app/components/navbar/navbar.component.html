@@ -1,13 +1,16 @@
 <nav>
   <h1>DayTrackr Parser</h1>
-  <ul class="tabs">
-    <li class="tab" *ngIf="isAuthenticatedUser">
+  <ul class="tabs" *ngIf="isAuthenticatedUser">
+    <li class="tab">
       <a routerLink="/" routerLinkActive="active-item">Home</a>
     </li>
-    <li class="tab" *ngIf="isAuthenticatedUser">
+    <li class="tab">
+      <a routerLink="/parser" routerLinkActive="active-item">Parser</a>
+    </li>
+    <li class="tab">
       <a routerLink="calendar" routerLinkActive="active-item">Calendar</a>
     </li>
-    <li class="tab" *ngIf="isAuthenticatedUser">
+    <li class="tab">
       <a routerLink="/login" routerLinkActive="active-item" (click)="logout()">Logout</a>
     </li>
   </ul>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, tap, switchMap } from 'rxjs';
-import { Day, Event } from '../components/input-box/input-box.component';
+import { Event } from 'src/common/interfaces';
+import { Day } from 'src/common/interfaces';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
@@ -70,5 +71,9 @@ export class DayService {
       tap((data) => console.log('Saved days!', data)),
       switchMap((list: Day[]) => of(list.map((day: Day) => ({ ...day, events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx) }))))
     );
+  }
+
+  public deleteById(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.base_url}/daily-events/delete/${id}`).pipe(tap((result) => console.log('Deleted day by ID', result)));
   }
 }

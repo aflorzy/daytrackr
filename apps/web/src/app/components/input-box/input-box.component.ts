@@ -2,18 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { DayService } from 'src/app/services/day.service';
-
-export interface Day {
-  id?: string;
-  date: Date;
-  events: Event[];
-}
-
-export interface Event {
-  id?: string;
-  name: string;
-  idx: number;
-}
+import { Event } from 'src/common/interfaces';
+import { Day } from 'src/common/interfaces';
 
 @Component({
   selector: 'app-input-box',
@@ -130,9 +120,6 @@ export class InputBoxComponent implements OnInit {
     this.days = days;
     errorMsg = '';
     this.setError(false, errorMsg);
-
-    // If all success, save input to localStorage
-    localStorage.setItem('fields', JSON.stringify({ date: this.realInitialDate, text: this.value }));
   }
 
   saveData() {
