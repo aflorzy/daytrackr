@@ -14,6 +14,8 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
+
 @SpringBootApplication
 @Configuration
 @EnableWebMvc
@@ -43,7 +45,8 @@ public class Application implements WebMvcConfigurer {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.applyPermitDefaultValues(); // Allows all origins, headers, and methods. You can customize this as needed.
+        config.applyPermitDefaultValues();
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         source.registerCorsConfiguration("/**", config);
         CorsFilter corsFilter = new CorsFilter(source);
         return corsFilter;

@@ -12,13 +12,14 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.aflorzy.daytrackr.domain.DailyEvent;
 import com.aflorzy.daytrackr.domain.DailyEventDto;
 import com.aflorzy.daytrackr.domain.UserEntity;
-import com.aflorzy.daytrackr.repositories.DailyEventRepository;
 import com.aflorzy.daytrackr.repositories.UserRepository;
 
 @RestController
@@ -27,9 +28,6 @@ public class DailyEventController {
 
     private static final Logger logger = LoggerFactory.getLogger(DailyEventController.class);
 
-
-    @Autowired
-    DailyEventRepository dailyEventRepository;
 
     @Autowired
     DailyEventService dailyEventService;
@@ -43,18 +41,18 @@ public class DailyEventController {
 
     @GetMapping("/find/id/{id}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public DailyEventDto find(Principal principal, @PathVariable("id") UUID id) {
+    public DailyEventDto findById(Principal principal, @PathVariable("id") UUID id) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        DailyEvent dailyEvent = dailyEventRepository.findByUserAndIdOrderByDateAsc(user, id);
+        DailyEvent dailyEvent = dailyEventService.findByUserAndIdOrderByDateAsc(user, id);
 
         return new DailyEventDto().fromDailyEvent(dailyEvent);
     }
 
     @GetMapping("/find/date/{date}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public DailyEventDto find(Principal principal, @PathVariable("date") LocalDate date) {
+    public DailyEventDto findByDate(Principal principal, @PathVariable("date") LocalDate date) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        DailyEvent dailyEvent = dailyEventRepository.findByUserAndDateOrderByDateAsc(user, date);
+        DailyEvent dailyEvent = dailyEventService.findByUserAndDateOrderByDateAsc(user, date);
 
         return new DailyEventDto().fromDailyEvent(dailyEvent);
     }
@@ -72,7 +70,7 @@ public class DailyEventController {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public List<DailyEventDto> findAll(Principal principal) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        List<DailyEvent> dailyEvents = dailyEventRepository.findByUserOrderByDateAsc(user);
+        List<DailyEvent> dailyEvents = dailyEventService.findByUserOrderByDateAsc(user);
         List<DailyEventDto> dailyEventsDto = new ArrayList<>();
         for (DailyEvent event : dailyEvents) {
             dailyEventsDto.add(new DailyEventDto().fromDailyEvent(event));
@@ -116,6 +114,7 @@ public class DailyEventController {
 
     @Transactional
     @PostMapping("/save/multi")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public List<DailyEventDto> saveMulti(Principal principal, @RequestBody List<DailyEventDto> dailyEventDtoList) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         List<DailyEventDto> result = new ArrayList<>();
@@ -136,5 +135,28 @@ public class DailyEventController {
         }
 
         return result;
+    }
+
+    @Transactional
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity deleteDailyEvent(Principal principal, @PathVariable UUID id) {
+        UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
+        DailyEvent dailyEvent = dailyEventService.findByUserAndIdOrderByDateAsc(user, id);
+
+        if (dailyEvent == null) {
+            logger.error("Could not find day to delete with ID " + id);
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!dailyEvent.getUser().getUsername().equals(user.getUsername())) {
+            logger.error("User " + user.getUsername() + " is not authorized to delete day with ID " + id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // If the user has the right permissions, delete the DailyEvent
+        dailyEventService.deleteById(id);
+        logger.info("User " + user.getUsername() + " successfully deleted day with ID " + id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

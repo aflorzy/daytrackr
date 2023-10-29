@@ -1,6 +1,5 @@
 package com.aflorzy.daytrackr.services;
 
-import com.aflorzy.daytrackr.controllers.DailyEventController;
 import com.aflorzy.daytrackr.domain.DailyEvent;
 import com.aflorzy.daytrackr.domain.Event;
 import com.aflorzy.daytrackr.domain.UserEntity;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class DailyEventService {
@@ -22,6 +22,18 @@ public class DailyEventService {
     DailyEventRepository dailyEventRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(DailyEventService.class);
+
+    public DailyEvent findByUserAndIdOrderByDateAsc(UserEntity user, UUID id) {
+        return dailyEventRepository.findByUserAndIdOrderByDateAsc(user, id);
+    }
+
+    public DailyEvent findByUserAndDateOrderByDateAsc(UserEntity user, LocalDate date) {
+        return dailyEventRepository.findByUserAndDateOrderByDateAsc(user, date);
+    }
+
+    public List<DailyEvent> findByUserOrderByDateAsc(UserEntity user) {
+        return dailyEventRepository.findByUserOrderByDateAsc(user);
+    }
 
     public DailyEvent findTodayOrLatest(UserEntity user) {
         LocalDate today = LocalDate.now();
@@ -83,5 +95,9 @@ public class DailyEventService {
                 throw new DailyEventSaveFailureException("Could not save DailyEvent of date: " + dailyEvent.getDate());
             }
         }
+    }
+
+    public void deleteById(UUID id) {
+        dailyEventRepository.deleteById(id);
     }
 }
