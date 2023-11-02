@@ -3,9 +3,11 @@ package com.aflorzy.daytrackr.controllers;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import com.aflorzy.daytrackr.domain.Event;
 import com.aflorzy.daytrackr.exceptions.DailyEventSaveFailureException;
 import com.aflorzy.daytrackr.services.DailyEventService;
 import jakarta.transaction.Transactional;
@@ -59,6 +61,13 @@ public class DailyEventController {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         DailyEvent dailyEvent = dailyEventService.findTodayOrLatest(user);
 
+        if (dailyEvent == null) {
+            DailyEventDto tempDailyEventDto = new DailyEventDto();
+            tempDailyEventDto.setId(null);
+            tempDailyEventDto.setEvents(new HashSet<>());
+            tempDailyEventDto.setDate(LocalDate.now());
+            return tempDailyEventDto;
+        }
         return new DailyEventDto().fromDailyEvent(dailyEvent);
     }
 
