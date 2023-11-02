@@ -51,19 +51,42 @@
   background-color: transparent;
 }
 
-.editDay {
+.edit-day {
   font-size: 18px;
   margin-left: 5px;
   padding: 0 8px;
   border-radius: 5px;
   color: #000;
+  border: 1px solid #000;
 }
-.editDay:hover {
+.edit-day:hover {
   cursor: pointer;
   color: #444;
   background-color: #eee;
+  border-color: #444;
 }
-.editDay:active {
+.edit-day:active {
   color: #222;
+  background-color: #ddd;
+  border-color: #222;
+}
+
+.delete-day {
+  font-size: 18px;
+  margin-left: 5px;
+  padding: 0 8px;
+  border-radius: 5px;
+  color: #f00;
+  border: 1px solid #f00;
+}
+.delete-day:hover {
+  cursor: pointer;
+  color: #b00;
+  border-color: #b00;
+  background-color: #eee;
+}
+.delete-day:active {
+  color: #d00;
+  border-color: #d00;
   background-color: #ddd;
 }

@@ -1,28 +1,13 @@
 <div class="content" *ngIf="day">
   <div class="date">
-    {{ day.date | date : "EEEE, MMMM d, y" }}
-    <span class="editDay" *ngIf="!hideEditIcon" (click)="onEdit.emit(true)">
-      <fa-icon [icon]="['fas', 'pencil']"></fa-icon
-    ></span>
-    <button (click)="onDelete.emit(true)">Delete</button>
+    {{ day.date | date : 'EEEE, MMMM d, y' }}
+    <span class="edit-day" *ngIf="!hideEditIcon" (click)="onEdit.emit(true)"><fa-icon [icon]="['fas', 'pencil']"></fa-icon></span>
+    <span class="delete-day" (click)="onDelete.emit(true)"><fa-icon [icon]="['fas', 'trash']"></fa-icon></span>
   </div>
   <div class="events">
     <div class="event" *ngFor="let event of day.events; let i = index">
-      <span
-        class="name"
-        [contentEditable]="editable"
-        (focus)="focusCell(i)"
-        (input)="editEvent($event)"
-        (keydown.Enter)="submit($event, i)"
-        (blur)="submit($event, i)"
-        [innerHTML]="event.name"
-        title="Edit event"></span>
-      <span
-        class="gap"
-        [class.hidden]="!editable"
-        *ngIf="i !== day.events.length - 1"
-        (click)="combineEvents(i)"
-        title="Combine events">
+      <span class="name" [contentEditable]="editable" (focus)="focusCell(i)" (input)="editEvent($event)" (keydown.Enter)="submit($event, i)" (blur)="submit($event, i)" [innerHTML]="event.name" title="Edit event"></span>
+      <span class="gap" [class.hidden]="!editable" *ngIf="i !== day.events.length - 1" (click)="combineEvents(i)" title="Combine events">
         <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
       </span>
     </div>

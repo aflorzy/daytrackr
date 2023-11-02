@@ -73,4 +73,9 @@ export class EditDayComponent implements OnInit {
       },
     });
   }
+
+  addEvent(name: string) {
+    this.day.events.push({ name, idx: this.day.events.length });
+    this.checkIsModified();
+  }
 }

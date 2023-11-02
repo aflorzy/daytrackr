@@ -1,5 +1,5 @@
 <div class="content">
-  <app-calendar *ngIf="selectedDay && !editing" [dayList]="days" [initializeCalendar]="selectedDay.date" [deletedDay$]="deletedDay$" (dayChange)="dayChange($event)" (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
+  <app-calendar *ngIf="selectedDay && !editing" [dayList]="days" [initializeCalendar]="selectedDay.date" [deletedDay$]="deletedDay$" (dayChange)="dayChange($event)" (newDayClick)="newDayClick($event)" (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
 
   <span class="hidden" *ngIf="!editing">Select from {{ days.length }} {{ days.length === 1 ? 'day' : 'days' }} in saved data:</span>
   <!-- <input type="date" id="date" class="hidden" (change)="dateChange($event)" /> -->

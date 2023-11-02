@@ -46,6 +46,7 @@ export class CalendarComponent implements OnInit {
   };
 
   @Output() dayChange = new EventEmitter<CalendarDay>();
+  @Output() newDayClick = new EventEmitter<CalendarDay>();
   @Output() firstLastDate = new EventEmitter<{ first: Date; last: Date }>();
   @Input() deletedDay$ = new Subject<DayObj>();
   @Input() set dayList(dayList: DayObj[]) {
@@ -151,7 +152,10 @@ export class CalendarComponent implements OnInit {
       weekOfYear: weekOfYear ? +weekOfYear : -1,
       monthStr: monthStr ? monthStr : '',
       monthStrAbbv: monthStrAbbv ? monthStrAbbv : '',
-      day: this.INITIAL_DAY_OBJ,
+      day: {
+        ...this.INITIAL_DAY_OBJ,
+        date: new Date(`${year}-${month}-${date}`),
+      },
     };
 
     day.day.date = new Date(`${day.year}/${day.month}/${day.date}`);
@@ -198,9 +202,11 @@ export class CalendarComponent implements OnInit {
   }
 
   selectDay(day: CalendarDay, month: CalendarMonth) {
-    if (day.day.events.length <= 0) return;
     if (day.month !== month.monthOfYear) return;
-
+    if (day.day.events.length <= 0) {
+      this.newDayClick.emit(day);
+      return;
+    }
     this.dayChange.emit(day);
   }
 }

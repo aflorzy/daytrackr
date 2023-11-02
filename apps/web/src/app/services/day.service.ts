@@ -60,6 +60,7 @@ export class DayService {
   }
 
   public saveDay(newDay: Day): Observable<Day> {
+    console.log("Saving day", newDay);
     return this.http.post<Day>(`${this.base_url}/daily-events/save`, newDay).pipe(
       tap((day: Day) => console.log('Saved day', day)),
       switchMap((day: Day) => of({ ...day, events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx) }))

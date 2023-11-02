@@ -82,6 +82,10 @@ export class CalendarPageComponent implements OnInit {
     this.existsNext = foundIndex < this.days.length - 1;
   }
 
+  newDayClick(calendarDay: CalendarDay) {
+    this.selectedDay = calendarDay.day;
+  }
+
   setFirstLastCalendarDates(dates: { first: Date; last: Date }) {
     this.firstLastDate$.next(dates);
   }

@@ -75,6 +75,7 @@
 }
 .month table tr td:hover {
   background-color: #ddd;
+  cursor: pointer;
 }
 .isSelected span p {
   background-color: var(--success-color);

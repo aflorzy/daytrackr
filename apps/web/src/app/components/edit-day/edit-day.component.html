@@ -8,6 +8,11 @@
   </div>
 </div>
 
+<form (submit)="addEvent(eventInput.value); eventInput.value = ''">
+  <label for="eventInput">Add Event</label>
+  <input type="text" #eventInput id="eventInput" autocomplete="off" />
+</form>
+
 <button (click)="saveChanges()" [disabled]="!isModified"> Save Changes </button>
 <button (click)="onCancel.emit(true)">Cancel</button>
 
