@@ -59,7 +59,6 @@ export class CalendarPageComponent implements OnInit {
           this.minDate = new Date(days[0].date);
           this.maxDate = new Date(days[days.length - 1].date);
 
-          this.selectedDay = days[days.length - 1];
           this.existsPrev = days.length > 1;
           this.existsNext = false;
 
