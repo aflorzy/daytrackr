@@ -9,9 +9,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { HomeComponent } from './components/home-page/home/home.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', component: HomeComponent, title: 'DayTrackr | Home', canActivate: [AuthGuard] },
+  { path: '', pathMatch: 'full', component: CalendarPageComponent, title: 'DayTrackr | Home', canActivate: [AuthGuard] },
   { path: 'parser', pathMatch: 'full', component: InputBoxComponent, title: 'DayTrackr | Parser', canActivate: [AuthGuard] },
-  { path: 'calendar', pathMatch: 'full', component: CalendarPageComponent, title: 'DayTrackr | Calendar', canActivate: [AuthGuard] },
   { path: 'edit/:date', pathMatch: 'full', component: EditDayComponent, title: 'DayTrackr | Edit', canActivate: [AuthGuard] },
   { path: 'login', pathMatch: 'full', component: LoginComponent, title: 'DayTrackr | Login' },
   { path: 'register', pathMatch: 'full', component: RegisterComponent, title: 'DayTrackr | Register' },
