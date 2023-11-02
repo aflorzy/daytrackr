@@ -18,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.aflorzy.daytrackr.domain.DailyEvent;
-import com.aflorzy.daytrackr.domain.DailyEventDto;
+import com.aflorzy.daytrackr.dto.DailyEventDto;
 import com.aflorzy.daytrackr.domain.UserEntity;
 import com.aflorzy.daytrackr.repositories.UserRepository;
 
@@ -34,10 +34,6 @@ public class DailyEventController {
 
     @Autowired
     UserRepository userRepository;
-
-    public static boolean isFalsy(Object value) {
-        return value == null || value.equals(0) || value.equals(false) || value.equals("");
-    }
 
     @GetMapping("/find/id/{id}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
@@ -101,14 +97,7 @@ public class DailyEventController {
     public DailyEventDto save(Principal principal, @RequestBody DailyEventDto dailyEventDto) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
 
-        DailyEvent dailyEvent = new DailyEvent();
-        dailyEvent.setUser(user);
-        dailyEvent.setId(dailyEventDto.getId());
-        dailyEvent.setDate(dailyEventDto.getDate());
-        dailyEvent.setEvents(dailyEventDto.getEvents());
-
-        DailyEvent returnedDailyEvent = dailyEvent.getId() == null ? dailyEventService.save(dailyEvent) : dailyEventService.update(dailyEvent);
-
+        DailyEvent returnedDailyEvent = dailyEventService.save(user, dailyEventDto);
         return new DailyEventDto().fromDailyEvent(returnedDailyEvent);
     }
 
@@ -119,18 +108,11 @@ public class DailyEventController {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         List<DailyEventDto> result = new ArrayList<>();
         for (DailyEventDto dailyEventDto : dailyEventDtoList) {
-            DailyEvent dailyEvent = new DailyEvent();
-            dailyEvent.setUser(user);
-            dailyEvent.setId(dailyEventDto.getId());
-            dailyEvent.setDate(dailyEventDto.getDate());
-            dailyEvent.setEvents(dailyEventDto.getEvents());
-
             try {
-                DailyEvent returnedDailyEvent = dailyEvent.getId() == null ? dailyEventService.save(dailyEvent) : dailyEventService.update(dailyEvent);
+                DailyEvent returnedDailyEvent = dailyEventService.save(user, dailyEventDto);
                 result.add(new DailyEventDto().fromDailyEvent(returnedDailyEvent));
             } catch (Exception e) {
-                logger.error(e.getMessage());
-                throw new DailyEventSaveFailureException("Could not save DailyEvent of date: " + dailyEvent.getDate());
+                throw new DailyEventSaveFailureException("Could not save DailyEvent of date: " + dailyEventDto.getDate());
             }
         }
 
