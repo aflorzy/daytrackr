@@ -54,8 +54,8 @@ public class DailyEventService {
     }
 
     public DailyEvent save(UserEntity user, DailyEventDto dailyEventDto) {
+        logger.info("User " + user.getUsername() + " saving " + dailyEventDto.getDate());
 
-        logger.info("Saving: " + dailyEventDto.toString());
         DailyEvent dailyEvent = new DailyEvent();
         dailyEvent.setUser(user);
         dailyEvent.setId(dailyEventDto.getId());
