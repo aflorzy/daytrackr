@@ -1,8 +1,8 @@
 <div class="content" *ngIf="day">
   <div class="date">
     {{ day.date | date : 'EEEE, MMMM d, y' }}
-    <span class="edit-day" *ngIf="!hideEditIcon" (click)="onEdit.emit(true)"><fa-icon [icon]="['fas', 'pencil']"></fa-icon></span>
-    <span class="delete-day" (click)="onDelete.emit(true)"><fa-icon [icon]="['fas', 'trash']"></fa-icon></span>
+    <span class="edit-day" *ngIf="!hideEditIcon" (click)="onEdit.emit(true)"><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon></span>
+    <span class="delete-day" (click)="onDelete.emit(true)" tooltip="Reorder Events"><fa-icon [icon]="['fas', 'trash']"></fa-icon></span>
   </div>
   <div class="events">
     <div class="event" *ngFor="let event of day.events; let i = index">
@@ -12,4 +12,9 @@
       </span>
     </div>
   </div>
+
+  <form *ngIf="!hideAddEvent" (submit)="addEvent(eventInput.value); eventInput.value = ''">
+    <label for="eventInput">Add Event</label>
+    <input type="text" #eventInput id="eventInput" autocomplete="off" />
+  </form>
 </div>

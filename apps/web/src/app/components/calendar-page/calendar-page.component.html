@@ -12,7 +12,7 @@
     </button>
   </div>
 
-  <app-day-list-item *ngIf="!editing" [day]="selectedDay" [editable]="false" (onEdit)="editing = true" (onDelete)="onDelete($event)"></app-day-list-item>
+  <app-day-list-item *ngIf="!editing" [day]="selectedDay" [hideEditIcon]="false" [hideAddEvent]="false" [editable]="true" (onEdit)="editing = true" (onDelete)="onDelete($event)" (edited)="onSubmit($event)"></app-day-list-item>
 
   <app-edit-day *ngIf="editing && selectedDay" [day]="selectedDay" (onSave)="handleSave($event); editing = false" (onCancel)="editing = false"></app-edit-day>
 </div>

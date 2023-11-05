@@ -27,9 +27,6 @@ export class CalendarPageComponent implements OnInit {
 
   constructor(private datePipe: DatePipe, private dayService: DayService) {}
   ngOnInit(): void {
-    // get days from local storage
-    // TODO: Get days for displayed months only. [currMonth-1,currMonth+1]
-    // Start by getting today, else latest
     this.subscribeInitialDay();
     this.subscribeCalendarChange();
   }
@@ -162,6 +159,19 @@ export class CalendarPageComponent implements OnInit {
       },
       error: (_) => {
         console.error('Could not delete day');
+      },
+    });
+  }
+
+  onSubmit(day: Day) {
+    this.dayService.saveDay(day).subscribe({
+      next: (res: Day) => {
+        if (this.selectedDay) {
+          this.selectedDay.id = res.id;
+        }
+      },
+      error: (e) => {
+        console.error(e);
       },
     });
   }

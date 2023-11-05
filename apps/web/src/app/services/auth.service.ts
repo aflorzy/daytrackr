@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 import { AccessToken } from 'src/common/interfaces';
 import { StorageService } from './storage.service';
 import { environment } from 'src/environments/environment';
+import * as jwt_decode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private base_url = environment.baseUrl;
-  private isAuthenticated: boolean = false;
 
   constructor(private http: HttpClient, private storageService: StorageService) {}
 
@@ -22,17 +22,24 @@ export class AuthService {
     this.storageService.setItemInStorage('token', token);
   }
 
-  private tokenExpired(token: string): boolean {
-    const expiry = JSON.parse(atob(token.split('.')[1])).exp;
-    return Math.floor(new Date().getTime() / 1000) >= expiry;
+  private getDecodedAccessToken(token: string): any {
+    try {
+      return jwt_decode.jwtDecode(token);
+    } catch (Error) {
+      return null;
+    }
   }
 
   public get tokenValid(): boolean {
     const token = this.token;
-    return token && token.accessToken && !this.tokenExpired(token.accessToken) ? true : false;
+    if (!token || !token.accessToken) return false;
+
+    const decoded = this.getDecodedAccessToken(token.accessToken);
+    const tokenExpired = Math.floor(new Date().getTime() / 1000) >= decoded.exp;
+    return !tokenExpired;
   }
 
-  public register(username: string, password: string): Observable<string> {
+  public register(username: string, password: string): Observable<{ message: string; error: string }> {
     const registerUrl = `${this.base_url}/auth/register`;
 
     const registerData = {
@@ -55,15 +62,10 @@ export class AuthService {
   }
 
   public logout() {
-    this.isAuthenticated = false;
     this.storageService.removeItemFromStorage('token');
   }
 
-  public set isAuthenticatedUser(isAuthenticated: boolean) {
-    this.isAuthenticated = isAuthenticated;
-  }
-
   public get isAuthenticatedUser(): boolean {
-    return this.isAuthenticated;
+    return this.tokenValid;
   }
 }

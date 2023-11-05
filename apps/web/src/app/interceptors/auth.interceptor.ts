@@ -15,7 +15,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (!matchingKeywords.length) {
       req = req.clone({ headers: req.headers.set('Authorization', `Bearer ${this.authService.token?.accessToken}`) });
-      this.authService.isAuthenticatedUser = true;
     }
 
     req = req.clone({ headers: req.headers.set('Accept', 'application/json; charset=utf-8').set('Content-Type', 'application/json') });

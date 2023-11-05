@@ -65,6 +65,9 @@ export class EditDayComponent implements OnInit {
     this.dayService.saveDay(this.day).subscribe({
       next: (res: Day) => {
         this.errorMessage = '';
+        if (this.day) {
+          this.day.id = res.id;
+        }
         this.onSave.emit(res);
       },
       error: (e: any) => {

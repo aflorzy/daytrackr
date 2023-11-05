@@ -124,13 +124,13 @@ export class InputBoxComponent implements OnInit {
 
   saveData() {
     // Loop through events and replace all &nbsp; with spaces
-    const daysFinal: Day[] = this.days.map((day) => {
-      const events: Event[] = day.events.map((event) => {
-        return { ...event, name: event.name.replace(/&nbsp;/g, ' ') };
-      });
+    // const daysFinal: Day[] = this.days.map((day) => {
+    //   const events: Event[] = day.events.map((event) => {
+    //     return { ...event, name: event.name.replace(/&nbsp;/g, ' ') };
+    //   });
 
-      return { ...day, events };
-    });
+    //   return { ...day, events };
+    // });
 
     this.daysSaved = true;
 

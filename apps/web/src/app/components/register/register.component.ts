@@ -15,7 +15,7 @@ export class RegisterComponent {
   successMessage: string = '';
   errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private storageService: StorageService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -51,17 +51,15 @@ export class RegisterComponent {
     }
 
     this.authService.register(this.username, this.password).subscribe({
-      next: (res: string) => {
-        this.successMessage = res;
+      next: (res: { message: string; error: string }) => {
+        this.successMessage = res.message;
         this.errorMessage = '';
-        // Set credentials in storage. Will remove immediatly after using in Login
-        this.storageService.setItemInStorage('credentials', { username: this.username, password: this.password });
-        this.router.navigate(['/login']);
+
+        setTimeout(() => this.router.navigate(['login']), 2000);
       },
       error: (e: HttpErrorResponse) => {
         this.successMessage = '';
         this.errorMessage = e.error.error;
-        console.error('Could not register user', e.error);
       },
     });
   }

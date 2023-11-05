@@ -38,3 +38,10 @@ export interface Day {
   date: Date;
   events: Event[];
 }
+
+export interface ResponseMessageDailyEvent {
+  message: string;
+  httpStatus: string;
+  dailyEvent: Day;
+  dailyEventList: Day[];
+}
