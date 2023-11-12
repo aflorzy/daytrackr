@@ -13,12 +13,9 @@
       <div *ngIf="passwordField?.hasError('required') && passwordField?.touched" class="error-message"> Password is required. </div>
     </div>
 
-    <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
-
+    <app-button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</app-button>
   </form>
-  <p class="auth-alt">
-    Don't have an account? <a routerLink="/register">Register Now</a>
-  </p>
+  <p class="auth-alt"> Don't have an account? <a routerLink="/register">Register Now</a> </p>
 
   <div *ngIf="loginError" class="error-message">
     {{ loginError }}

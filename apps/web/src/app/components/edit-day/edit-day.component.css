@@ -17,7 +17,7 @@
   margin-left: 10px;
 }
 .arrow.down {
-  color: red;
+  color: var(--warn-color);
   border-right: 1px solid #777;
   margin-right: 10px;
 }
@@ -42,4 +42,13 @@
 
 .events {
   margin: 20px;
+}
+
+.trash-icon {
+  color: var(--warn-color);
+  opacity: 0;
+}
+.trash-icon:hover {
+  opacity: 1;
+  cursor: pointer;
 }

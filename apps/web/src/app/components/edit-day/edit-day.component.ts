@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DayService } from 'src/app/services/day.service';
 import { Event } from 'src/common/interfaces';
 import { Day } from 'src/common/interfaces';
@@ -16,6 +17,10 @@ export class EditDayComponent implements OnInit {
   isModified: boolean = false;
   day_original!: Day;
   errorMessage: string = '';
+
+  eventForm = new FormGroup({
+    eventInput: new FormControl(''),
+  });
 
   constructor(private dayService: DayService) {}
 
@@ -79,6 +84,12 @@ export class EditDayComponent implements OnInit {
 
   addEvent(name: string) {
     this.day.events.push({ name, idx: this.day.events.length });
+    this.checkIsModified();
+  }
+
+  deleteEvent(event: Event) {
+    this.day.events = this.day.events.filter((temp: Event) => temp.idx !== event.idx).map((temp: Event, index: number) => ({ ...temp, idx: index }));
+
     this.checkIsModified();
   }
 }

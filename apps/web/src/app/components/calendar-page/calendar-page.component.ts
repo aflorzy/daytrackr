@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ContentChild, OnInit, TemplateRef } from '@angular/core';
 import { CalendarDay, Day } from 'src/common/interfaces';
 import { DatePipe } from '@angular/common';
 import { DayService } from 'src/app/services/day.service';

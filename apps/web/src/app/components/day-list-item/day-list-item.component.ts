@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Event } from 'src/common/interfaces';
 import { Day } from 'src/common/interfaces';
 
@@ -17,6 +18,10 @@ export class DayListItemComponent {
   @Output() onDelete = new EventEmitter<boolean>();
   editingEvent: string = '';
   originalEvent: string = '';
+
+  eventForm = new FormGroup({
+    eventInput: new FormControl(''),
+  });
 
   editEvent(event: any) {
     if (!this.editable) return;

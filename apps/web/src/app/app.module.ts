@@ -23,9 +23,10 @@ import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { BannerComponent } from './components/banner/banner.component';
 import { HomeComponent } from './components/home-page/home/home.component';
+import { ButtonComponent } from './components/button/button.component';
 
 @NgModule({
-  declarations: [AppComponent, InputBoxComponent, DateInputComponent, DayListComponent, DayListItemComponent, CalendarPageComponent, NavbarComponent, CalendarComponent, EditDayComponent, LoginComponent, RegisterComponent, BannerComponent, HomeComponent],
+  declarations: [AppComponent, InputBoxComponent, DateInputComponent, DayListComponent, DayListItemComponent, CalendarPageComponent, NavbarComponent, CalendarComponent, EditDayComponent, LoginComponent, RegisterComponent, BannerComponent, HomeComponent, ButtonComponent],
   imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule, FontAwesomeModule, HttpClientModule],
   providers: [
     DatePipe,

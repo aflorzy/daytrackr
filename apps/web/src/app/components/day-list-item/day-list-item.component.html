@@ -13,8 +13,8 @@
     </div>
   </div>
 
-  <form *ngIf="!hideAddEvent" (submit)="addEvent(eventInput.value); eventInput.value = ''">
-    <label for="eventInput">Add Event</label>
-    <input type="text" #eventInput id="eventInput" autocomplete="off" />
+  <form *ngIf="!hideAddEvent" (submit)="addEvent(eventForm.get('eventInput')?.value?.trim() || ''); eventForm.get('eventInput')?.setValue('')" [formGroup]="eventForm">
+    <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
+    <app-button size="sm" fill="fill" color="primary" [disabled]="!eventForm.get('eventInput')?.value?.trim()">Add</app-button>
   </form>
 </div>

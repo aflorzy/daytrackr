@@ -5,16 +5,17 @@
     <span class="arrow up" [class.hidden]="event.idx === 0" (click)="moveUp(event, day)"><fa-icon [icon]="['fas', 'chevron-up']"></fa-icon></span>
     <span class="arrow down" [class.hidden]="event.idx === day.events.length - 1" (click)="moveDown(event, day)"><fa-icon [icon]="['fas', 'chevron-down']"></fa-icon></span>
     <span class="text">{{ event.name }}</span>
+    <span class="trash-icon" (click)="deleteEvent(event)"><fa-icon [icon]="['fas', 'trash']" transform="shrink-4"></fa-icon></span>
   </div>
 </div>
 
-<form (submit)="addEvent(eventInput.value); eventInput.value = ''">
-  <label for="eventInput">Add Event</label>
-  <input type="text" #eventInput id="eventInput" autocomplete="off" />
+<form (submit)="addEvent(eventForm.get('eventInput')?.value?.trim() || ''); eventForm.get('eventInput')?.setValue('')" [formGroup]="eventForm">
+  <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
+  <app-button size="sm" fill="fill" color="primary" [disabled]="!eventForm.get('eventInput')?.value?.trim()">Add</app-button>
 </form>
 
-<button (click)="saveChanges()" [disabled]="!isModified"> Save Changes </button>
-<button (click)="onCancel.emit(true)">Cancel</button>
+<app-button (click)="saveChanges()" fill="fill" color="primary" [disabled]="!isModified">Save Changes</app-button>
+<app-button (click)="onCancel.emit(true)" fill="outline" color="primary">Cancel</app-button>
 
 <ng-template #loading>
   <p>Loading...</p>

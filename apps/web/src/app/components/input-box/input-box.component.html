@@ -1,29 +1,15 @@
-<p>
-  Input data in the text area below. Each day should be separated by a newline
-  (\n) and should begin with the day's name (Sunday, Monday... etc.) followed by
-  '- ' and a list of the day's events (comma-separated).
-</p>
+<p> Input data in the text area below. Each day should be separated by a newline (\n) and should begin with the day's name (Sunday, Monday... etc.) followed by '- ' and a list of the day's events (comma-separated). </p>
 <p>eg. 'Saturday- Breakfast, work, Minecraft, lunch'</p>
-<p>
-  Enter the date of the first day in 'YYYY/MM/DD' format. It is validated by
-  ensuring the day 'Saturday' corresponds to the name of the actual date
-  '2023/08/05'. If the date is invalid, the 'Parse' button will be disabled.
-  Each subsequent day listed is assumed to be the next day in the sequence.
-</p>
+<p> Enter the date of the first day in 'YYYY/MM/DD' format. It is validated by ensuring the day 'Saturday' corresponds to the name of the actual date '2023/08/05'. If the date is invalid, the 'Parse' button will be disabled. Each subsequent day listed is assumed to be the next day in the sequence. </p>
 <form (submit)="onSubmit()">
-  <app-date-input
-    [setInitialDate]="initialDate"
-    (initialDateEmitter)="initialDate = $event"
-    (invalidDateEmitter)="invalidDate = $event"></app-date-input>
+  <app-date-input [setInitialDate]="initialDate" (initialDateEmitter)="initialDate = $event" (invalidDateEmitter)="invalidDate = $event"></app-date-input>
   <textarea cols="130" rows="20" [(ngModel)]="value" name="inputBox"></textarea>
 
-  <button [disabled]="invalidDate || !value">Parse</button>
+  <app-button [disabled]="invalidDate || !value">Parse</app-button>
 </form>
 
 <ng-container *ngIf="error$ | async as errorObsv">
-  <app-day-list
-    *ngIf="!errorObsv.isError; else error"
-    [days]="days"></app-day-list>
+  <app-day-list *ngIf="!errorObsv.isError; else error" [days]="days"></app-day-list>
 
   <ng-template #error>
     <div class="error">
@@ -32,6 +18,4 @@
   </ng-template>
 </ng-container>
 
-<button class="saveData" *ngIf="days.length > 0" (click)="saveData()">
-  Save Data
-</button>
+<app-button class="saveData" *ngIf="days.length > 0" (click)="saveData()"> Save Data </app-button>
