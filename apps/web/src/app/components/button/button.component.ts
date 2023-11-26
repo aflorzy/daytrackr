@@ -12,5 +12,6 @@ export class ButtonComponent {
   @Input() color: 'primary' | 'accent' = 'primary';
   @Input() fill: 'fill' | 'outline' = 'fill';
 
-  @Output() click = new EventEmitter<void>();
+  @Output() clicked = new EventEmitter<void>();
+
 }

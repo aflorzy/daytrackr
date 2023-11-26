@@ -14,8 +14,8 @@
   <app-button size="sm" fill="fill" color="primary" [disabled]="!eventForm.get('eventInput')?.value?.trim()">Add</app-button>
 </form>
 
-<app-button (click)="saveChanges()" fill="fill" color="primary" [disabled]="!isModified">Save Changes</app-button>
-<app-button (click)="onCancel.emit(true)" fill="outline" color="primary">Cancel</app-button>
+<app-button (clicked)="saveChanges()" fill="fill" color="primary" [disabled]="!isModified">Save Changes</app-button>
+<app-button (clicked)="onCancel.emit(true)" fill="outline" color="primary">Cancel</app-button>
 
 <ng-template #loading>
   <p>Loading...</p>

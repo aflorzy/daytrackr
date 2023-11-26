@@ -4,8 +4,8 @@
   <span class="hidden" *ngIf="!editing">Select from {{ days.length }} {{ days.length === 1 ? 'day' : 'days' }} in saved data:</span>
   <!-- <input type="date" id="date" class="hidden" (change)="dateChange($event)" /> -->
   <div class="arrows" *ngIf="selectedDay && minDate && maxDate && !editing">
-    <app-button (click)="onPrev()" [disabled]="!existsPrev"> <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev </app-button>
-    <app-button (click)="onNext()" [disabled]="!existsNext"> Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon> </app-button>
+    <app-button (clicked)="onPrev()" [disabled]="!existsPrev"> <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev </app-button>
+    <app-button (clicked)="onNext()" [disabled]="!existsNext"> Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon> </app-button>
   </div>
 
   <app-day-list-item *ngIf="!editing" [day]="selectedDay" [hideEditIcon]="false" [hideAddEvent]="false" [editable]="true" (onEdit)="editing = true" (onDelete)="onDelete($event)" (edited)="onSubmit($event)"></app-day-list-item>
