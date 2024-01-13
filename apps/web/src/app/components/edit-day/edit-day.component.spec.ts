@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { EditDayComponent } from './edit-day.component';
+import { EditDayComponent } from "./edit-day.component";
 
-describe('EditDayComponent', () => {
+describe("EditDayComponent", () => {
   let component: EditDayComponent;
   let fixture: ComponentFixture<EditDayComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EditDayComponent ]
-    })
-    .compileComponents();
+      declarations: [EditDayComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditDayComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

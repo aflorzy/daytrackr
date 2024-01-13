@@ -1,14 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { CalendarPageComponent } from './calendar-page.component';
+import { CalendarPageComponent } from "./calendar-page.component";
 
-describe('CalendarComponent', () => {
+describe("CalendarComponent", () => {
   let component: CalendarPageComponent;
   let fixture: ComponentFixture<CalendarPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CalendarPageComponent],
+      declarations: [CalendarPageComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CalendarPageComponent);
@@ -16,7 +16,7 @@ describe('CalendarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

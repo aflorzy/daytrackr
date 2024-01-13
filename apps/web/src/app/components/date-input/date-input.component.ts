@@ -1,21 +1,19 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-date-input',
-  templateUrl: './date-input.component.html',
-  styleUrls: ['./date-input.component.css'],
+  selector: "app-date-input",
+  templateUrl: "./date-input.component.html",
+  styleUrls: ["./date-input.component.css"]
 })
 export class DateInputComponent {
-  regex: RegExp = /^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$/
+  regex = /^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$/;
 
   date?: Date;
-  initialDate: string = '';
-  invalidDate: boolean = true;
+  initialDate = "";
+  invalidDate = true;
   @Input() set setInitialDate(date: Date | undefined) {
     if (!this.initialDate) {
-      this.initialDate = date
-        ? date.toISOString().split('T')[0].replaceAll('-', '/')
-        : '';
+      this.initialDate = date ? date.toISOString().split("T")[0].replaceAll("-", "/") : "";
       this.onChange();
     }
   }
@@ -34,8 +32,5 @@ export class DateInputComponent {
       this.initialDateEmitter.emit(this.date);
       this.invalidDateEmitter.emit(false);
     }
-
-
   }
-
 }

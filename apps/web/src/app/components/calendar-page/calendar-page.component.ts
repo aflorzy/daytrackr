@@ -1,13 +1,13 @@
-import { Component, ContentChild, OnInit, TemplateRef } from '@angular/core';
-import { CalendarDay, Day } from 'src/common/interfaces';
-import { DatePipe } from '@angular/common';
-import { DayService } from 'src/app/services/day.service';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { DatePipe } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import { Observable, Subject } from "rxjs";
+import { DayService } from "src/app/services/day.service";
+import { CalendarDay, Day } from "src/common/interfaces";
 
 @Component({
-  selector: 'app-calendar-page',
-  templateUrl: './calendar-page.component.html',
-  styleUrls: ['./calendar-page.component.css'],
+  selector: "app-calendar-page",
+  templateUrl: "./calendar-page.component.html",
+  styleUrls: ["./calendar-page.component.css"]
 })
 export class CalendarPageComponent implements OnInit {
   days: Day[] = [];
@@ -18,14 +18,17 @@ export class CalendarPageComponent implements OnInit {
   lastCalendarDate!: Date;
   firstLastDate$ = new Subject<{ first: Date; last: Date }>();
   deletedDay$ = new Subject<Day>();
-  existsPrev: boolean = false;
-  existsNext: boolean = false;
-  editing: boolean = false;
+  existsPrev = false;
+  existsNext = false;
+  editing = false;
   days$!: Observable<Day[]>;
-  errorMessage: string = '';
-  warnMessage: string = '';
+  errorMessage = "";
+  warnMessage = "";
 
-  constructor(private datePipe: DatePipe, private dayService: DayService) {}
+  constructor(
+    private datePipe: DatePipe,
+    private dayService: DayService
+  ) {}
   ngOnInit(): void {
     this.subscribeInitialDay();
     this.subscribeCalendarChange();
@@ -36,23 +39,23 @@ export class CalendarPageComponent implements OnInit {
       next: (day: Day) => {
         this.selectedDay = day;
       },
-      error: (e) => {
+      error: e => {
         console.error(e);
-      },
+      }
     });
   }
 
   subscribeCalendarChange() {
     this.firstLastDate$.subscribe({
-      next: (dates) => {
+      next: dates => {
         if (!dates.first || !dates.last) return;
 
-        this.dayService.getDaysBetween(dates.first, dates.last).subscribe((days) => {
+        this.dayService.getDaysBetween(dates.first, dates.last).subscribe(days => {
           if (days.length === 0) return;
 
           this.days = days;
 
-          let dateInput = document.getElementById('date') as HTMLInputElement;
+          const dateInput = document.getElementById("date") as HTMLInputElement;
           this.minDate = new Date(days[0].date);
           this.maxDate = new Date(days[days.length - 1].date);
 
@@ -60,20 +63,20 @@ export class CalendarPageComponent implements OnInit {
           this.existsNext = false;
 
           if (dateInput) {
-            dateInput.setAttribute('max', this.datePipe.transform(days[days.length - 1].date, 'yyyy-MM-dd') || '');
-            dateInput.value = this.datePipe.transform(this.selectedDay?.date, 'yyyy-MM-dd') || '';
+            dateInput.setAttribute("max", this.datePipe.transform(days[days.length - 1].date, "yyyy-MM-dd") || "");
+            dateInput.value = this.datePipe.transform(this.selectedDay?.date, "yyyy-MM-dd") || "";
           }
         });
       },
       error: (e: any) => {
-        this.warnMessage = 'No days available';
-      },
+        this.warnMessage = "No days available";
+      }
     });
   }
 
   dayChange(calendarDay: CalendarDay) {
     this.selectedDay = calendarDay.day;
-    const foundIndex = this.days.findIndex((day) => day.date === this.selectedDay?.date);
+    const foundIndex = this.days.findIndex(day => day.date === this.selectedDay?.date);
     this.existsPrev = foundIndex > 0;
     this.existsNext = foundIndex < this.days.length - 1;
   }
@@ -87,7 +90,7 @@ export class CalendarPageComponent implements OnInit {
   }
 
   onPrev() {
-    let foundIndex = this.days.findIndex((day) => day.date === this.selectedDay?.date);
+    const foundIndex = this.days.findIndex(day => day.date === this.selectedDay?.date);
     if (foundIndex === -1 || foundIndex === 0) return;
 
     const found = this.days[foundIndex - 1];
@@ -95,13 +98,13 @@ export class CalendarPageComponent implements OnInit {
     this.existsPrev = foundIndex > 1;
     this.existsNext = foundIndex <= this.days.length - 1;
 
-    let dateInput = document.getElementById('date') as HTMLInputElement;
-    const date = this.datePipe.transform(found.date, 'yyyy-MM-dd');
-    dateInput.value = date || '';
+    const dateInput = document.getElementById("date") as HTMLInputElement;
+    const date = this.datePipe.transform(found.date, "yyyy-MM-dd");
+    dateInput.value = date || "";
   }
 
   onNext() {
-    let foundIndex = this.days.findIndex((day) => day.date === this.selectedDay?.date);
+    const foundIndex = this.days.findIndex(day => day.date === this.selectedDay?.date);
     if (foundIndex === -1 || foundIndex === this.days.length - 1) return;
 
     const found = this.days[foundIndex + 1];
@@ -109,9 +112,9 @@ export class CalendarPageComponent implements OnInit {
     this.existsPrev = foundIndex >= 0;
     this.existsNext = foundIndex < this.days.length - 2;
 
-    let dateInput = document.getElementById('date') as HTMLInputElement;
-    const date = this.datePipe.transform(found.date, 'yyyy-MM-dd');
-    dateInput.value = date || '';
+    const dateInput = document.getElementById("date") as HTMLInputElement;
+    const date = this.datePipe.transform(found.date, "yyyy-MM-dd");
+    dateInput.value = date || "";
   }
 
   handleSave(day: Day) {
@@ -122,7 +125,7 @@ export class CalendarPageComponent implements OnInit {
     if (!deleted || !this.selectedDay || !this.selectedDay.id) return;
 
     this.dayService.deleteById(this.selectedDay.id).subscribe({
-      next: (_) => {
+      next: _ => {
         if (!this.selectedDay) return;
         // Trigger calendar to remove day's events
         this.deletedDay$.next(this.selectedDay);
@@ -157,9 +160,9 @@ export class CalendarPageComponent implements OnInit {
           this.selectedDay = undefined;
         }
       },
-      error: (_) => {
-        console.error('Could not delete day');
-      },
+      error: _ => {
+        console.error("Could not delete day");
+      }
     });
   }
 
@@ -170,9 +173,9 @@ export class CalendarPageComponent implements OnInit {
           this.selectedDay.id = res.id;
         }
       },
-      error: (e) => {
+      error: e => {
         console.error(e);
-      },
+      }
     });
   }
 }

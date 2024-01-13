@@ -6,10 +6,7 @@
   (input)="onChange()"
   autocomplete="off"
   placeholder="YYYY/MM/DD"
-  [pattern]="regex"
-/>
+  [pattern]="regex" />
 <p class="hint">
-  <span [class.invalid]="invalidDate">{{
-    invalidDate ? date : (date | date : "EEEE, MMMM d, y")
-  }}</span>
+  <span [class.invalid]="invalidDate">{{ invalidDate ? date : (date | date: "EEEE, MMMM d, y") }}</span>
 </p>

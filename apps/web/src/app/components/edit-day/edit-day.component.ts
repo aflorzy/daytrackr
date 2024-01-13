@@ -1,25 +1,24 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { DayService } from 'src/app/services/day.service';
-import { Event } from 'src/common/interfaces';
-import { Day } from 'src/common/interfaces';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormControl, FormGroup } from "@angular/forms";
+import { DayService } from "src/app/services/day.service";
+import { Day, Event } from "src/common/interfaces";
 
 @Component({
-  selector: 'app-edit-day',
-  templateUrl: './edit-day.component.html',
-  styleUrls: ['./edit-day.component.css'],
+  selector: "app-edit-day",
+  templateUrl: "./edit-day.component.html",
+  styleUrls: ["./edit-day.component.css"]
 })
 export class EditDayComponent implements OnInit {
   // day$_original!: Observable<Day>;
   @Input() day!: Day;
-  @Output() onSave = new EventEmitter<Day>();
-  @Output() onCancel = new EventEmitter<boolean>();
-  isModified: boolean = false;
+  @Output() save = new EventEmitter<Day>();
+  @Output() cancel = new EventEmitter<boolean>();
+  isModified = false;
   day_original!: Day;
-  errorMessage: string = '';
+  errorMessage = "";
 
   eventForm = new FormGroup({
-    eventInput: new FormControl(''),
+    eventInput: new FormControl("")
   });
 
   constructor(private dayService: DayService) {}
@@ -69,16 +68,16 @@ export class EditDayComponent implements OnInit {
   saveChanges() {
     this.dayService.saveDay(this.day).subscribe({
       next: (res: Day) => {
-        this.errorMessage = '';
+        this.errorMessage = "";
         if (this.day) {
           this.day.id = res.id;
         }
-        this.onSave.emit(res);
+        this.save.emit(res);
       },
       error: (e: any) => {
-        this.errorMessage = 'Could not save day';
-        console.error('Could not save day', e);
-      },
+        this.errorMessage = "Could not save day";
+        console.error("Could not save day", e);
+      }
     });
   }
 
@@ -88,7 +87,9 @@ export class EditDayComponent implements OnInit {
   }
 
   deleteEvent(event: Event) {
-    this.day.events = this.day.events.filter((temp: Event) => temp.idx !== event.idx).map((temp: Event, index: number) => ({ ...temp, idx: index }));
+    this.day.events = this.day.events
+      .filter((temp: Event) => temp.idx !== event.idx)
+      .map((temp: Event, index: number) => ({ ...temp, idx: index }));
 
     this.checkIsModified();
   }

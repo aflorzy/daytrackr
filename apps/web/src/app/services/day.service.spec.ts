@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { DayService } from './day.service';
+import { DayService } from "./day.service";
 
-describe('DayService', () => {
+describe("DayService", () => {
   let service: DayService;
 
   beforeEach(() => {
@@ -10,7 +10,7 @@ describe('DayService', () => {
     service = TestBed.inject(DayService);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 });

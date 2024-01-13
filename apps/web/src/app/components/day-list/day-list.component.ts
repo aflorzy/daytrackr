@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { Day } from 'src/common/interfaces';
+import { Component, Input } from "@angular/core";
+import { Day } from "src/common/interfaces";
 
 @Component({
-  selector: 'app-day-list',
-  templateUrl: './day-list.component.html',
-  styleUrls: ['./day-list.component.css'],
+  selector: "app-day-list",
+  templateUrl: "./day-list.component.html",
+  styleUrls: ["./day-list.component.css"]
 })
 export class DayListComponent {
   @Input() days: Day[] = [];

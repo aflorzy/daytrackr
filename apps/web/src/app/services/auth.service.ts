@@ -1,25 +1,28 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { AccessToken } from 'src/common/interfaces';
-import { StorageService } from './storage.service';
-import { environment } from 'src/environments/environment';
-import * as jwt_decode from 'jwt-decode';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { AccessToken } from "src/common/interfaces";
+import { StorageService } from "./storage.service";
+import { environment } from "src/environments/environment";
+import * as jwt_decode from "jwt-decode";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root"
 })
 export class AuthService {
   private base_url = environment.baseUrl;
 
-  constructor(private http: HttpClient, private storageService: StorageService) {}
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService
+  ) {}
 
   public get token(): AccessToken {
-    return this.storageService.getItemFromStorage('token');
+    return this.storageService.getItemFromStorage("token");
   }
 
   public set token(token: AccessToken) {
-    this.storageService.setItemInStorage('token', token);
+    this.storageService.setItemInStorage("token", token);
   }
 
   private getDecodedAccessToken(token: string): any {
@@ -44,10 +47,10 @@ export class AuthService {
 
     const registerData = {
       username: username,
-      password: password,
+      password: password
     };
 
-    return this.http.post<any>(registerUrl, registerData, { responseType: 'json' });
+    return this.http.post<any>(registerUrl, registerData, { responseType: "json" });
   }
 
   public login(username: string, password: string): Observable<AccessToken> {
@@ -55,14 +58,14 @@ export class AuthService {
 
     const loginData = {
       username: username,
-      password: password,
+      password: password
     };
 
     return this.http.post<AccessToken>(loginUrl, loginData);
   }
 
   public logout() {
-    this.storageService.removeItemFromStorage('token');
+    this.storageService.removeItemFromStorage("token");
   }
 
   public get isAuthenticatedUser(): boolean {
