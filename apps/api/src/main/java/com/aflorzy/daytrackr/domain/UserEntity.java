@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 @Entity
@@ -31,12 +32,30 @@ public class UserEntity {
 
   private String password;
 
-//  private String email;
-//  private String phone;
-//  private String firstName;
-//  private String lastName;
+  @Email
+  private String email;
+  private String phone;
+  private String firstName;
+  private String lastName;
+  private String preferredName;
 
   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private List<Role> roles = new ArrayList<>();
+
+  public String getFirstName() {
+    return preferredName != null ? preferredName : firstName;
+  }
+
+  public String getName() {
+    return getFirstName();
+  }
+
+  public String getFullName() {
+    return getName() + ' ' + lastName;
+  }
+
+  public String getProperName() {
+    return firstName + ' ' + lastName;
+  }
 }

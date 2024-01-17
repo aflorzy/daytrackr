@@ -1,5 +1,6 @@
 package com.aflorzy.daytrackr.controllers;
 
+import java.security.Principal;
 import java.util.Collections;
 
 import com.aflorzy.daytrackr.dto.RegisterResponseDto;
@@ -10,10 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.aflorzy.daytrackr.domain.Role;
 import com.aflorzy.daytrackr.domain.UserEntity;
@@ -73,4 +71,14 @@ public class AuthController {
     return new ResponseEntity<>(new RegisterResponseDto("User registered successfully!", null), HttpStatus.OK);
   }
 
+  @GetMapping("valid")
+  public ResponseEntity tokenValid(Principal principal) {
+    if (principal == null) {
+      return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    } else if (userRepository.findByUsername(principal.getName()).orElse(null) == null) {
+      return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    } else {
+      return new ResponseEntity(HttpStatus.OK);
+    }
+  }
 }

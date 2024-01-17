@@ -11,6 +11,7 @@ import com.aflorzy.daytrackr.domain.ResponseMessageDailyEvent;
 import com.aflorzy.daytrackr.exceptions.DailyEventSaveFailureException;
 import com.aflorzy.daytrackr.services.DailyEventService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,8 @@ import com.aflorzy.daytrackr.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/daily-events")
+@Slf4j
 public class DailyEventController {
-
-    private static final Logger logger = LoggerFactory.getLogger(DailyEventController.class);
-
 
     @Autowired
     DailyEventService dailyEventService;
@@ -175,18 +174,18 @@ public class DailyEventController {
         DailyEvent dailyEvent = dailyEventService.findByUserAndIdOrderByDateAsc(user, id);
 
         if (dailyEvent == null) {
-            logger.error("Could not find day to delete with ID " + id);
+            log.error("Could not find day to delete with ID " + id);
             return ResponseEntity.notFound().build();
         }
 
         if (!dailyEvent.getUser().getUsername().equals(user.getUsername())) {
-            logger.error("User " + user.getUsername() + " is not authorized to delete day with ID " + id);
+            log.error("User " + user.getUsername() + " is not authorized to delete day with ID " + id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         // If the user has the right permissions, delete the DailyEvent
         dailyEventService.deleteById(id);
-        logger.info("User " + user.getUsername() + " successfully deleted day with ID " + id);
+        log.info("User " + user.getUsername() + " successfully deleted day with ID " + id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
