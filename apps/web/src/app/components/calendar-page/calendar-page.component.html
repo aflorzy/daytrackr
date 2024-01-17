@@ -2,8 +2,8 @@
   <app-calendar
     *ngIf="selectedDay && !editing"
     [dayList]="days"
-    [initializeCalendar]="selectedDay.date"
-    [deletedDay$]="deletedDay$"
+    [initialDate]="selectedDay.date"
+    [deletedDay]="deletedDay$ | async"
     (dayChange)="dayChange($event)"
     (newDayClick)="newDayClick($event)"
     (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>

@@ -1,17 +1,15 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import * as jwt_decode from "jwt-decode";
 import { Observable } from "rxjs";
 import { AccessToken } from "src/common/interfaces";
+import { BASE_URL } from "../../common/constants";
 import { StorageService } from "./storage.service";
-import { environment } from "src/environments/environment";
-import * as jwt_decode from "jwt-decode";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthService {
-  private base_url = environment.baseUrl;
-
   constructor(
     private http: HttpClient,
     private storageService: StorageService
@@ -25,12 +23,8 @@ export class AuthService {
     this.storageService.setItemInStorage("token", token);
   }
 
-  private getDecodedAccessToken(token: string): any {
-    try {
-      return jwt_decode.jwtDecode(token);
-    } catch (Error) {
-      return null;
-    }
+  public get isAuthenticatedUser(): boolean {
+    return this.tokenValid;
   }
 
   public get tokenValid(): boolean {
@@ -42,8 +36,20 @@ export class AuthService {
     return !tokenExpired;
   }
 
+  private getDecodedAccessToken(token: string): any {
+    try {
+      return jwt_decode.jwtDecode(token);
+    } catch (Error) {
+      return null;
+    }
+  }
+
+  public logout() {
+    this.storageService.removeItemFromStorage("token");
+  }
+
   public register(username: string, password: string): Observable<{ message: string; error: string }> {
-    const registerUrl = `${this.base_url}/auth/register`;
+    const registerUrl = `${BASE_URL}/auth/register`;
 
     const registerData = {
       username: username,
@@ -54,7 +60,7 @@ export class AuthService {
   }
 
   public login(username: string, password: string): Observable<AccessToken> {
-    const loginUrl = `${this.base_url}/auth/login`;
+    const loginUrl = `${BASE_URL}/auth/login`;
 
     const loginData = {
       username: username,
@@ -62,13 +68,5 @@ export class AuthService {
     };
 
     return this.http.post<AccessToken>(loginUrl, loginData);
-  }
-
-  public logout() {
-    this.storageService.removeItemFromStorage("token");
-  }
-
-  public get isAuthenticatedUser(): boolean {
-    return this.tokenValid;
   }
 }

@@ -90,3 +90,19 @@
   border-color: #d00;
   background-color: #ddd;
 }
+
+form {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+input[type='text'] {
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #009688; /* Soft green border for input fields */
+  border-radius: 4px;
+  background-color: #f0f9ff; /* Light blue input field background */
+  font-size: 16px;
+  color: #333; /* Dark text color */
+}

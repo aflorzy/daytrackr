@@ -18,6 +18,7 @@ nav {
   justify-content: space-around;
   width: 20%;
   max-width: 500px;
+  gap: 10px;
 }
 .tab a {
   text-decoration: none;

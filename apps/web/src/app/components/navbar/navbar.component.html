@@ -8,7 +8,13 @@
       <a routerLink="/parser" routerLinkActive="active-item">Parser</a>
     </li>
     <li class="tab">
+      <a routerLink="/contact" routerLinkActive="active-item">Contact</a>
+    </li>
+    <li class="tab">
       <a routerLink="/login" routerLinkActive="active-item" (click)="logout()">Logout</a>
+    </li>
+    <li class="tab user-icon">
+      <a routerLink="/profile"><fa-icon [icon]="['fas', 'user-circle']"></fa-icon></a>
     </li>
   </ul>
 </nav>

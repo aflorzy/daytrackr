@@ -1,0 +1,46 @@
+form {
+  margin: 0 auto; /* Center the container horizontally */
+  max-width: 400px; /* Set a maximum width for the container */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Box shadow for a card-like effect */
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+  label {
+    display: block;
+    font-weight: bold;
+    color: #009688; /* Soft green label color */
+    margin-bottom: 5px;
+  }
+
+input[type='text'],
+textarea,
+input[type="file"] {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #009688; /* Soft green border for input fields */
+  border-radius: 4px;
+  background-color: #f0f9ff; /* Light blue input field background */
+  font-size: 16px;
+  font-family: Roboto;
+  color: #333; /* Dark text color */
+}
+
+/* Add a hover effect to the input fields */
+input[type='text']:hover,
+textarea,
+input[type='file']:hover {
+  border: 1px solid #007d71; /* Slightly darker green border on hover */
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+

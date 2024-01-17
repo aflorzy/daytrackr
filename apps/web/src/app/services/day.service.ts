@@ -1,10 +1,9 @@
-import { Injectable } from "@angular/core";
-import { Observable, of, tap, switchMap } from "rxjs";
-import { Event, ResponseMessageDailyEvent } from "src/common/interfaces";
-import { Day } from "src/common/interfaces";
-import { HttpClient } from "@angular/common/http";
 import { DatePipe } from "@angular/common";
-import { environment } from "src/environments/environment";
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable, of, switchMap, tap } from "rxjs";
+import { Day, Event, ResponseMessageDailyEvent } from "src/common/interfaces";
+import { BASE_URL } from "../../common/constants";
 
 @Injectable({
   providedIn: "root"
@@ -12,7 +11,6 @@ import { environment } from "src/environments/environment";
 export class DayService {
   day!: Day;
   days: Day[];
-  private base_url: string = environment.baseUrl;
 
   constructor(
     private http: HttpClient,
@@ -23,7 +21,7 @@ export class DayService {
   }
 
   public getDayByDate(date: Date): Observable<Day> {
-    return this.http.get<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/find/date/${date}`).pipe(
+    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/date/${date}`).pipe(
       tap((response: ResponseMessageDailyEvent) => console.log("Got day by date", response.dailyEvent)),
       switchMap((response: ResponseMessageDailyEvent) =>
         of({
@@ -35,7 +33,7 @@ export class DayService {
   }
 
   public getDayById(id: string): Observable<Day> {
-    return this.http.get<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/find/date/${id}`).pipe(
+    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/date/${id}`).pipe(
       tap((response: ResponseMessageDailyEvent) => console.log("Got day by ID", response.dailyEvent)),
       switchMap((response: ResponseMessageDailyEvent) =>
         of({
@@ -47,7 +45,7 @@ export class DayService {
   }
 
   public getTodayOrLatest(): Observable<Day> {
-    return this.http.get<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/find/today`).pipe(
+    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/today`).pipe(
       tap((response: ResponseMessageDailyEvent) => console.log("Got today or latest", response.dailyEvent)),
       switchMap((response: ResponseMessageDailyEvent) =>
         of({
@@ -59,7 +57,7 @@ export class DayService {
   }
 
   public getAllDays(): Observable<Day[]> {
-    return this.http.get<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/find/all`).pipe(
+    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/all`).pipe(
       tap((response: ResponseMessageDailyEvent) => console.log("Retrieved all days", response.dailyEventList)),
       // Sorting events by index ASC
       switchMap((response: ResponseMessageDailyEvent) =>
@@ -78,7 +76,7 @@ export class DayService {
     const dateStr2: string = this.datePipe.transform(date2, "yyyy-MM-dd") ?? "";
 
     return this.http
-      .get<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`)
+      .get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`)
       .pipe(
         tap((response: ResponseMessageDailyEvent) =>
           console.log(
@@ -99,7 +97,7 @@ export class DayService {
   }
 
   public saveDay(newDay: Day): Observable<Day> {
-    return this.http.post<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/save`, newDay).pipe(
+    return this.http.post<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/save`, newDay).pipe(
       tap((response: ResponseMessageDailyEvent) => console.log("Saved day", response.dailyEvent)),
       switchMap((response: ResponseMessageDailyEvent) =>
         of({
@@ -111,7 +109,7 @@ export class DayService {
   }
 
   public saveMulti(days: Day[]): Observable<Day[]> {
-    return this.http.post<ResponseMessageDailyEvent>(`${this.base_url}/daily-events/save/multi`, days).pipe(
+    return this.http.post<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/save/multi`, days).pipe(
       tap((response: ResponseMessageDailyEvent) => console.log("Saved days!", response.dailyEventList)),
       switchMap((response: ResponseMessageDailyEvent) =>
         of(
@@ -125,6 +123,6 @@ export class DayService {
   }
 
   public deleteById(id: string): Observable<any> {
-    return this.http.delete(`${this.base_url}/daily-events/delete/${id}`);
+    return this.http.delete(`${BASE_URL}/daily-events/delete/${id}`);
   }
 }
