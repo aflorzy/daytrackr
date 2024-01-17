@@ -31,6 +31,8 @@ COPY --from=build /app/dist/daytrackr-parser/ /usr/share/nginx/html
 # Copy our custom nginx config
 COPY /nginx-custom.conf /etc/nginx/conf.d/default.conf
 
+# Set NGINX user
+USER nginx
 
 # Expose port 80 to the Docker host, so we can access it
 # from the outside.
