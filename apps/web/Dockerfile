@@ -34,7 +34,7 @@ COPY /nginx-custom.conf /etc/nginx/conf.d/default.conf
 
 # Change nginx permissions
 RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
-    chmod -R 770 /var/cache/nginx /var/run /var/log/nginx
+    chmod -R 777 /var/cache/nginx /var/run /var/log/nginx
 
 # Expose port 80 to the Docker host, so we can access it
 # from the outside.
