@@ -1,52 +1,51 @@
-// pipeline {
-//   agent { dockerfile true }
-//   options {
-//     buildDiscarder(logRotator(numToKeepStr: '5'))
-//   }
-//   environment {
-//     DOCKERHUB_CREDENTIALS = credentials('a31f8410-5536-438f-ab05-65bb5b548864')
-//   }
-//   stages {
-//     stage('Build') {
-//       steps {
-//         sh 'docker build -t aflorzy/daytrackr-frontend .'
-//       }
-//     }
-//     stage('Login') {
-//       steps {
-//         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-//       }
-//     }
-//     stage('Push') {
-//       steps {
-//         sh 'docker push aflorzy/daytrackr-frontend'
-//       }
-//     }
-//   }
-//   post {
-//     always {
-//       sh 'docker logout'
-//     }
-//   }
-// }
-
-node {
-  // Define the agent block with the Docker image
-  docker.image('gradle:8.2.0-jdk17-alpine').inside {
-    try {
-      // Your pipeline steps
-      stage('Build') {
-        sh 'docker build -t aflorzy/daytrackr-frontend .'
-      }
-      stage('Login') {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
-      stage('Push') {
-        sh 'docker push aflorzy/daytrackr-frontend'
-      }
-    } finally {
-      // Ensure Docker logout
-      sh 'docker logout'
+pipeline {
+    agent any
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout(true)
     }
-  }
+    environment {
+        VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
+        REGISTRY="localhost:5000"
+        IMAGE_NAME="daytrackr-frontend"
+    }
+
+    tools {
+        'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
+    }
+    stages {
+        stage ('Checkout SCM') {
+            steps {
+                git branch: 'main', credentialsId: 'github-daytrackr-parser', url: 'git@github.com:aflorzy/daytrackr-parser.git'
+            }
+        }
+        stage ('Build Docker Image') {
+            steps {
+                sh 'docker build -t ${IMAGE_NAME} .'
+            }
+        }
+        stage ('Push Image to Registry') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'f4b22f31-c51c-4a5c-b998-efd520b5b9f9', passwordVariable: 'REGISTRY_PSW', usernameVariable: 'REGISTRY_USR')]) {
+                        echo 'Login Docker'
+                        sh 'docker login localhost:5000 -u $REGISTRY_USR -p $REGISTRY_PSW'
+                        echo 'Tag and push versioned image'
+                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL"
+                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL'
+
+                        echo 'Tag and push latest image'
+                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:latest"
+                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:latest' // Keep latest up to date
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Logout Docker'
+            sh 'docker logout localhost:5000'
+        }
+    }
 }
