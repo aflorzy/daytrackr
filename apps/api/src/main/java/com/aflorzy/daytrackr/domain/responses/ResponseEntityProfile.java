@@ -1,19 +1,16 @@
-package com.aflorzy.daytrackr.domain;
+package com.aflorzy.daytrackr.domain.responses;
 
-import com.aflorzy.daytrackr.dto.DailyEventDto;
+import com.aflorzy.daytrackr.dto.ProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseMessageDailyEvent {
+public class ResponseEntityProfile {
     private String message;
     private HttpStatus httpStatus;
-    private DailyEventDto dailyEvent;
-    private List<DailyEventDto> dailyEventList;
+    private ProfileDto profile;
 }

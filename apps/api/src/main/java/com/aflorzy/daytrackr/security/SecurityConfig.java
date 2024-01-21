@@ -39,6 +39,7 @@ public class SecurityConfig {
             .requestMatchers(new AntPathRequestMatcher("/api/home")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/api/daily-events/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/api/feedback/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/api/profile/**")).permitAll()
             .anyRequest().authenticated())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)

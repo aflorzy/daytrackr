@@ -2,7 +2,9 @@ package com.aflorzy.daytrackr.services;
 
 import com.aflorzy.daytrackr.domain.FeedbackMessage;
 import com.aflorzy.daytrackr.domain.UserEntity;
+import com.aflorzy.daytrackr.domain.responses.ResponseMessage;
 import com.aflorzy.daytrackr.dto.FeedbackMessageDto;
+import com.aflorzy.daytrackr.enums.StatusType;
 import com.aflorzy.daytrackr.repositories.FeedbackRepository;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
@@ -53,7 +55,7 @@ public class FeedbackService {
         return feedbackRepository.save(feedbackMessage);
     }
 
-    public ResponseEntity sendMail(UserEntity user, FeedbackMessageDto feedbackMessageDto) {
+    public ResponseMessage sendMail(UserEntity user, FeedbackMessageDto feedbackMessageDto) {
         FeedbackMessage feedbackMessage = new FeedbackMessage();
         feedbackMessage.setMessage(feedbackMessageDto.getMessage());
         feedbackMessage.setSubject(feedbackMessageDto.getSubject());
@@ -71,11 +73,11 @@ public class FeedbackService {
 
             log.info("Successfully sent email to " + user.getEmail());
 
-            return new ResponseEntity<>("Emails sent successfully", HttpStatus.OK);
+            return new ResponseMessage("Feedback submitted successfully.", StatusType.SUCCESS);
 
         } catch (MailException ex) {
             log.error(ex.getMessage());
-            return new ResponseEntity("Feedback and confirmation emails sent successfully", HttpStatus.OK);
+            return new ResponseMessage("Could not send feedback.", StatusType.ERROR);
         }
     }
 
@@ -86,7 +88,7 @@ public class FeedbackService {
             helper.setFrom(new InternetAddress("tbillform@gmail.com"));
             helper.setSubject("DayTrackr | Feedback Received");
 
-            String name = user.getFirstName() == null ? user.getUsername() : user.getFullName();
+            String name = user.getName() == null ? user.getUsername() : user.getFullName();
             String email = user.getEmail();
             String emailBody = ""
                     .concat(name == null ? "" : "<p><strong>Contact name:</strong> " + name + "</p>")
@@ -106,7 +108,7 @@ public class FeedbackService {
             helper.setFrom(new InternetAddress("tbillform@gmail.com"));
             helper.setSubject("DayTrackr | We've received your feedback!");
 
-            String name = user.getFirstName() == null ? user.getUsername() : user.getFullName();
+            String name = user.getName() == null ? user.getUsername() : user.getFullName();
             String email = user.getEmail();
             String emailBody = ""
                     .concat("<h3>Thanks for the feedback! See the details of your message below.</h3>")

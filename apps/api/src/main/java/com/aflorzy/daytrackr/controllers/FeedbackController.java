@@ -1,12 +1,16 @@
 package com.aflorzy.daytrackr.controllers;
 
 import com.aflorzy.daytrackr.domain.UserEntity;
+import com.aflorzy.daytrackr.domain.responses.ResponseMessage;
 import com.aflorzy.daytrackr.dto.FeedbackMessageDto;
+import com.aflorzy.daytrackr.enums.StatusType;
 import com.aflorzy.daytrackr.repositories.UserRepository;
 import com.aflorzy.daytrackr.services.FeedbackService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +34,10 @@ public class FeedbackController {
     @Transactional
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity sendEmail(Principal principal, @RequestBody FeedbackMessageDto feedbackMessage) {
+    public ResponseEntity<ResponseMessage> sendEmail(Principal principal, @RequestBody FeedbackMessageDto feedbackMessage) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        return this.feedbackService.sendMail(user, feedbackMessage);
+        ResponseMessage responseMessage = this.feedbackService.sendMail(user, feedbackMessage);
+
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(responseMessage);
     }
 }
