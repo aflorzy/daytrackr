@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import * as jwt_decode from "jwt-decode";
 import { Observable } from "rxjs";
-import { AccessToken } from "src/common/interfaces";
-import { BASE_URL } from "../../common/constants";
+import { AccessToken } from "src/app/interfaces";
+import { BASE_URL } from "../constants";
 import { StorageService } from "./storage.service";
 
 @Injectable({

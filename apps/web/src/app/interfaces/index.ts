@@ -1,3 +1,5 @@
+import { StatusType } from "../enums";
+
 export interface AccessToken {
   accessToken: string;
   tokenType: string;
@@ -44,4 +46,14 @@ export interface ResponseMessageDailyEvent {
   httpStatus: string;
   dailyEvent: Day;
   dailyEventList: Day[];
+}
+export interface ResponseMessage {
+  message: string;
+  statusType: StatusType;
+}
+
+export interface FeedbackMessage {
+  subject: string;
+  body: string;
+  attachments: any[];
 }

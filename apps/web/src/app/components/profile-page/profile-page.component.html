@@ -1,15 +1,21 @@
-<!-- edit-profile.component.html -->
-<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+<form class="form-container" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <ng-container *ngIf="responseMessage$ | async as responseMessage"
+    ><app-banner
+      [type]="responseMessage.statusType"
+      [message]="responseMessage?.message ?? ''"
+      [dismissable]="false"></app-banner
+  ></ng-container>
+
   <div class="form-group">
     <label for="firstName">First Name</label>
     <input type="text" id="firstName" formControlName="firstName" />
-    <div *ngIf="userFormControls.firstName.hasError('required')" class="error-message">First Name is required.</div>
+    <div *ngIf="hasError('firstName', 'required')" class="error-message">First Name is required.</div>
   </div>
 
   <div class="form-group">
     <label for="lastName">Last Name</label>
     <input type="text" id="lastName" formControlName="lastName" />
-    <div *ngIf="userFormControls.lastName.hasError('required')" class="error-message">Last Name is required.</div>
+    <div *ngIf="hasError('lastName', 'required')" class="error-message">Last Name is required.</div>
   </div>
 
   <div class="form-group">
@@ -20,15 +26,20 @@
   <div class="form-group">
     <label for="email">Email Address</label>
     <input type="email" id="email" formControlName="email" />
-    <div *ngIf="userFormControls.email.hasError('required')" class="error-message">Email Address is required.</div>
-    <div *ngIf="userFormControls.email.hasError('email')" class="error-message">Invalid Email Address.</div>
+    <div *ngIf="hasError('email', 'required')" class="error-message">Email Address is required.</div>
+    <div *ngIf="hasError('email', 'email')" class="error-message">Invalid Email Address.</div>
   </div>
 
   <div class="form-group">
     <label for="phone">Phone Number</label>
     <input type="tel" id="phone" formControlName="phone" />
-    <div *ngIf="userFormControls.phone.hasError('pattern')" class="error-message">Invalid Phone Number.</div>
+    <div *ngIf="hasError('phone', 'pattern')" class="error-message">Invalid Phone Number.</div>
   </div>
 
-  <button type="submit" [disabled]="!userForm.valid">Save Changes</button>
+  <!-- Disable if form has not changed, is invalid, or if the response message is showing (after saving) -->
+  <app-button
+    type="submit"
+    [disabled]="(isDirty$ | async) === false || userForm.invalid || !!(responseMessage$ | async)"
+    >Save Changes</app-button
+  >
 </form>

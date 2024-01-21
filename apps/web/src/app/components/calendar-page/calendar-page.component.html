@@ -39,11 +39,11 @@
 </div>
 
 <ng-template #noData
-  ><app-banner type="warning" message="No days to display!" [dismissable]="false"></app-banner
+  ><app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner
 ></ng-template>
 <app-banner
   *ngIf="errorMessage"
-  type="error"
+  [type]="StatusType.ERROR"
   [message]="errorMessage"
   [dismissable]="true"
   (dismissed)="errorMessage = ''"></app-banner>

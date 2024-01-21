@@ -2,17 +2,22 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Subject } from "rxjs";
+import { ResponseMessage } from "src/app/interfaces";
 import { AuthService } from "src/app/services/auth.service";
-import { AccessToken } from "src/common/interfaces";
+import { StatusType } from "../../enums";
+import { AccessToken } from "../../interfaces";
 
+@UntilDestroy()
 @Component({
   selector: "app-login",
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"]
+  templateUrl: "./login.component.html"
 })
 export class LoginComponent {
   loginForm: FormGroup;
   loginError: string | null = null;
+  responseMessage$ = new Subject<ResponseMessage>();
 
   constructor(
     private fb: FormBuilder,
@@ -43,16 +48,27 @@ export class LoginComponent {
       const username = this.loginForm.get("username")?.value;
       const password = this.loginForm.get("password")?.value;
 
-      this.authService.login(username, password).subscribe(
-        (response: AccessToken) => {
-          this.authService.token = response;
-          this.loginForm.reset();
-          this.router.navigate([""]);
-        },
-        (e: HttpErrorResponse) => {
-          this.loginError = e.error.message;
-        }
-      );
+      this.authService
+        .login(username, password)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (response: AccessToken) => {
+            this.responseMessage$.next({
+              message: "Successfully logged in",
+              statusType: StatusType.SUCCESS
+            });
+
+            this.authService.token = response;
+            this.loginForm.reset();
+            this.router.navigate([""]);
+          },
+          error: (e: HttpErrorResponse) => {
+            this.responseMessage$.next({
+              message: "Failed to login. Please check your credentials",
+              statusType: StatusType.ERROR
+            });
+          }
+        });
     }
   }
 }

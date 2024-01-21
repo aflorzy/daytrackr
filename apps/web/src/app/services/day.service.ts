@@ -2,8 +2,8 @@ import { DatePipe } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, of, switchMap, tap } from "rxjs";
-import { Day, Event, ResponseMessageDailyEvent } from "src/common/interfaces";
-import { BASE_URL } from "../../common/constants";
+import { Day, Event, ResponseMessageDailyEvent } from "src/app/interfaces";
+import { BASE_URL } from "../constants";
 
 @Injectable({
   providedIn: "root"

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { StatusType } from "../../enums";
 
 @Component({
   selector: "app-banner",
@@ -7,7 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 })
 export class BannerComponent implements OnInit {
   @Input() message = "";
-  @Input() type: "info" | "success" | "warning" | "error" = "info";
+  @Input() type: StatusType = StatusType.INFO;
   @Input() dismissable = true;
   @Output() dismissed = new EventEmitter<void>();
 

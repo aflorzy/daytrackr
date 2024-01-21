@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { CalendarDay, CalendarMonth, CalendarWeek, Day as DayObj } from "src/common/interfaces";
+import { CalendarDay, CalendarMonth, CalendarWeek, Day as DayObj } from "src/app/interfaces";
 import { CalendarService } from "../../../services/calendar.service";
 
 @Component({

@@ -8,6 +8,7 @@ import { LoginComponent } from "./components/login/login.component";
 import { ProfilePageComponent } from "./components/profile-page/profile-page.component";
 import { RegisterComponent } from "./components/register/register.component";
 import { AuthGuard } from "./guards/auth.guard";
+import { DirtyCheckGuard } from "./guards/dirty-check.guard";
 
 const titlePrefix = "DayTrackr | ";
 const routes: Routes = [
@@ -43,7 +44,8 @@ const routes: Routes = [
     pathMatch: "full",
     component: ProfilePageComponent,
     title: titlePrefix + "Profile",
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    canDeactivate: [DirtyCheckGuard]
   },
   { path: "login", pathMatch: "full", component: LoginComponent, title: titlePrefix + "Login" },
   { path: "register", pathMatch: "full", component: RegisterComponent, title: titlePrefix + "Register" }

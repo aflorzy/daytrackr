@@ -12,8 +12,7 @@ export class ButtonComponent {
   @Input() color: "primary" | "accent" = "primary";
   @Input() fill: "fill" | "outline" = "fill";
   @Input() type: "button" | "submit" = "button";
-  @Input() widthPercent?: number; 
+  @Input() widthPercent?: number;
 
   @Output() clicked = new EventEmitter<void>();
-
 }

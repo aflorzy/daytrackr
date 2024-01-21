@@ -1,4 +1,4 @@
-<div class="auth-container">
+<div class="form-container">
   <h2>Login</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -21,7 +21,10 @@
   </form>
   <p class="auth-alt">Don't have an account? <a routerLink="/register">Sign up!</a></p>
 
-  <div *ngIf="loginError" class="error-message">
-    {{ loginError }}
-  </div>
+  <ng-container *ngIf="responseMessage$ | async as responseMessage"
+    ><app-banner
+      [type]="responseMessage.statusType"
+      [message]="responseMessage.message"
+      [dismissable]="false"></app-banner
+  ></ng-container>
 </div>

@@ -1,9 +1,12 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Observable, Subject } from "rxjs";
 import { DayService } from "src/app/services/day.service";
-import { CalendarDay, Day } from "src/common/interfaces";
+import { StatusType } from "../../enums";
+import { CalendarDay, Day } from "../../interfaces";
 
+@UntilDestroy()
 @Component({
   selector: "app-calendar-page",
   templateUrl: "./calendar-page.component.html",
@@ -29,44 +32,55 @@ export class CalendarPageComponent implements OnInit {
     private datePipe: DatePipe,
     private dayService: DayService
   ) {}
+
   ngOnInit(): void {
     this.subscribeInitialDay();
     this.subscribeCalendarChange();
   }
 
+  get StatusType() {
+    return StatusType;
+  }
+
   subscribeInitialDay() {
-    this.dayService.getTodayOrLatest().subscribe({
-      next: (day: Day) => {
-        this.selectedDay = day;
-      },
-      error: e => {
-        console.error(e);
-      }
-    });
+    this.dayService
+      .getTodayOrLatest()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (day: Day) => {
+          this.selectedDay = day;
+        },
+        error: e => {
+          console.error(e);
+        }
+      });
   }
 
   subscribeCalendarChange() {
-    this.firstLastDate$.subscribe({
+    this.firstLastDate$.pipe(untilDestroyed(this)).subscribe({
       next: dates => {
         if (!dates.first || !dates.last) return;
 
-        this.dayService.getDaysBetween(dates.first, dates.last).subscribe(days => {
-          if (days.length === 0) return;
+        this.dayService
+          .getDaysBetween(dates.first, dates.last)
+          .pipe(untilDestroyed(this))
+          .subscribe(days => {
+            if (days.length === 0) return;
 
-          this.days = days;
+            this.days = days;
 
-          const dateInput = document.getElementById("date") as HTMLInputElement;
-          this.minDate = new Date(days[0].date);
-          this.maxDate = new Date(days[days.length - 1].date);
+            const dateInput = document.getElementById("date") as HTMLInputElement;
+            this.minDate = new Date(days[0].date);
+            this.maxDate = new Date(days[days.length - 1].date);
 
-          this.existsPrev = days.length > 1;
-          this.existsNext = false;
+            this.existsPrev = days.length > 1;
+            this.existsNext = false;
 
-          if (dateInput) {
-            dateInput.setAttribute("max", this.datePipe.transform(days[days.length - 1].date, "yyyy-MM-dd") || "");
-            dateInput.value = this.datePipe.transform(this.selectedDay?.date, "yyyy-MM-dd") || "";
-          }
-        });
+            if (dateInput) {
+              dateInput.setAttribute("max", this.datePipe.transform(days[days.length - 1].date, "yyyy-MM-dd") || "");
+              dateInput.value = this.datePipe.transform(this.selectedDay?.date, "yyyy-MM-dd") || "";
+            }
+          });
       },
       error: (e: any) => {
         this.warnMessage = "No days available";
@@ -124,58 +138,64 @@ export class CalendarPageComponent implements OnInit {
   onDelete(deleted: boolean) {
     if (!deleted || !this.selectedDay || !this.selectedDay.id) return;
 
-    this.dayService.deleteById(this.selectedDay.id).subscribe({
-      next: _ => {
-        if (!this.selectedDay) return;
-        // Trigger calendar to remove day's events
-        this.deletedDay$.next(this.selectedDay);
+    this.dayService
+      .deleteById(this.selectedDay.id)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: _ => {
+          if (!this.selectedDay) return;
+          // Trigger calendar to remove day's events
+          this.deletedDay$.next(this.selectedDay);
 
-        // Filter out of list
-        let tempSelectedDay: Day | undefined;
-        let deletedFirst: boolean;
-        this.days = this.days.filter((day: Day) => {
-          const found: boolean = day.id === this.selectedDay?.id;
+          // Filter out of list
+          let tempSelectedDay: Day | undefined;
+          let deletedFirst: boolean;
+          this.days = this.days.filter((day: Day) => {
+            const found: boolean = day.id === this.selectedDay?.id;
 
-          if (deletedFirst && !tempSelectedDay) {
-            // Deleted first day in list. Others exist
-            tempSelectedDay = day;
-            this.selectedDay = day;
+            if (deletedFirst && !tempSelectedDay) {
+              // Deleted first day in list. Others exist
+              tempSelectedDay = day;
+              this.selectedDay = day;
+            }
+
+            if (found && tempSelectedDay) {
+              this.selectedDay = tempSelectedDay;
+            } else if (found) {
+              // Deleted first day in list. Others may or may not exist
+              deletedFirst = true;
+            } else {
+              tempSelectedDay = day;
+            }
+
+            // Do not want to keep deleted day
+            return !found;
+          });
+
+          if (!tempSelectedDay) {
+            // Delete only item in list
+            this.selectedDay = undefined;
           }
-
-          if (found && tempSelectedDay) {
-            this.selectedDay = tempSelectedDay;
-          } else if (found) {
-            // Deleted first day in list. Others may or may not exist
-            deletedFirst = true;
-          } else {
-            tempSelectedDay = day;
-          }
-
-          // Do not want to keep deleted day
-          return !found;
-        });
-
-        if (!tempSelectedDay) {
-          // Delete only item in list
-          this.selectedDay = undefined;
+        },
+        error: _ => {
+          console.error("Could not delete day");
         }
-      },
-      error: _ => {
-        console.error("Could not delete day");
-      }
-    });
+      });
   }
 
   onSubmit(day: Day) {
-    this.dayService.saveDay(day).subscribe({
-      next: (res: Day) => {
-        if (this.selectedDay) {
-          this.selectedDay.id = res.id;
+    this.dayService
+      .saveDay(day)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (res: Day) => {
+          if (this.selectedDay) {
+            this.selectedDay.id = res.id;
+          }
+        },
+        error: e => {
+          console.error(e);
         }
-      },
-      error: e => {
-        console.error(e);
-      }
-    });
+      });
   }
 }

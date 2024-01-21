@@ -1,4 +1,4 @@
-<div class="auth-container">
+<div class="form-container">
   <h2>Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -35,13 +35,13 @@
 
   <app-banner
     *ngIf="successMessage"
-    type="success"
+    [type]="StatusType.SUCCESS"
     [dismissable]="true"
     [message]="successMessage"
     (dismissed)="successMessage = ''"></app-banner>
   <app-banner
     *ngIf="errorMessage"
-    type="error"
+    [type]="StatusType.ERROR"
     [dismissable]="true"
     [message]="errorMessage"
     (dismissed)="errorMessage = ''"></app-banner>

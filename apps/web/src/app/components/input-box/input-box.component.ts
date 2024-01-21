@@ -1,9 +1,12 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, Subject } from "rxjs";
+import { DAYS_OF_WEEK } from "src/app/constants";
+import { Day } from "src/app/interfaces";
 import { DayService } from "src/app/services/day.service";
-import { Day } from "src/common/interfaces";
 
+@UntilDestroy()
 @Component({
   selector: "app-input-box",
   templateUrl: "./input-box.component.html",
@@ -16,7 +19,6 @@ export class InputBoxComponent implements OnInit {
   invalidDate = true;
   date?: Date;
   days: Day[] = [];
-  DAYS_OF_WEEK: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   daysSaved = false;
 
   error$: Subject<any> = new BehaviorSubject({ isError: false, errorMsg: "" });
@@ -69,7 +71,7 @@ export class InputBoxComponent implements OnInit {
       }
 
       // Check if line starts with DAY_OF_WEEK
-      const dayOfWeek = this.DAYS_OF_WEEK.find((day, index) => line.startsWith(day + "-"));
+      const dayOfWeek = DAYS_OF_WEEK.find((day, index) => line.startsWith(day + "-"));
 
       if (!dayOfWeek) {
         // Did not find 'Saturday-'... at beginning of line
@@ -80,10 +82,10 @@ export class InputBoxComponent implements OnInit {
 
       if (
         dayOfWeekIdx !== -1 &&
-        this.DAYS_OF_WEEK.indexOf(dayOfWeek) !== dayOfWeekIdx + 1 &&
-        !(this.DAYS_OF_WEEK.indexOf(dayOfWeek) === 0 && dayOfWeekIdx === this.DAYS_OF_WEEK.length - 1)
+        DAYS_OF_WEEK.indexOf(dayOfWeek) !== dayOfWeekIdx + 1 &&
+        !(DAYS_OF_WEEK.indexOf(dayOfWeek) === 0 && dayOfWeekIdx === DAYS_OF_WEEK.length - 1)
       ) {
-        errorMsg = `Dates out of order at line ${index1}. Expected ${this.DAYS_OF_WEEK[dayOfWeekIdx + 1 >= this.DAYS_OF_WEEK.length ? 0 : dayOfWeekIdx + 1]} but got ${dayOfWeek}. '${line}'`;
+        errorMsg = `Dates out of order at line ${index1}. Expected ${DAYS_OF_WEEK[dayOfWeekIdx + 1 >= DAYS_OF_WEEK.length ? 0 : dayOfWeekIdx + 1]} but got ${dayOfWeek}. '${line}'`;
         this.setError(true, errorMsg);
         throw new Error(errorMsg);
       }
@@ -103,7 +105,7 @@ export class InputBoxComponent implements OnInit {
         throw new Error(errorMsg);
       }
 
-      dayOfWeekIdx = this.DAYS_OF_WEEK.indexOf(dayOfWeek);
+      dayOfWeekIdx = DAYS_OF_WEEK.indexOf(dayOfWeek);
       line = line.replace(dayOfWeek + "-", "");
 
       const day: Day = {
@@ -140,13 +142,16 @@ export class InputBoxComponent implements OnInit {
 
     this.daysSaved = true;
 
-    this.dayService.saveMulti(this.days).subscribe({
-      next: (result: Day[]) => {
-        this.days = result;
-      },
-      error: (e: any) => {
-        console.error("Could not save days", e);
-      }
-    });
+    this.dayService
+      .saveMulti(this.days)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (result: Day[]) => {
+          this.days = result;
+        },
+        error: (e: any) => {
+          console.error("Could not save days", e);
+        }
+      });
   }
 }

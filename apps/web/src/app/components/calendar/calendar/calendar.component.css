@@ -1,4 +1,10 @@
 /* Calendar table */
+* {
+  box-sizing: content-box;
+  font-family: serif;
+
+}
+
 .months {
   display: flex;
   flex-direction: row;

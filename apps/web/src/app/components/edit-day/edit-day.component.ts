@@ -1,15 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Day, Event } from "src/app/interfaces";
 import { DayService } from "src/app/services/day.service";
-import { Day, Event } from "src/common/interfaces";
 
+@UntilDestroy()
 @Component({
   selector: "app-edit-day",
   templateUrl: "./edit-day.component.html",
   styleUrls: ["./edit-day.component.css"]
 })
 export class EditDayComponent implements OnInit {
-  // day$_original!: Observable<Day>;
   @Input() day!: Day;
   @Output() save = new EventEmitter<Day>();
   @Output() cancel = new EventEmitter<boolean>();
@@ -66,19 +67,22 @@ export class EditDayComponent implements OnInit {
   }
 
   saveChanges() {
-    this.dayService.saveDay(this.day).subscribe({
-      next: (res: Day) => {
-        this.errorMessage = "";
-        if (this.day) {
-          this.day.id = res.id;
+    this.dayService
+      .saveDay(this.day)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (res: Day) => {
+          this.errorMessage = "";
+          if (this.day) {
+            this.day.id = res.id;
+          }
+          this.save.emit(res);
+        },
+        error: (e: any) => {
+          this.errorMessage = "Could not save day";
+          console.error("Could not save day", e);
         }
-        this.save.emit(res);
-      },
-      error: (e: any) => {
-        this.errorMessage = "Could not save day";
-        console.error("Could not save day", e);
-      }
-    });
+      });
   }
 
   addEvent(name: string) {

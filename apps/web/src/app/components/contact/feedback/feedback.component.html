@@ -1,4 +1,4 @@
-<form [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
+<form class="form-container" [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
   <div class="form-group">
     <label for="subject">Subject:</label>
     <input type="text" id="subject" formControlName="subject" required />
@@ -21,4 +21,11 @@
   </div>
 
   <app-button type="submit" [widthPercent]="100">Submit</app-button>
+
+  <ng-container *ngIf="responseMessage"
+    ><app-banner
+      [type]="responseMessage.statusType"
+      [message]="responseMessage.message"
+      [dismissable]="false"></app-banner
+  ></ng-container>
 </form>

@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Injectable } from "@angular/core";
-import { CalendarDay, CalendarMonth, CalendarWeek, Day } from "../../common/interfaces";
+import { CalendarDay, CalendarMonth, CalendarWeek, Day } from "src/app/interfaces";
 
 @Injectable({
   providedIn: "root"

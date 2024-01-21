@@ -1,3 +1,6 @@
 <div class="content">
-    <app-feedback (submitForm)="handleSubmit($event)"></app-feedback>
+  <app-feedback
+    [responseMessage]="responseMessage$ | async"
+    [resetForm]="(resetForm$ | async) || false"
+    (submitForm)="handleSubmit($event)"></app-feedback>
 </div>

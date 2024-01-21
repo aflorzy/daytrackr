@@ -2,32 +2,32 @@
   padding: 10px;
   border: 2px solid transparent; /* Add a transparent border */
   border-radius: 4px;
-  width: 80%; /* Shorten the width */
+  width: 100%; /* Shorten the width */
   margin: 0 auto; /* Center the banner horizontally */
   display: flex;
   align-items: center;
   justify-content: space-between; /* Align the dismiss button to the right */
 }
 
-.banner-info {
+.banner-INFO {
   background-color: #cce5ff;
   color: #004085;
   border-color: #004085; /* Set the border color to match text color */
 }
 
-.banner-success {
+.banner-SUCCESS {
   background-color: #d4edda;
   color: #155724;
   border-color: #155724; /* Set the border color to match text color */
 }
 
-.banner-warning {
+.banner-WARNING {
   background-color: #fff3cd;
   color: #856404;
   border-color: #856404; /* Set the border color to match text color */
 }
 
-.banner-error {
+.banner-ERROR {
   background-color: #f8d7da;
   color: #721c24;
   border-color: #721c24; /* Set the border color to match text color */

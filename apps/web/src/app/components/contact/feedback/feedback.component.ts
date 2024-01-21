@@ -1,13 +1,15 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { FeedbackMessage } from "../../../services/feedback.service";
+import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 
 @Component({
   selector: "app-feedback",
   templateUrl: "./feedback.component.html",
   styleUrls: ["./feedback.component.css"]
 })
-export class FeedbackComponent {
+export class FeedbackComponent implements OnChanges {
+  @Input() responseMessage!: ResponseMessage | null;
+  @Input() resetForm!: boolean;
   @Output() submitForm = new EventEmitter<FeedbackMessage>();
 
   feedbackForm: FormGroup;
@@ -18,6 +20,11 @@ export class FeedbackComponent {
       message: ["", Validators.required],
       file: [null, [Validators.required, this.validateFileType]]
     });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.resetForm && this.resetForm) {
+      this.feedbackForm.reset();
+    }
   }
 
   hasError(fieldName: string, error: string): boolean {
