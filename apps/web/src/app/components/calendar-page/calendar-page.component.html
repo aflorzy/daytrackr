@@ -1,46 +1,48 @@
 <div class="content">
-  <app-calendar
-    *ngIf="selectedDay && !editing"
-    [dayList]="days"
-    [initialDate]="selectedDay.date"
-    [deletedDay]="deletedDay$ | async"
-    (dayChange)="dayChange($event)"
-    (newDayClick)="newDayClick($event)"
-    (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
+  <ng-container *ngIf="selectedDay; else noData">
+    <ng-container *ngIf="!editing; else editView">
+      <app-calendar
+        [dayList]="days"
+        [initialDate]="selectedDay.date"
+        [deletedDay]="deletedDay$ | async"
+        (dayChange)="dayChange($event)"
+        (newDayClick)="newDayClick($event)"
+        (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
 
-  <span class="hidden" *ngIf="!editing"
-    >Select from {{ days.length }} {{ days.length === 1 ? "day" : "days" }} in saved data:</span
-  >
-  <!-- <input type="date" id="date" class="hidden" (change)="dateChange($event)" /> -->
-  <div class="arrows" *ngIf="selectedDay && minDate && maxDate && !editing">
-    <app-button (clicked)="onPrev()" [disabled]="!existsPrev">
-      <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev
-    </app-button>
-    <app-button (clicked)="onNext()" [disabled]="!existsNext">
-      Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon>
-    </app-button>
-  </div>
+      <span class="hidden">Select from {{ days.length }} {{ days.length === 1 ? "day" : "days" }} in saved data:</span>
 
-  <app-day-list-item
-    *ngIf="!editing"
-    [day]="selectedDay"
-    [hideEditIcon]="false"
-    [hideAddEvent]="false"
-    [editable]="true"
-    (onEdit)="editing = true"
-    (delete)="onDelete($event)"
-    (edited)="onSubmit($event)"></app-day-list-item>
+      <div class="arrows" *ngIf="minDate && maxDate">
+        <app-button (clicked)="onPrev()" [disabled]="!existsPrev">
+          <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev
+        </app-button>
+        <app-button (clicked)="onNext()" [disabled]="!existsNext">
+          Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon>
+        </app-button>
+      </div>
 
-  <app-edit-day
-    *ngIf="editing && selectedDay"
-    [day]="selectedDay"
-    (save)="handleSave($event); editing = false"
-    (cancel)="editing = false"></app-edit-day>
+      <app-day-list-item
+        [day]="selectedDay"
+        [hideEditIcon]="false"
+        [hideAddEvent]="false"
+        [editable]="true"
+        (edit)="editing = true"
+        (delete)="onDelete($event)"
+        (edited)="onSubmit($event)"></app-day-list-item>
+    </ng-container>
+
+    <ng-template #editView>
+      <app-edit-day
+        [day]="selectedDay"
+        (save)="handleSave($event); editing = false"
+        (cancel)="editing = false"></app-edit-day>
+    </ng-template>
+  </ng-container>
+
+  <ng-template #noData
+    ><app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner
+  ></ng-template>
 </div>
 
-<ng-template #noData
-  ><app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner
-></ng-template>
 <app-banner
   *ngIf="errorMessage"
   [type]="StatusType.ERROR"

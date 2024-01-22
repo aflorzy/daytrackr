@@ -2,8 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, Observable, Subject, switchMap, tap, timer } from "rxjs";
-import { ResponseMessage } from "src/app/interfaces";
-import { Profile, ProfileService } from "src/app/services/profile.service";
+import { Profile, ResponseMessage } from "src/app/interfaces";
+import { ProfileService } from "src/app/services/profile.service";
 import { dirtyCheck } from "../../operators/dirty-check.operator";
 
 export const store = new BehaviorSubject({

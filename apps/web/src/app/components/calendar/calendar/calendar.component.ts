@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { CalendarDay, CalendarMonth, CalendarWeek, Day as DayObj } from "src/app/interfaces";
+import { CalendarDay, CalendarMonth, Day as DayObj } from "src/app/interfaces";
 import { CalendarService } from "../../../services/calendar.service";
 
 @Component({
@@ -41,80 +41,29 @@ export class CalendarComponent implements OnChanges {
 
   private handleDeletedDay(deletedDay: DayObj) {
     // Set day's events to []
-    this.monthList = this.monthListInitial.map((calendarMonth: CalendarMonth) => ({
-      ...calendarMonth,
-      weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
-        ...calendarWeek,
-        days: calendarWeek.days.map((calendarDay: CalendarDay) => {
-          const yearNum: number = +(this.datePipe.transform(deletedDay.date, "yyyy") ?? "");
-          const monthNum: number = +(this.datePipe.transform(deletedDay.date, "MM") ?? "");
-          const dayNum: number = +(this.datePipe.transform(deletedDay.date, "dd") ?? "");
-          if (calendarDay.year == yearNum && calendarDay.month == monthNum && calendarDay.date == dayNum) {
-            calendarDay.day.events = [];
-          }
-
-          return calendarDay;
-        })
-      }))
-    }));
+    this.monthList = this.calendarService.removeDay(this.monthListInitial, deletedDay);
   }
 
   private initializeDayList(dayList: DayObj[]) {
     // Loop through dayList and set on appropriate calendar day
     dayList.forEach((day: DayObj) => {
-      this.monthList = this.monthListInitial.map((calendarMonth: CalendarMonth) => ({
-        ...calendarMonth,
-        weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
-          ...calendarWeek,
-          days: calendarWeek.days.map((calendarDay: CalendarDay) => {
-            const yearNum: number = +(this.datePipe.transform(day.date, "yyyy") ?? "");
-            const monthNum: number = +(this.datePipe.transform(day.date, "MM") ?? "");
-            const dayNum: number = +(this.datePipe.transform(day.date, "dd") ?? "");
-            if (calendarDay.year == yearNum && calendarDay.month == monthNum && calendarDay.date == dayNum) {
-              calendarDay.day = day;
-            }
-
-            return calendarDay;
-          })
-        }))
-      }));
+      this.monthList = this.calendarService.setDay(this.monthListInitial, day);
     });
   }
 
   private initializeCalendar(date: Date) {
-    const monthChanged: boolean =
-      this.datePipe.transform(this.selectedDate, "MM") !== this.datePipe.transform(date, "MM");
-    const shouldEmitFirstLast: boolean = !this.selectedDate || monthChanged;
+    const monthListTemp = this.calendarService.initializeCalendar(date, this.selectedDate);
     this.selectedDate = date;
+    if (!monthListTemp) return;
 
-    if (!shouldEmitFirstLast) return;
-
-    const currentMonth: CalendarMonth = {
-      ...this.calendarService.monthFromDate(date)
-    };
-
-    const previousMonthDate: Date = new Date(date);
-    previousMonthDate.setDate(15);
-    previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
-    const previousMonth: CalendarMonth = {
-      ...this.calendarService.monthFromDate(previousMonthDate)
-    };
-
-    const nextMonthDate: Date = new Date(date);
-    nextMonthDate.setDate(15);
-    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-    const nextMonth: CalendarMonth = { ...this.calendarService.monthFromDate(nextMonthDate) };
-
-    this.monthList = [previousMonth, currentMonth, nextMonth];
-    this.monthListInitial = [...this.monthList];
+    this.monthList = monthListTemp;
+    this.monthListInitial = [...monthListTemp];
 
     // Only emit these when month has changed
-    if (shouldEmitFirstLast) {
-      this.firstLastDate.emit({
-        first: previousMonth.weeks[0].days[0].day.date,
-        last: nextMonth.weeks[5].days[6].day.date
-      });
-    }
+    this.firstLastDate.emit({
+      first: monthListTemp[0].weeks[0].days[0].day.date,
+      last: monthListTemp[monthListTemp.length - 1].weeks[5].days[6].day.date
+    });
   }
 
   selectDay(day: CalendarDay, month: CalendarMonth) {

@@ -111,10 +111,6 @@ export class CalendarPageComponent implements OnInit {
     this.selectedDay = found;
     this.existsPrev = foundIndex > 1;
     this.existsNext = foundIndex <= this.days.length - 1;
-
-    const dateInput = document.getElementById("date") as HTMLInputElement;
-    const date = this.datePipe.transform(found.date, "yyyy-MM-dd");
-    dateInput.value = date || "";
   }
 
   onNext() {
@@ -125,10 +121,6 @@ export class CalendarPageComponent implements OnInit {
     this.selectedDay = found;
     this.existsPrev = foundIndex >= 0;
     this.existsNext = foundIndex < this.days.length - 2;
-
-    const dateInput = document.getElementById("date") as HTMLInputElement;
-    const date = this.datePipe.transform(found.date, "yyyy-MM-dd");
-    dateInput.value = date || "";
   }
 
   handleSave(day: Day) {

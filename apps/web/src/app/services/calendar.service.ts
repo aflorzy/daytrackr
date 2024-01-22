@@ -109,4 +109,64 @@ export class CalendarService {
 
     return month;
   }
+
+  initializeCalendar(date: Date, selectedDate?: Date): CalendarMonth[] | void {
+    const monthChanged: boolean = this.datePipe.transform(selectedDate, "MM") !== this.datePipe.transform(date, "MM");
+    const shouldEmitFirstLast: boolean = !selectedDate || monthChanged;
+    selectedDate = date;
+
+    if (!shouldEmitFirstLast) return;
+
+    const currentMonth: CalendarMonth = {
+      ...this.monthFromDate(date)
+    };
+
+    const previousMonthDate: Date = new Date(date);
+    previousMonthDate.setDate(15);
+    previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
+    const previousMonth: CalendarMonth = {
+      ...this.monthFromDate(previousMonthDate)
+    };
+
+    const nextMonthDate: Date = new Date(date);
+    nextMonthDate.setDate(15);
+    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    const nextMonth: CalendarMonth = { ...this.monthFromDate(nextMonthDate) };
+
+    return [previousMonth, currentMonth, nextMonth];
+  }
+
+  setDay(monthListInitial: CalendarMonth[], day: Day): CalendarMonth[] {
+    return this.setDayEvents(monthListInitial, day, "set");
+  }
+
+  removeDay(monthListInitial: CalendarMonth[], day: Day): CalendarMonth[] {
+    return this.setDayEvents(monthListInitial, day, "remove");
+  }
+
+  private setDayEvents(monthListInitial: CalendarMonth[], day: Day, mode: string): CalendarMonth[] {
+    return monthListInitial.map((calendarMonth: CalendarMonth) => ({
+      ...calendarMonth,
+      weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
+        ...calendarWeek,
+        days: calendarWeek.days.map((calendarDay: CalendarDay) => {
+          const yearNum: number = +(this.datePipe.transform(day.date, "yyyy") ?? "");
+          const monthNum: number = +(this.datePipe.transform(day.date, "MM") ?? "");
+          const dayNum: number = +(this.datePipe.transform(day.date, "dd") ?? "");
+          if (calendarDay.year == yearNum && calendarDay.month == monthNum && calendarDay.date == dayNum) {
+            switch (mode) {
+              case "set":
+                calendarDay.day = day;
+                break;
+              case "remove":
+                calendarDay.day.events = [];
+                break;
+            }
+          }
+
+          return calendarDay;
+        })
+      }))
+    }));
+  }
 }
