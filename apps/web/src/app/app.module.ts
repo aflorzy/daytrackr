@@ -25,7 +25,9 @@ import { LoginComponent } from "./components/login/login.component";
 import { NavbarComponent } from "./components/navbar/navbar.component";
 import { RegisterComponent } from "./components/register/register.component";
 import { AuthInterceptor } from "./interceptors/auth.interceptor";
-import { ProfilePageComponent } from './components/profile-page/profile-page.component';
+import { ProfilePageComponent } from "./components/profile-page/profile-page.component";
+import { StoreModule } from "@ngrx/store";
+import * as reducers from "./store/reducers";
 
 @NgModule({
   declarations: [
@@ -47,7 +49,17 @@ import { ProfilePageComponent } from './components/profile-page/profile-page.com
     ContactPageComponent,
     ProfilePageComponent
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule, FontAwesomeModule, HttpClientModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    HttpClientModule,
+    StoreModule.forRoot(reducers.reducers, {
+      metaReducers: reducers.metaReducers
+    })
+  ],
   providers: [
     DatePipe,
     {
