@@ -41,12 +41,6 @@ export interface Day {
   events: Event[];
 }
 
-export interface ResponseMessageDailyEvent {
-  message: string;
-  httpStatus: string;
-  dailyEvent: Day;
-  dailyEventList: Day[];
-}
 export interface ResponseMessage {
   message: string;
   statusType: StatusType;

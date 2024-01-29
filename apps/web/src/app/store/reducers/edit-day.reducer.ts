@@ -1,0 +1,181 @@
+import { createReducer, on } from "@ngrx/store";
+import { Day, Event } from "../../interfaces";
+import { EditDayActions, EditDayApiActions } from "../actions/edit-day.actions";
+
+export interface State {
+  day: Day;
+  editingDay: Day;
+  touched: boolean;
+  loading: boolean;
+  errorMsg: string;
+}
+
+export const initialState: State = {
+  day: {
+    events: [],
+    date: new Date()
+  },
+  editingDay: {
+    events: [],
+    date: new Date()
+  },
+  touched: false,
+  loading: false,
+  errorMsg: ""
+};
+
+export const editDayReducer = createReducer(
+  initialState,
+
+  // Set editingDay to day so data is current IFF it is the first edit action
+  on(
+    EditDayActions.addEvent,
+    EditDayActions.removeEvent,
+    EditDayActions.updateEvent,
+    EditDayActions.moveEvent,
+    EditDayActions.combineEvents,
+    (state): State => {
+      console.log("Event", state);
+      if (state.touched) return { ...state };
+      else return { ...state, editingDay: { ...state.day } };
+    }
+  ),
+  // Set touched IFF it is the first edit action
+  on(
+    EditDayActions.addEvent,
+    EditDayActions.removeEvent,
+    EditDayActions.updateEvent,
+    EditDayActions.moveEvent,
+    EditDayActions.combineEvents,
+    (state): State => ({ ...state, touched: true })
+  ),
+
+  on(EditDayActions.addEvent, (state, { name }): State => {
+    const event: Event = { name, idx: state.editingDay.events.length };
+    return {
+      ...state,
+      editingDay: { ...state.editingDay, events: [...state.editingDay.events, event] }
+    };
+  }),
+  on(EditDayActions.removeEvent, (state, { event }): State => {
+    const editingDay: Day = { ...state.editingDay, events: [...state.editingDay.events] };
+    editingDay.events.splice(event.idx, 1);
+
+    return {
+      ...state,
+      editingDay
+    };
+  }),
+  on(
+    EditDayActions.insertEvent,
+    (state, { event }): State => ({
+      ...state,
+      editingDay: {
+        ...state.editingDay,
+        events: reorderEvents(state.editingDay.events.splice(event.idx, 0, event))
+      }
+    })
+  ),
+  on(EditDayActions.updateEvent, (state, { event }): State => {
+    const editingDay: Day = { ...state.editingDay, events: [...state.editingDay.events] };
+    editingDay.events.splice(event.idx, 1, event);
+
+    return {
+      ...state,
+      editingDay
+    };
+  }),
+  on(EditDayActions.moveEvent, (state, { event, newIdx }): State => {
+    const temp: Event = state.editingDay.events[newIdx];
+    const events: Event[] = [...state.editingDay.events];
+    events[newIdx] = events[event.idx];
+    events[event.idx] = temp;
+
+    return {
+      ...state,
+      editingDay: {
+        ...state.editingDay,
+        events: reorderEvents(events)
+      }
+    };
+  }),
+  on(EditDayActions.combineEvents, (state, { event1, event2 }): State => {
+    const tempEvent: Event = {
+      idx: event1.idx,
+      name: `${event1.name}, ${event2.name}`
+    };
+    const events: Event[] = [...state.editingDay.events];
+    events[tempEvent.idx] = tempEvent;
+    events.splice(event2.idx, 1);
+
+    return {
+      ...state,
+      editingDay: {
+        ...state.editingDay,
+        events: reorderEvents(events)
+      }
+    };
+  }),
+
+  on(
+    EditDayApiActions.loadDaySuccess,
+    EditDayApiActions.saveEditsSuccess,
+    (state, { day }): State => ({
+      ...state,
+      day
+    })
+  ),
+  on(
+    EditDayApiActions.saveEditsSuccess,
+    EditDayActions.cancelEdits,
+    (state): State => ({
+      ...state,
+      touched: false
+    })
+  ),
+
+  on(
+    EditDayApiActions.deleteDaySuccess,
+    (state, { day }): State => ({
+      ...state,
+      day: { date: day.date, events: [] }
+    })
+  ),
+
+  // Reset global loading indicator
+  on(
+    EditDayApiActions.loadDaySuccess,
+    EditDayApiActions.loadDayFailure,
+    EditDayApiActions.saveEditsSuccess,
+    EditDayApiActions.saveEditsFailure,
+    EditDayApiActions.deleteDaySuccess,
+    EditDayApiActions.deleteDayFailure,
+    (state): State => ({ ...state, loading: false })
+  ),
+  // Set global loading indicator
+  on(
+    EditDayActions.loadDay,
+    EditDayActions.saveEdits,
+    EditDayActions.deleteDay,
+    (state): State => ({ ...state, loading: true })
+  ),
+
+  // Reset global error message
+  on(
+    EditDayApiActions.loadDaySuccess,
+    EditDayApiActions.saveEditsSuccess,
+    EditDayApiActions.deleteDaySuccess,
+    (state): State => ({ ...state, errorMsg: "" })
+  ),
+  // Set global error message
+  on(
+    EditDayApiActions.loadDayFailure,
+    EditDayApiActions.saveEditsFailure,
+    EditDayApiActions.deleteDayFailure,
+    (state, { errorMsg }): State => ({ ...state, errorMsg })
+  )
+);
+
+function reorderEvents(events: Event[]): Event[] {
+  return events.map((event: Event, index: number) => ({ ...event, idx: index }));
+}

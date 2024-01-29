@@ -6,6 +6,8 @@ export interface State {
   selectedDay: Day;
   dayList: Day[];
   currentDate: Date;
+  errorMsg: string;
+  loading: boolean;
 }
 
 export const initialState: State = {
@@ -14,11 +16,20 @@ export const initialState: State = {
     date: new Date()
   },
   dayList: [],
-  currentDate: new Date()
+  currentDate: new Date(),
+  errorMsg: "",
+  loading: false
 };
 
 export const dayReducer = createReducer(
   initialState,
+  on(
+    DayActions.setDayList,
+    (state, { dayList }): State => ({
+      ...state,
+      dayList
+    })
+  ),
   on(
     DayActions.addDay,
     (state, { date }): State => ({
@@ -28,8 +39,12 @@ export const dayReducer = createReducer(
     })
   ),
   on(
-    DayActions.removeDay,
-    (state, { id }): State => ({ ...state, dayList: state.dayList.filter((day: Day) => day.id !== id) })
+    DayActions.saveDay,
+    DayActions.setSelectedDay,
+    (state, { day }): State => ({
+      ...state,
+      selectedDay: day
+    })
   ),
   on(
     DayActions.selectDay,
@@ -41,33 +56,22 @@ export const dayReducer = createReducer(
           : { date: state.currentDate, events: [] }
     })
   ),
-  on(
-    DayActions.addEvent,
-    (state, { event }): State => ({
+  on(DayActions.addEvent, (state, { name }): State => {
+    const event: Event = { name, idx: state.selectedDay.events.length };
+    return {
       ...state,
       selectedDay: { ...state.selectedDay, events: [...state.selectedDay.events, event] }
-    })
-  ),
-  on(
-    DayActions.removeEvent,
-    (state, { event }): State => ({
+    };
+  }),
+  on(DayActions.removeEvent, (state, { event }): State => {
+    const selectedDay: Day = { ...state.selectedDay, events: [...state.selectedDay.events] };
+    selectedDay.events.splice(event.idx, 1);
+
+    return {
       ...state,
-      selectedDay: {
-        ...state.selectedDay,
-        events: state.selectedDay.events.filter((e: Event) => e.idx === event.idx)
-      }
-    })
-  ),
-  on(
-    DayActions.removeEvent,
-    (state, { event }): State => ({
-      ...state,
-      selectedDay: {
-        ...state.selectedDay,
-        events: reorderEvents(state.selectedDay.events.filter((e: Event) => e.idx === event.idx))
-      }
-    })
-  ),
+      selectedDay
+    };
+  }),
   on(
     DayActions.insertEvent,
     (state, { event }): State => ({
@@ -78,10 +82,149 @@ export const dayReducer = createReducer(
       }
     })
   ),
-  on(DayApiActions.retrievedDayList, (state, { dayList }): State => ({ ...state, dayList })),
-  on(DayApiActions.retrievedCurrentDate, (state, { currentDate }): State => ({ ...state, currentDate }))
+  on(DayActions.updateEvent, (state, { event }): State => {
+    // Event should delete if name == ""
+    const selectedDay: Day = { ...state.selectedDay, events: [...state.selectedDay.events] };
+    selectedDay.events.splice(event.idx, 1, event);
+
+    return {
+      ...state,
+      selectedDay
+    };
+  }),
+  on(DayActions.moveEvent, (state, { event, newIdx }): State => {
+    const temp: Event = state.selectedDay.events[newIdx];
+    const events: Event[] = [...state.selectedDay.events];
+    events[newIdx] = events[event.idx];
+    events[event.idx] = temp;
+
+    return {
+      ...state,
+      selectedDay: {
+        ...state.selectedDay,
+        events: reorderEvents(events)
+      }
+    };
+  }),
+  on(DayActions.combineEvents, (state, { event1, event2 }): State => {
+    const tempEvent: Event = {
+      idx: event1.idx,
+      name: `${event1.name}, ${event2.name}`
+    };
+    const events: Event[] = [...state.selectedDay.events];
+    events[tempEvent.idx] = tempEvent;
+    events.splice(event2.idx, 1);
+
+    return {
+      ...state,
+      selectedDay: {
+        ...state.selectedDay,
+        events: reorderEvents(events)
+      }
+    };
+  }),
+  on(DayActions.selectNextDay, (state): State => {
+    const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
+    return {
+      ...state,
+      selectedDay: state.dayList[selectedDayIndex + 1]
+    };
+  }),
+  on(DayActions.selectPreviousDay, (state): State => {
+    const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
+    return {
+      ...state,
+      selectedDay: state.dayList[selectedDayIndex - 1]
+    };
+  }),
+  on(DayApiActions.saveDaySuccess, (state, { day }): State => ({ ...state, selectedDay: day })),
+  on(DayApiActions.retrieveDayListSuccess, (state, { dayList }): State => ({ ...state, dayList })),
+  on(DayApiActions.retrieveCurrentDateSuccess, (state, { currentDate }): State => ({ ...state, currentDate })),
+  on(
+    DayApiActions.retrieveTodaySuccess,
+    (state, { day }): State => ({ ...state, selectedDay: day || { date: new Date(), events: [] } })
+  ),
+  on(
+    DayApiActions.deleteDaySuccess,
+    (state, { day }): State => ({
+      ...state,
+      dayList: state.dayList.filter((dayTemp: Day) => dayTemp.id !== day.id),
+      selectedDay: { date: day.date, events: [] }
+    })
+  ),
+
+  // Overwrite selectedDay in dayList
+  on(
+    DayActions.addDay,
+    DayActions.selectDay,
+    DayActions.addEvent,
+    DayActions.removeEvent,
+    DayActions.insertEvent,
+    DayActions.updateEvent,
+    DayActions.moveEvent,
+    DayActions.combineEvents,
+    DayApiActions.deleteDaySuccess,
+    (state): State => {
+      const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
+      const dayList: Day[] = [...state.dayList];
+      dayList.splice(selectedDayIndex, 1, state.selectedDay);
+
+      return { ...state, dayList };
+    }
+  ),
+
+  // Reset global error message
+  on(
+    DayApiActions.saveDaySuccess,
+    DayApiActions.retrieveDayListSuccess,
+    DayApiActions.retrieveCurrentDateSuccess,
+    DayApiActions.retrieveTodaySuccess,
+    DayApiActions.deleteDaySuccess,
+    (state): State => ({ ...state, errorMsg: "" })
+  ),
+  // Set global error message
+  on(
+    DayApiActions.saveDayFailure,
+    DayApiActions.retrieveDayListFailure,
+    DayApiActions.retrieveCurrentDateFailure,
+    DayApiActions.retrieveTodayFailure,
+    DayApiActions.deleteDayFailure,
+    (state, { errorMsg }): State => ({ ...state, errorMsg })
+  ),
+
+  // Reset global loading indicator
+  on(
+    DayApiActions.saveDaySuccess,
+    DayApiActions.saveDayFailure,
+    DayApiActions.retrieveDayListSuccess,
+    DayApiActions.retrieveDayListFailure,
+    DayApiActions.retrieveCurrentDateSuccess,
+    DayApiActions.retrieveCurrentDateFailure,
+    DayApiActions.retrieveTodaySuccess,
+    DayApiActions.retrieveTodayFailure,
+    DayApiActions.deleteDaySuccess,
+    DayApiActions.deleteDayFailure,
+    (state): State => ({ ...state, loading: false })
+  ),
+  // Set global loading indicator
+  on(
+    DayActions.getDayList,
+    DayActions.getDayListBetween,
+    DayActions.setInitialDay,
+    DayActions.addEvent,
+    DayActions.removeEvent,
+    DayActions.updateEvent,
+    DayActions.moveEvent,
+    DayActions.combineEvents,
+    DayActions.deleteDay,
+    (state): State => ({ ...state, loading: false })
+  )
 );
 
 function reorderEvents(events: Event[]): Event[] {
   return events.map((event: Event, index: number) => ({ ...event, idx: index }));
+}
+
+function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
+  return dayList.findIndex((day: Day) => day.id === selectedDay.id);
 }

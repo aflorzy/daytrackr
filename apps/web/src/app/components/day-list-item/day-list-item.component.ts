@@ -12,9 +12,11 @@ export class DayListItemComponent {
   @Input() editable!: boolean;
   @Input() hideEditIcon!: boolean;
   @Input() hideAddEvent!: boolean;
-  @Output() edited = new EventEmitter<Day>();
-  @Output() edit = new EventEmitter<boolean>();
-  @Output() delete = new EventEmitter<boolean>();
+  @Output() enterEditMode = new EventEmitter<void>();
+  @Output() deleteDay = new EventEmitter<void>();
+  @Output() combineEvents = new EventEmitter<{ event1: Event; event2: Event }>();
+  @Output() addEvent = new EventEmitter<string>();
+  @Output() saveEvent = new EventEmitter<Event>();
   editingEvent = "";
   originalEvent = "";
 
@@ -33,44 +35,22 @@ export class DayListItemComponent {
     this.originalEvent = this.editingEvent;
   }
 
-  submit(e: any, index: number) {
+  delete() {
+    if (window.confirm("Are you sure you want to delete this day?")) {
+      this.deleteDay.emit();
+    }
+  }
+
+  submit(e: any, event: Event, index: number) {
     if (!this.day || index >= this.day.events.length || !this.editable) return;
 
     if (e.type === "blur" && this.editingEvent === "" && this.originalEvent !== this.day.events[index].name) {
       return;
     }
 
-    if (this.editingEvent === "") {
-      // Remove empty event
-      this.day.events.splice(index, 1);
-      this.decrementIndices(index - 1);
-    } else {
-      this.day.events.splice(index, 1, {
-        name: this.editingEvent,
-        idx: index
-      });
-    }
-
+    console.log("Saving", event);
+    this.saveEvent.emit({ ...event, name: this.editingEvent });
     this.editingEvent = "";
-    this.edited.emit(this.day);
-  }
-
-  combineEvents(index: number) {
-    if (!this.day || !this.editable) return;
-
-    const combinedEvent: Event = {
-      name: this.day.events[index].name + ", " + this.day.events[index + 1].name,
-      idx: index
-    };
-
-    // Insert combined event
-    this.day.events.splice(index, 2, combinedEvent);
-
-    // Decrement indices after the combined event
-    this.decrementIndices(index);
-
-    this.editingEvent = "";
-    this.edited.emit(this.day);
   }
 
   decrementIndices(index: number) {
@@ -79,11 +59,5 @@ export class DayListItemComponent {
     for (let i = index + 1; i < this.day.events.length; i++) {
       this.day.events[i].idx--;
     }
-  }
-
-  addEvent(name: string) {
-    this.day?.events.push({ name, idx: this.day?.events.length });
-
-    this.edited.emit(this.day);
   }
 }

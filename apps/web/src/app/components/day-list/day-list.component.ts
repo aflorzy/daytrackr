@@ -8,8 +8,4 @@ import { Day } from "src/app/interfaces";
 })
 export class DayListComponent {
   @Input() days: Day[] = [];
-
-  editDay(day: Day, index: number) {
-    this.days.splice(index, 1, day);
-  }
 }

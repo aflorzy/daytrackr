@@ -1,16 +1,23 @@
-import { DatePipe } from "@angular/common";
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
+} from "@angular/core";
 import { CalendarDay, CalendarMonth, Day as DayObj } from "src/app/interfaces";
 import { CalendarService } from "../../../services/calendar.service";
 
 @Component({
   selector: "app-calendar",
   templateUrl: "./calendar.component.html",
-  styleUrls: ["./calendar.component.css"]
+  styleUrls: ["./calendar.component.css"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent implements OnChanges {
   @Input() dayList!: DayObj[];
-  @Input() deletedDay!: DayObj | null;
   @Input() initialDate!: Date;
   @Output() dayChange = new EventEmitter<CalendarDay>();
   @Output() newDayClick = new EventEmitter<CalendarDay>();
@@ -20,16 +27,9 @@ export class CalendarComponent implements OnChanges {
   monthListInitial: CalendarMonth[] = [];
   selectedDate?: Date;
 
-  constructor(
-    private datePipe: DatePipe,
-    private calendarService: CalendarService
-  ) {}
+  constructor(private calendarService: CalendarService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.deletedDay && this.deletedDay) {
-      this.handleDeletedDay(this.deletedDay);
-    }
-
     if (changes.initialDate && this.initialDate) {
       this.initializeCalendar(this.initialDate);
     }
@@ -37,11 +37,6 @@ export class CalendarComponent implements OnChanges {
     if (changes.dayList && this.dayList) {
       this.initializeDayList(this.dayList);
     }
-  }
-
-  private handleDeletedDay(deletedDay: DayObj) {
-    // Set day's events to []
-    this.monthList = this.calendarService.removeDay(this.monthListInitial, deletedDay);
   }
 
   private initializeDayList(dayList: DayObj[]) {

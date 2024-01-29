@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { CalendarPageComponent } from "./components/calendar-page/calendar-page.component";
 import { ContactPageComponent } from "./components/contact/contact-page/contact-page.component";
-import { EditDayComponent } from "./components/edit-day/edit-day.component";
+import { EditDayPageComponent } from "./components/edit-day-page/edit-day-page.component";
 import { InputBoxComponent } from "./components/input-box/input-box.component";
 import { LoginComponent } from "./components/login/login.component";
 import { ProfilePageComponent } from "./components/profile-page/profile-page.component";
@@ -35,7 +35,7 @@ const routes: Routes = [
   {
     path: "edit/:date",
     pathMatch: "full",
-    component: EditDayComponent,
+    component: EditDayPageComponent,
     title: titlePrefix + "Edit",
     canActivate: [AuthGuard]
   },
