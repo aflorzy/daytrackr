@@ -1,4 +1,4 @@
-import { DatePipe } from "@angular/common";
+import { DatePipe, formatDate } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
@@ -30,10 +30,10 @@ export class DayService {
     };
   }
 
-  public getDayByDate(date: Date): Observable<Day> {
-    console.log("Day by date", date);
+  public getDayByDate(date: Date | string): Observable<Day> {
+    const formattedDate: string = formatDate(date, "yyyy-MM-dd", "en-us");
     return this.http
-      .get<Day>(`${BASE_URL}/daily-events/find/date/${date}`)
+      .get<Day>(`${BASE_URL}/daily-events/find/date/${formattedDate}`)
       .pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 

@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { catchError, map, mergeMap, of, switchMap } from "rxjs";
+import { catchError, filter, map, mergeMap, of, switchMap, tap } from "rxjs";
 import { Day } from "../../interfaces";
 import { DayService } from "../../services/day.service";
 import { EditDayActions, EditDayApiActions } from "../actions/edit-day.actions";
 import { selectEditingDay } from "../selectors/edit-day.selector";
-import { selectRouteParams } from "../selectors/router.selectors";
+import { selectRouteParam } from "../selectors/router.selectors";
 
 @Injectable()
 export class EditDayEffects {
@@ -14,9 +15,10 @@ export class EditDayEffects {
     return this.action$.pipe(
       ofType(EditDayActions.loadDay),
       switchMap(() =>
-        this.store.select(selectRouteParams).pipe(
-          mergeMap(params =>
-            this.dayService.getDayByDate(params.date).pipe(
+        this.store.select(selectRouteParam("date")).pipe(
+          filter(param => !!param),
+          mergeMap(date =>
+            this.dayService.getDayByDate(date || "").pipe(
               map((day: Day) => EditDayApiActions.loadDaySuccess({ day })),
               catchError((error: { message: string }) =>
                 of(EditDayApiActions.loadDayFailure({ errorMsg: error.message }))
@@ -37,7 +39,7 @@ export class EditDayEffects {
 
   moveEventDown$ = createEffect(() => {
     return this.action$.pipe(
-      ofType(EditDayActions.moveEventUp),
+      ofType(EditDayActions.moveEventDown),
       mergeMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx + 1 })))
     );
   });
@@ -60,6 +62,18 @@ export class EditDayEffects {
     );
   });
 
+  navigateHome$ = createEffect(
+    () => {
+      return this.action$.pipe(
+        ofType(EditDayActions.cancelEdits, EditDayApiActions.saveEditsSuccess),
+        tap(() => {
+          this.router.navigate([""]);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   deleteDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(EditDayActions.deleteDay),
@@ -79,6 +93,7 @@ export class EditDayEffects {
   constructor(
     private action$: Actions,
     private dayService: DayService,
-    private store: Store
+    private store: Store,
+    private router: Router
   ) {}
 }

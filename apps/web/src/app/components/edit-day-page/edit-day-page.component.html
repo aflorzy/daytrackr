@@ -1,6 +1,3 @@
-<p>{{ date$ | async }}</p>
-<p>{{ isChanged$ | async }}</p>
-
 <ng-container *ngIf="day$ | async as day; else loading">
   <app-edit-day
     [day]="day"

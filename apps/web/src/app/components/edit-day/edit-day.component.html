@@ -15,7 +15,7 @@
   </div>
 </div>
 
-<form (submit)="addEvent.emit(eventForm.controls.eventInput.value || '')" [formGroup]="eventForm">
+<form (submit)="addEvent.emit(eventForm.controls.eventInput.value || ''); eventForm.reset()" [formGroup]="eventForm">
   <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
   <app-button
     type="submit"

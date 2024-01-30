@@ -48,7 +48,8 @@ const routes: Routes = [
     canDeactivate: [DirtyCheckGuard]
   },
   { path: "login", pathMatch: "full", component: LoginComponent, title: titlePrefix + "Login" },
-  { path: "register", pathMatch: "full", component: RegisterComponent, title: titlePrefix + "Register" }
+  { path: "register", pathMatch: "full", component: RegisterComponent, title: titlePrefix + "Register" },
+  { path: "**", redirectTo: "/" }
 ];
 
 @NgModule({

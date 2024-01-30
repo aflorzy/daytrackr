@@ -7,7 +7,6 @@ import { Subject } from "rxjs";
 import { ResponseMessage } from "src/app/interfaces";
 import { AuthService } from "src/app/services/auth.service";
 import { StatusType } from "../../enums";
-import { AccessToken } from "../../interfaces";
 
 @UntilDestroy()
 @Component({
@@ -52,13 +51,12 @@ export class LoginComponent {
         .login(username, password)
         .pipe(untilDestroyed(this))
         .subscribe({
-          next: (response: AccessToken) => {
+          next: () => {
             this.responseMessage$.next({
               message: "Successfully logged in",
               statusType: StatusType.SUCCESS
             });
 
-            this.authService.token = response;
             this.loginForm.reset();
             this.router.navigate([""]);
           },

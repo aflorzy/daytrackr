@@ -3,7 +3,7 @@ import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { Day, Event } from "../../interfaces";
 import { EditDayActions } from "../../store/actions/edit-day.actions";
-import { selectDay, selectIsChanged } from "../../store/selectors/edit-day.selector";
+import { selectEditingDay, selectIsChanged } from "../../store/selectors/edit-day.selector";
 import { selectRouteParam } from "../../store/selectors/router.selectors";
 
 @Component({
@@ -13,7 +13,7 @@ import { selectRouteParam } from "../../store/selectors/router.selectors";
 })
 export class EditDayPageComponent implements OnInit {
   date$: Observable<string | undefined> = this.store.select(selectRouteParam("date"));
-  day$: Observable<Day> = this.store.select(selectDay);
+  day$: Observable<Day> = this.store.select(selectEditingDay);
   isChanged$: Observable<boolean> = this.store.select(selectIsChanged);
 
   constructor(private store: Store) {}

@@ -11,6 +11,7 @@ export class DayListItemComponent {
   @Input() day?: Day;
   @Input() editable!: boolean;
   @Input() hideEditIcon!: boolean;
+  @Input() hideDeleteIcon!: boolean;
   @Input() hideAddEvent!: boolean;
   @Output() enterEditMode = new EventEmitter<void>();
   @Output() deleteDay = new EventEmitter<void>();
@@ -42,13 +43,13 @@ export class DayListItemComponent {
   }
 
   submit(e: any, event: Event, index: number) {
-    if (!this.day || index >= this.day.events.length || !this.editable) return;
+    if (!this.day || index >= this.day.events.length || !this.editable || this.editingEvent === this.originalEvent)
+      return;
 
     if (e.type === "blur" && this.editingEvent === "" && this.originalEvent !== this.day.events[index].name) {
       return;
     }
 
-    console.log("Saving", event);
     this.saveEvent.emit({ ...event, name: this.editingEvent });
     this.editingEvent = "";
   }

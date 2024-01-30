@@ -1,12 +1,16 @@
 <div class="content" *ngIf="day">
   <div class="date">
     {{ day.date | date: "EEEE, MMMM d, y" }}
-    <span class="edit-day" *ngIf="!hideEditIcon" (click)="enterEditMode.emit()"
-      ><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon
-    ></span>
-    <span class="delete-day" (click)="delete()" tooltip="Reorder Events"
-      ><fa-icon [icon]="['fas', 'trash']"></fa-icon
-    ></span>
+    <ng-container *ngIf="!hideEditIcon">
+      <span class="edit-day" (click)="enterEditMode.emit()"
+        ><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon
+      ></span>
+    </ng-container>
+    <ng-container *ngIf="!hideDeleteIcon">
+      <span class="delete-day" (click)="delete()" tooltip="Reorder Events"
+        ><fa-icon [icon]="['fas', 'trash']"></fa-icon
+      ></span>
+    </ng-container>
   </div>
   <div class="events">
     <div class="event" *ngFor="let event of day.events; let i = index">
@@ -19,14 +23,16 @@
         (blur)="submit($event, event, i)"
         [innerHTML]="event.name"
         title="Edit event"></span>
-      <span
-        class="gap"
-        [class.hidden]="!editable"
-        *ngIf="i !== day.events.length - 1"
-        (click)="combineEvents.emit({ event1: event, event2: day.events[i + 1] })"
-        title="Combine events">
-        <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
-      </span>
+
+      <ng-container *ngIf="i !== day.events.length - 1">
+        <span
+          class="gap"
+          [class.hidden]="!editable"
+          (click)="combineEvents.emit({ event1: event, event2: day.events[i + 1] })"
+          title="Combine events">
+          <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
+        </span>
+      </ng-container>
     </div>
   </div>
 

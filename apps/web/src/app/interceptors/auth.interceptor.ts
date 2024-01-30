@@ -7,10 +7,10 @@ import {
   HttpResponse
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { Observable, throwError } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { AuthService } from "../services/auth.service";
-import { Router } from "@angular/router";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -41,7 +41,6 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           // Unauthorized (token expired or invalid), log the user out and navigate to the login page
           this.authService.logout();
-          this.router.navigate(["/login"]);
         }
         return throwError(() => error);
       })

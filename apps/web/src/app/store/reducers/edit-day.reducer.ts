@@ -35,7 +35,6 @@ export const editDayReducer = createReducer(
     EditDayActions.moveEvent,
     EditDayActions.combineEvents,
     (state): State => {
-      console.log("Event", state);
       if (state.touched) return { ...state };
       else return { ...state, editingDay: { ...state.day } };
     }
@@ -63,19 +62,24 @@ export const editDayReducer = createReducer(
 
     return {
       ...state,
-      editingDay
+      editingDay: {
+        ...editingDay,
+        events: reorderEvents(editingDay.events)
+      }
     };
   }),
-  on(
-    EditDayActions.insertEvent,
-    (state, { event }): State => ({
+  on(EditDayActions.insertEvent, (state, { event }): State => {
+    const editingDay: Day = { ...state.editingDay, events: [...state.editingDay.events] };
+    editingDay.events.splice(event.idx, 0, event);
+
+    return {
       ...state,
       editingDay: {
-        ...state.editingDay,
-        events: reorderEvents(state.editingDay.events.splice(event.idx, 0, event))
+        ...editingDay,
+        events: reorderEvents(editingDay.events)
       }
-    })
-  ),
+    };
+  }),
   on(EditDayActions.updateEvent, (state, { event }): State => {
     const editingDay: Day = { ...state.editingDay, events: [...state.editingDay.events] };
     editingDay.events.splice(event.idx, 1, event);
@@ -116,6 +120,14 @@ export const editDayReducer = createReducer(
       }
     };
   }),
+  // Write editingEvent
+  on(
+    EditDayApiActions.loadDaySuccess,
+    (state, { day }): State => ({
+      ...state,
+      editingDay: day
+    })
+  ),
 
   on(
     EditDayApiActions.loadDaySuccess,
@@ -131,6 +143,16 @@ export const editDayReducer = createReducer(
     (state): State => ({
       ...state,
       touched: false
+    })
+  ),
+
+  // Reset isChanged by setting editingDay equal
+  on(
+    EditDayApiActions.saveEditsSuccess,
+    EditDayActions.cancelEdits,
+    (state): State => ({
+      ...state,
+      editingDay: { ...state.day }
     })
   ),
 

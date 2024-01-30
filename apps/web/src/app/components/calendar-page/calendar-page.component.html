@@ -1,7 +1,5 @@
 <div class="content">
   <ng-container *ngIf="selectedDay$ | async as selectedDay; else noData">
-    <h1>Editing: {{ editing }}</h1>
-
     <app-calendar
       [dayList]="(dayList$ | async) || []"
       [initialDate]="selectedDay.date"
@@ -18,7 +16,8 @@
 
     <app-day-list-item
       [day]="selectedDay"
-      [hideEditIcon]="false"
+      [hideEditIcon]="!selectedDay.events.length"
+      [hideDeleteIcon]="!selectedDay.id"
       [hideAddEvent]="false"
       [editable]="true"
       (enterEditMode)="enterEditMode(selectedDay)"
@@ -31,8 +30,4 @@
   <ng-template #noData
     ><app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner
   ></ng-template>
-
-  <ng-container *ngIf="dayList$ | async as dayListObs">
-    <h2>{{ dayListObs.length }}</h2>
-  </ng-container>
 </div>

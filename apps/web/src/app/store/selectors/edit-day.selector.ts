@@ -14,6 +14,7 @@ export const selectEditingDay = createSelector(selectEditDayState, (state: EditD
 
 export const selectTouched = createSelector(selectEditDayState, (state: EditDayState): boolean => state.touched);
 
-export const selectIsChanged = createSelector(selectEditDayState, (state: EditDayState): boolean =>
-  isEqual(state.day, state.editingDay)
+export const selectIsChanged = createSelector(
+  selectEditDayState,
+  (state: EditDayState): boolean => !isEqual(state.day, state.editingDay)
 );
