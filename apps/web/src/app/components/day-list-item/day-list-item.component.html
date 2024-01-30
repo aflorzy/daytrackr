@@ -1,12 +1,16 @@
 <div class="content" *ngIf="day">
   <div class="date">
     {{ day.date | date: "EEEE, MMMM d, y" }}
-    <span class="edit-day" *ngIf="!hideEditIcon" (click)="edit.emit(true)"
-      ><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon
-    ></span>
-    <span class="delete-day" (click)="delete.emit(true)" tooltip="Reorder Events"
-      ><fa-icon [icon]="['fas', 'trash']"></fa-icon
-    ></span>
+    <ng-container *ngIf="!hideEditIcon">
+      <span class="edit-day" (click)="enterEditMode.emit()"
+        ><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon
+      ></span>
+    </ng-container>
+    <ng-container *ngIf="!hideDeleteIcon">
+      <span class="delete-day" (click)="delete()" tooltip="Reorder Events"
+        ><fa-icon [icon]="['fas', 'trash']"></fa-icon
+      ></span>
+    </ng-container>
   </div>
   <div class="events">
     <div class="event" *ngFor="let event of day.events; let i = index">
@@ -15,27 +19,36 @@
         [contentEditable]="editable"
         (focus)="focusCell(i)"
         (input)="editEvent($event)"
-        (keydown.Enter)="submit($event, i)"
-        (blur)="submit($event, i)"
+        (keydown.Enter)="submit($event, event, i)"
+        (blur)="submit($event, event, i)"
         [innerHTML]="event.name"
         title="Edit event"></span>
-      <span
-        class="gap"
-        [class.hidden]="!editable"
-        *ngIf="i !== day.events.length - 1"
-        (click)="combineEvents(i)"
-        title="Combine events">
-        <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
-      </span>
+
+      <ng-container *ngIf="i !== day.events.length - 1">
+        <span
+          class="gap"
+          [class.hidden]="!editable"
+          (click)="combineEvents.emit({ event1: event, event2: day.events[i + 1] })"
+          title="Combine events">
+          <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
+        </span>
+      </ng-container>
     </div>
   </div>
 
   <form
     *ngIf="!hideAddEvent"
-    (submit)="addEvent(eventForm.get('eventInput')?.value?.trim() || ''); eventForm.get('eventInput')?.setValue('')"
+    (submit)="
+      addEvent.emit(eventForm.get('eventInput')?.value?.trim() || ''); eventForm.get('eventInput')?.setValue('')
+    "
     [formGroup]="eventForm">
     <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
-    <app-button size="md" fill="fill" color="primary" [disabled]="!eventForm.get('eventInput')?.value?.trim()"
+    <app-button
+      type="submit"
+      size="md"
+      fill="fill"
+      color="primary"
+      [disabled]="!eventForm.get('eventInput')?.value?.trim()"
       >Add</app-button
     >
   </form>

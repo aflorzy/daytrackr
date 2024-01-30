@@ -1,8 +1,8 @@
-import { DatePipe } from "@angular/common";
+import { DatePipe, formatDate } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, of, switchMap, tap } from "rxjs";
-import { Day, Event, ResponseMessageDailyEvent } from "src/app/interfaces";
+import { Observable, map } from "rxjs";
+import { Day, Event } from "src/app/interfaces";
 import { BASE_URL } from "../constants";
 
 @Injectable({
@@ -20,55 +20,41 @@ export class DayService {
     this.days = JSON.parse(days);
   }
 
-  public getDayByDate(date: Date): Observable<Day> {
-    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/date/${date}`).pipe(
-      tap((response: ResponseMessageDailyEvent) => console.log("Got day by date", response.dailyEvent)),
-      switchMap((response: ResponseMessageDailyEvent) =>
-        of({
-          ...response.dailyEvent,
-          events: response.dailyEvent.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-        })
-      )
-    );
+  // Sorting events by index ASC
+  private sortDayEvents(day: Day): Day {
+    if (!day) return day;
+
+    return {
+      ...day,
+      events: day?.events?.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
+    };
+  }
+
+  public getDayByDate(date: Date | string): Observable<Day> {
+    const formattedDate: string = formatDate(date, "yyyy-MM-dd", "en-us");
+    return this.http
+      .get<Day>(`${BASE_URL}/daily-events/find/date/${formattedDate}`)
+      .pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
   public getDayById(id: string): Observable<Day> {
-    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/date/${id}`).pipe(
-      tap((response: ResponseMessageDailyEvent) => console.log("Got day by ID", response.dailyEvent)),
-      switchMap((response: ResponseMessageDailyEvent) =>
-        of({
-          ...response.dailyEvent,
-          events: response.dailyEvent.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-        })
-      )
-    );
+    return this.http
+      .get<Day>(`${BASE_URL}/daily-events/find/date/${id}`)
+      .pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
-  public getTodayOrLatest(): Observable<Day> {
-    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/today`).pipe(
-      tap((response: ResponseMessageDailyEvent) => console.log("Got today or latest", response.dailyEvent)),
-      switchMap((response: ResponseMessageDailyEvent) =>
-        of({
-          ...response.dailyEvent,
-          events: response.dailyEvent.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-        })
-      )
-    );
+  public getToday(): Observable<Day> {
+    return this.http.get<Day>(`${BASE_URL}/daily-events/find/today`).pipe(map((day: Day) => this.sortDayEvents(day)));
+  }
+
+  public getLatest(): Observable<Day> {
+    return this.http.get<Day>(`${BASE_URL}/daily-events/find/latest`).pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
   public getAllDays(): Observable<Day[]> {
-    return this.http.get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/all`).pipe(
-      tap((response: ResponseMessageDailyEvent) => console.log("Retrieved all days", response.dailyEventList)),
-      // Sorting events by index ASC
-      switchMap((response: ResponseMessageDailyEvent) =>
-        of(
-          response.dailyEventList.map((day: Day) => ({
-            ...day,
-            events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-          }))
-        )
-      )
-    );
+    return this.http
+      .get<Day[]>(`${BASE_URL}/daily-events/find/all`)
+      .pipe(map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day))));
   }
 
   public getDaysBetween(date1: Date, date2: Date): Observable<Day[]> {
@@ -76,53 +62,23 @@ export class DayService {
     const dateStr2: string = this.datePipe.transform(date2, "yyyy-MM-dd") ?? "";
 
     return this.http
-      .get<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`)
-      .pipe(
-        tap((response: ResponseMessageDailyEvent) =>
-          console.log(
-            `Retrieved ${response.dailyEventList.length} days beetween ${dateStr1} and ${dateStr2}`,
-            response.dailyEventList
-          )
-        ),
-        // Sorting events by index ASC
-        switchMap((response: ResponseMessageDailyEvent) =>
-          of(
-            response.dailyEventList.map((day: Day) => ({
-              ...day,
-              events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-            }))
-          )
-        )
-      );
+      .get<Day[]>(`${BASE_URL}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`)
+      .pipe(map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day))));
   }
 
   public saveDay(newDay: Day): Observable<Day> {
-    return this.http.post<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/save`, newDay).pipe(
-      tap((response: ResponseMessageDailyEvent) => console.log("Saved day", response.dailyEvent)),
-      switchMap((response: ResponseMessageDailyEvent) =>
-        of({
-          ...response.dailyEvent,
-          events: response.dailyEvent.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-        })
-      )
-    );
+    return this.http
+      .post<Day>(`${BASE_URL}/daily-events/save`, newDay)
+      .pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
   public saveMulti(days: Day[]): Observable<Day[]> {
-    return this.http.post<ResponseMessageDailyEvent>(`${BASE_URL}/daily-events/save/multi`, days).pipe(
-      tap((response: ResponseMessageDailyEvent) => console.log("Saved days!", response.dailyEventList)),
-      switchMap((response: ResponseMessageDailyEvent) =>
-        of(
-          response.dailyEventList.map((day: Day) => ({
-            ...day,
-            events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
-          }))
-        )
-      )
-    );
+    return this.http
+      .post<Day[]>(`${BASE_URL}/daily-events/save/multi`, days)
+      .pipe(map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day))));
   }
 
-  public deleteById(id: string): Observable<any> {
-    return this.http.delete(`${BASE_URL}/daily-events/delete/${id}`);
+  public deleteById(id: string): Observable<void> {
+    return this.http.delete<void>(`${BASE_URL}/daily-events/delete/${id}`);
   }
 }

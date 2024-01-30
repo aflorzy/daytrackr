@@ -18,7 +18,7 @@ export class FeedbackComponent implements OnChanges {
     this.feedbackForm = this.fb.group({
       subject: ["", Validators.required],
       message: ["", Validators.required],
-      file: [null, [Validators.required, this.validateFileType]]
+      file: [null, [this.validateFileType]]
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
@@ -50,8 +50,6 @@ export class FeedbackComponent implements OnChanges {
       this.feedbackForm.patchValue({ file: null });
       event.target.value = null; // Clear the input
     }
-
-    console.log(this.feedbackForm.getRawValue());
   }
 
   validateFileType(file: File): boolean {

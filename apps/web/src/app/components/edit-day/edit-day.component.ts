@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { Day, Event } from "src/app/interfaces";
-import { DayService } from "src/app/services/day.service";
 
 @UntilDestroy()
 @Component({
@@ -10,91 +9,21 @@ import { DayService } from "src/app/services/day.service";
   templateUrl: "./edit-day.component.html",
   styleUrls: ["./edit-day.component.css"]
 })
-export class EditDayComponent implements OnInit {
+export class EditDayComponent {
   @Input() day!: Day;
-  @Output() save = new EventEmitter<Day>();
+  @Input() isChanged = false;
+  @Output() saveEdits = new EventEmitter<Day>();
   @Output() cancel = new EventEmitter<boolean>();
-  isModified = false;
-  day_original!: Day;
-  errorMessage = "";
+  @Output() moveEventUp = new EventEmitter<Event>();
+  @Output() moveEventDown = new EventEmitter<Event>();
+  @Output() removeEvent = new EventEmitter<Event>();
+  @Output() addEvent = new EventEmitter<string>();
 
   eventForm = new FormGroup({
     eventInput: new FormControl("")
   });
 
-  constructor(private dayService: DayService) {}
-
-  ngOnInit(): void {
-    this.day_original = JSON.parse(JSON.stringify(this.day));
-  }
-
-  identify(index: number, event: Event) {
+  identify(_: number, event: Event) {
     return event.idx;
-  }
-
-  moveUp(event: Event, day: Day) {
-    const index: number = event.idx;
-    const newIndex: number = index - 1;
-
-    if (index <= 0) return;
-
-    const temp: Event = day.events[newIndex];
-    day.events[newIndex] = { ...event, idx: newIndex };
-    day.events[index] = { ...temp, idx: index };
-
-    this.day = { ...day };
-
-    this.checkIsModified();
-  }
-
-  moveDown(event: Event, day: Day) {
-    const index: number = event.idx;
-    const newIndex: number = index + 1;
-
-    if (event.idx >= day.events.length - 1) return;
-
-    const temp: Event = day.events[newIndex];
-    day.events[newIndex] = { ...event, idx: newIndex };
-    day.events[index] = { ...temp, idx: index };
-
-    this.day = { ...day };
-
-    this.checkIsModified();
-  }
-
-  checkIsModified() {
-    this.isModified = JSON.stringify(this.day_original) !== JSON.stringify(this.day);
-  }
-
-  saveChanges() {
-    this.dayService
-      .saveDay(this.day)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (res: Day) => {
-          this.errorMessage = "";
-          if (this.day) {
-            this.day.id = res.id;
-          }
-          this.save.emit(res);
-        },
-        error: (e: any) => {
-          this.errorMessage = "Could not save day";
-          console.error("Could not save day", e);
-        }
-      });
-  }
-
-  addEvent(name: string) {
-    this.day.events.push({ name, idx: this.day.events.length });
-    this.checkIsModified();
-  }
-
-  deleteEvent(event: Event) {
-    this.day.events = this.day.events
-      .filter((temp: Event) => temp.idx !== event.idx)
-      .map((temp: Event, index: number) => ({ ...temp, idx: index }));
-
-    this.checkIsModified();
   }
 }
