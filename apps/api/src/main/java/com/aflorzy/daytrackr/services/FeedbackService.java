@@ -85,7 +85,7 @@ public class FeedbackService {
         return mimeMessage -> {
             mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress("tbillform@gmail.com"));
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            helper.setFrom(new InternetAddress("tbillform@gmail.com"));
+            helper.setFrom(new InternetAddress("DayTrackr Support <tbillform@gmail.com>"));
             helper.setSubject("DayTrackr | Feedback Received");
 
             String name = user.getName() == null ? user.getUsername() : user.getFullName();
@@ -105,7 +105,7 @@ public class FeedbackService {
         return mimeMessage -> {
             mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            helper.setFrom(new InternetAddress("tbillform@gmail.com"));
+            helper.setFrom(new InternetAddress("DayTrackr Support <tbillform@gmail.com>"));
             helper.setSubject("DayTrackr | We've received your feedback!");
 
             String name = user.getName() == null ? user.getUsername() : user.getFullName();

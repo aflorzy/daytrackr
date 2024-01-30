@@ -28,6 +28,8 @@ public class DailyEventDto {
   private Set<Event> events;
 
   public DailyEventDto fromDailyEvent(DailyEvent dailyEvent) {
+    if (dailyEvent == null) return null;
+
     this.id = dailyEvent.getId();
     this.date = dailyEvent.getDate();
     this.events = dailyEvent.getEvents();

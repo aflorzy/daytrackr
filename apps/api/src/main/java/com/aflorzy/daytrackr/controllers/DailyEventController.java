@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.UUID;
 
 import com.aflorzy.daytrackr.domain.responses.ResponseEntityDailyEvent;
+import com.aflorzy.daytrackr.domain.responses.ResponseMessage;
+import com.aflorzy.daytrackr.enums.StatusType;
 import com.aflorzy.daytrackr.exceptions.DailyEventSaveFailureException;
 import com.aflorzy.daytrackr.services.DailyEventService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,58 +39,43 @@ public class DailyEventController {
 
     @GetMapping("/find/id/{id}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent findById(Principal principal, @PathVariable("id") UUID id) {
+    public ResponseEntity<DailyEventDto> findById(Principal principal, @PathVariable("id") UUID id) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         DailyEvent dailyEvent = dailyEventService.findByUserAndIdOrderByDateAsc(user, id);
 
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
-        responseMessage.setMessage("Successfully found day");
-        responseMessage.setHttpStatus(HttpStatus.OK);
-        responseMessage.setDailyEvent(new DailyEventDto().fromDailyEvent(dailyEvent));
-        return responseMessage;
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
     }
 
     @GetMapping("/find/date/{date}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent findByDate(Principal principal, @PathVariable("date") LocalDate date) {
+    public ResponseEntity<DailyEventDto> findByDate(Principal principal, @PathVariable("date") LocalDate date) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         DailyEvent dailyEvent = dailyEventService.findByUserAndDateOrderByDateAsc(user, date);
 
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
-        responseMessage.setMessage("Successfully found day");
-        responseMessage.setHttpStatus(HttpStatus.OK);
-        responseMessage.setDailyEvent(new DailyEventDto().fromDailyEvent(dailyEvent));
-        return responseMessage;
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
     }
 
     @GetMapping("/find/today")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent findTodayOrLatest(Principal principal) {
+    public ResponseEntity<DailyEventDto> findToday(Principal principal) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        DailyEvent dailyEvent = dailyEventService.findTodayOrLatest(user);
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
+        DailyEvent dailyEvent = dailyEventService.findToday(user);
 
-        if (dailyEvent == null) {
-            DailyEventDto tempDailyEventDto = new DailyEventDto();
-            tempDailyEventDto.setId(null);
-            tempDailyEventDto.setEvents(new HashSet<>());
-            tempDailyEventDto.setDate(LocalDate.now());
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
+    }
 
-            responseMessage.setMessage("Could not find \"today\"");
-            responseMessage.setHttpStatus(HttpStatus.OK);
-            responseMessage.setDailyEvent(tempDailyEventDto);
-        } else {
-            responseMessage.setMessage("Successfully retrieved \"today\"");
-            responseMessage.setHttpStatus(HttpStatus.OK);
-            responseMessage.setDailyEvent(new DailyEventDto().fromDailyEvent(dailyEvent));
-        }
+    @GetMapping("/find/latest")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<DailyEventDto> findLatest(Principal principal) {
+        UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
+        DailyEvent dailyEvent = dailyEventService.findLatest(user);
 
-        return responseMessage;
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
     }
 
     @GetMapping("/find/all")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent findAll(Principal principal) {
+    public ResponseEntity<List<DailyEventDto>> findAll(Principal principal) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         List<DailyEvent> dailyEvents = dailyEventService.findByUserOrderByDateAsc(user);
         List<DailyEventDto> dailyEventsDto = new ArrayList<>();
@@ -95,16 +83,13 @@ public class DailyEventController {
             dailyEventsDto.add(new DailyEventDto().fromDailyEvent(event));
         }
 
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
-        responseMessage.setMessage("Found " + dailyEvents.size() + " day(s)");
-        responseMessage.setHttpStatus(HttpStatus.OK);
-        responseMessage.setDailyEventList(dailyEventsDto);
-        return responseMessage;
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(dailyEventsDto);
+
     }
 
     @GetMapping("/find/between")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent getDailyEventsBetweenDates(
+    public ResponseEntity<List<DailyEventDto>> getDailyEventsBetweenDates(
             Principal principal,
             @RequestParam LocalDate date1,
             @RequestParam LocalDate date2
@@ -117,35 +102,29 @@ public class DailyEventController {
             dailyEventsDto.add(new DailyEventDto().fromDailyEvent(event));
         }
 
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
-        responseMessage.setMessage("Found " + dailyEvents.size() + " day(s)");
-        responseMessage.setHttpStatus(HttpStatus.OK);
-        responseMessage.setDailyEventList(dailyEventsDto);
-        return responseMessage;
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(dailyEventsDto);
     }
 
     @Transactional
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent save(Principal principal, @RequestBody DailyEventDto dailyEventDto) {
+    public ResponseEntity<DailyEventDto> save(Principal principal, @RequestBody DailyEventDto dailyEventDto) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-    try {
-        DailyEvent returnedDailyEvent = dailyEventService.save(user, dailyEventDto);
 
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
-        responseMessage.setMessage("Successfully saved day(s)");
-        responseMessage.setHttpStatus(HttpStatus.OK);
-        responseMessage.setDailyEvent(new DailyEventDto().fromDailyEvent(returnedDailyEvent));
-        return responseMessage;
-    } catch (Exception e) {
-        return new ResponseEntityDailyEvent("Could not save day", HttpStatus.NOT_ACCEPTABLE, null, null);
-    }
+        DailyEvent returnedDailyEvent = null;
+        try {
+            returnedDailyEvent = dailyEventService.save(user, dailyEventDto);
+        } catch (Exception e) {
+            log.error("Could not save day: " + dailyEventDto.getDate());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(returnedDailyEvent));
     }
 
     @Transactional
     @PostMapping("/save/multi")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntityDailyEvent saveMulti(Principal principal, @RequestBody List<DailyEventDto> dailyEventDtoList) {
+    public ResponseEntity<List<DailyEventDto>> saveMulti(Principal principal, @RequestBody List<DailyEventDto> dailyEventDtoList) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         List<DailyEventDto> result = new ArrayList<>();
         for (DailyEventDto dailyEventDto : dailyEventDtoList) {
@@ -157,11 +136,7 @@ public class DailyEventController {
             }
         }
 
-        ResponseEntityDailyEvent responseMessage = new ResponseEntityDailyEvent();
-        responseMessage.setMessage("Successfully saved day(s)");
-        responseMessage.setHttpStatus(HttpStatus.OK);
-        responseMessage.setDailyEventList(result);
-        return responseMessage;
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
     @Transactional

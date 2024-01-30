@@ -39,14 +39,17 @@ public class DailyEventService {
         return dailyEventRepository.findByUserOrderByDateAsc(user);
     }
 
-    public DailyEvent findTodayOrLatest(UserEntity user) {
+    public DailyEvent findToday(UserEntity user) {
         LocalDate today = LocalDate.now();
-        DailyEvent todayOrLatest = dailyEventRepository.findByUserAndDateOrderByDateAsc(user, today);
-        if (todayOrLatest == null) {
-            todayOrLatest = dailyEventRepository.findTopByUserOrderByDateDesc(user);
-        }
+        DailyEvent todayDay = dailyEventRepository.findByUserAndDateOrderByDateAsc(user, today);
 
-        return todayOrLatest;
+        return todayDay;
+    }
+
+    public DailyEvent findLatest(UserEntity user) {
+        DailyEvent latest = dailyEventRepository.findTopByUserOrderByDateDesc(user);
+
+        return latest;
     }
 
     public List<DailyEvent> findDaysBetween(UserEntity user, LocalDate date1, LocalDate date2) {
