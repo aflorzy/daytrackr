@@ -9,6 +9,34 @@ import { selectSelectedDay } from "../selectors/day.selectors";
 
 @Injectable()
 export class DayEffects {
+  loadToday$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(DayActions.setInitialDay),
+      concatLatestFrom(() => this.store.select(selectSelectedDay)),
+      mergeMap(([_, selectedDay]) => {
+        if (selectedDay.id) {
+          return this.dayService
+            .getDayById(selectedDay.id)
+            .pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
+        } else {
+          return this.dayService.getToday().pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
+        }
+      })
+    );
+  });
+
+  setDayByDate$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(DayActions.setDayByDate),
+      mergeMap(action => {
+        console.log("Setting day by date", action.date);
+        return this.dayService
+          .getDayByDate(action.date)
+          .pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
+      })
+    );
+  });
+
   loadDayList$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.getDayList),
@@ -52,42 +80,6 @@ export class DayEffects {
     );
   });
 
-  loadToday$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(DayActions.setInitialDay),
-      mergeMap(() => this.dayService.getToday().pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day }))))
-    );
-  });
-
-  deleteDay$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(DayActions.deleteDay),
-      mergeMap(action =>
-        this.dayService.deleteById(action.day.id || "").pipe(
-          map(() => DayApiActions.deleteDaySuccess({ day: action.day })),
-          catchError((error: { message: string }) => of(DayApiActions.deleteDayFailure({ errorMsg: error.message })))
-        )
-      )
-    );
-  });
-
-  // Get current date. Implement endpoint for this, and listen to proper actions
-  /*
-  loadCurrentDate$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(DayActions.addDay),
-      mergeMap(() =>
-        this.dayService.getCurrentDate().pipe(
-          map((currentDate: Date) => DayApiActions.retrieveCurrentDateSuccess({ currentDate })),
-          catchError((error: { message: string }) =>
-            of(DayApiActions.retrieveCurrentDateFailure({ errorMsg: error.message }))
-          )
-        )
-      )
-    );
-  });
-  */
-  // Save day
   saveSelectedDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(
@@ -110,6 +102,19 @@ export class DayEffects {
       })
     );
   });
+
+  deleteDay$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(DayActions.deleteDay),
+      mergeMap(action =>
+        this.dayService.deleteById(action.day.id || "").pipe(
+          map(() => DayApiActions.deleteDaySuccess({ day: action.day })),
+          catchError((error: { message: string }) => of(DayApiActions.deleteDayFailure({ errorMsg: error.message })))
+        )
+      )
+    );
+  });
+
   // Save multiple days
 
   constructor(

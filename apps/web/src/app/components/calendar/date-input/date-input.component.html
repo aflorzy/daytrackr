@@ -1,0 +1,3 @@
+<form [formGroup]="form" class="date">
+  <input type="date" formControlName="date" name="date-input" (change)="handleBlur(form.controls.date.value)" />
+</form>

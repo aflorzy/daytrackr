@@ -13,10 +13,10 @@ export interface State {
 export const initialState: State = {
   selectedDay: {
     events: [],
-    date: new Date()
+    date: getTodayDate()
   },
   dayList: [],
-  currentDate: new Date(),
+  currentDate: getTodayDate(),
   errorMsg: "",
   loading: false
 };
@@ -142,16 +142,16 @@ export const dayReducer = createReducer(
   on(DayApiActions.retrieveCurrentDateSuccess, (state, { currentDate }): State => ({ ...state, currentDate })),
   on(
     DayApiActions.retrieveTodaySuccess,
-    (state, { day }): State => ({ ...state, selectedDay: day || { date: new Date(), events: [] } })
+    (state, { day }): State => ({ ...state, selectedDay: day || { date: getTodayDate(), events: [] } })
   ),
-  on(
-    DayApiActions.deleteDaySuccess,
-    (state, { day }): State => ({
+  on(DayApiActions.deleteDaySuccess, (state, { day }): State => {
+    console.log("Success", day);
+    return {
       ...state,
       dayList: state.dayList.filter((dayTemp: Day) => dayTemp.id !== day.id),
       selectedDay: { date: day.date, events: [] }
-    })
-  ),
+    };
+  }),
 
   // Overwrite selectedDay in dayList
   on(
@@ -227,4 +227,13 @@ function reorderEvents(events: Event[]): Event[] {
 
 function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
   return dayList.findIndex((day: Day) => day.id === selectedDay.id);
+}
+
+export function getTodayDate(): Date {
+  const today: Date = new Date();
+  const year: number = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, "0");
+  const day = today.getDate().toString().padStart(2, "0");
+  const dayStr = `${year}/${month}/${day}`;
+  return new Date(dayStr);
 }

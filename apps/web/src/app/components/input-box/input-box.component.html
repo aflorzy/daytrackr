@@ -9,10 +9,10 @@
   day listed is assumed to be the next day in the sequence.
 </p>
 <form (submit)="onSubmit()">
-  <app-date-input
+  <!-- <app-date-input
     [setInitialDate]="initialDate"
     (initialDateEmitter)="initialDate = $event"
-    (invalidDateEmitter)="invalidDate = $event"></app-date-input>
+    (invalidDateEmitter)="invalidDate = $event"></app-date-input> -->
   <textarea cols="130" rows="20" [(ngModel)]="value" name="inputBox"></textarea>
 
   <app-button [disabled]="invalidDate || !value">Parse</app-button>
