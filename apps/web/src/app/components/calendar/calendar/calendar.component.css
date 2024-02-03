@@ -2,7 +2,6 @@
 * {
   box-sizing: content-box;
   font-family: serif;
-
 }
 
 .months {
@@ -13,6 +12,7 @@
   gap: 20px;
   margin-top: 20px;
 }
+
 .month {
   height: 240px;
   width: 235px;
@@ -20,6 +20,7 @@
   padding: 8px;
   border-radius: 15px;
 }
+
 .month .name {
   padding: 0;
   margin: 0;
@@ -30,13 +31,16 @@
   line-height: 20px;
   text-decoration: underline;
 }
+
 .month table {
   margin-top: 0;
   padding-top: 0;
 }
+
 .month table tr:first-child th {
   height: 15px !important;
 }
+
 .month table tr th,
 .month table tr td {
   text-align: center;
@@ -47,16 +51,12 @@
 .month table tr td.differentMonth {
   opacity: 30%;
 }
-.month table tr td.differentMonth:hover {
-  background-color: #eee;
-}
-.month table tr td.differentMonth span p:hover {
-  cursor: auto !important;
-}
+
 .month table tr td.differentMonth.hasEvent:hover span p {
   background-color: #eee;
   color: #000;
 }
+
 .month table tr td.isSelected.differentMonth:hover span p {
   background-color: var(--primary-color);
   color: #fff;
@@ -70,6 +70,7 @@
   justify-content: center;
   align-items: center;
 }
+
 .month table tr td span p {
   padding: 0;
   margin: 0;
@@ -79,21 +80,26 @@
   display: flex;
   align-items: center;
 }
+
 .month table tr td:hover {
   background-color: #ddd;
   cursor: pointer;
 }
+
 .isSelected span p {
   background-color: var(--primary-color);
   color: #fff;
 }
+
 .hasEvent span p {
   border: 2px solid var(--primary-color);
   border-radius: 50%;
 }
+
 .month table tr td.hasEvent:hover {
   background-color: transparent;
 }
+
 .month table tr td.hasEvent:hover span p {
   background-color: var(--primary-color);
   color: #fff;

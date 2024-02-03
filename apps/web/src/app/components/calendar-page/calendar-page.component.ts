@@ -31,8 +31,6 @@ import {
   styleUrls: ["./calendar-page.component.css"]
 })
 export class CalendarPageComponent implements OnInit {
-  editing = false;
-
   selectedDay$: Observable<Day> = this.store.select(selectSelectedDay);
   dayList$: Observable<Day[]> = this.store.select(selectDayList);
   existsPreviousDay$: Observable<boolean> = this.store.select(selectExistsPreviousDay);
@@ -86,7 +84,6 @@ export class CalendarPageComponent implements OnInit {
   }
 
   enterEditMode(selectedDay: Day) {
-    // this.editing = true;
     this.router.navigate([`edit/${selectedDay.date}`]);
   }
 
@@ -101,5 +98,14 @@ export class CalendarPageComponent implements OnInit {
 
   setFirstLastCalendarDates(dates: { first: Date; last: Date }) {
     this.store.dispatch(DayActions.getDayListBetween({ date1: dates.first, date2: dates.last }));
+  }
+
+  /* DATE INPUT FUNCTIONS */
+  counter = 0;
+  handleDateInputChange(date: Date) {
+    if (!date) return;
+    if (this.counter > 3) return;
+    this.counter++;
+    this.store.dispatch(DayActions.setDayByDate({ date }));
   }
 }

@@ -8,7 +8,6 @@ import { FaIconLibrary, FontAwesomeModule } from "@fortawesome/angular-fontaweso
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { DateInputComponent } from "./components/date-input/date-input.component";
 import { DayListItemComponent } from "./components/day-list-item/day-list-item.component";
 import { DayListComponent } from "./components/day-list/day-list.component";
 import { InputBoxComponent } from "./components/input-box/input-box.component";
@@ -20,6 +19,7 @@ import { BannerComponent } from "./components/banner/banner.component";
 import { ButtonComponent } from "./components/button/button.component";
 import { CalendarPageComponent } from "./components/calendar-page/calendar-page.component";
 import { CalendarComponent } from "./components/calendar/calendar/calendar.component";
+import { DateInputComponent } from "./components/calendar/date-input/date-input.component";
 import { ContactPageComponent } from "./components/contact/contact-page/contact-page.component";
 import { FeedbackComponent } from "./components/contact/feedback/feedback.component";
 import { EditDayPageComponent } from "./components/edit-day-page/edit-day-page.component";
@@ -39,7 +39,6 @@ import { editDayReducer } from "./store/reducers/edit-day.reducer";
   declarations: [
     AppComponent,
     InputBoxComponent,
-    DateInputComponent,
     DayListComponent,
     DayListItemComponent,
     CalendarPageComponent,
@@ -54,7 +53,8 @@ import { editDayReducer } from "./store/reducers/edit-day.reducer";
     FeedbackComponent,
     ContactPageComponent,
     ProfilePageComponent,
-    EditDayPageComponent
+    EditDayPageComponent,
+    DateInputComponent
   ],
   imports: [
     BrowserModule,

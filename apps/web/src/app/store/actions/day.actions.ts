@@ -12,6 +12,7 @@ export const DayActions = createActionGroup({
     "Set Initial Day": emptyProps(),
     "Set Selected Day": props<{ day: Day }>(),
     "Select Day": props<{ id: string }>(),
+    "Set Day By Date": props<{ date: Date }>(),
     "Save Day": props<{ day: Day }>(),
     "Add Event": props<{ name: string }>(),
     "Save Event": props<{ event: Event }>(),

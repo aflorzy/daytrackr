@@ -4,6 +4,7 @@ import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
 import { Day, Event } from "src/app/interfaces";
 import { BASE_URL } from "../constants";
+import { getTodayDate } from "../store/reducers/day.reducer";
 
 @Injectable({
   providedIn: "root"
@@ -39,12 +40,13 @@ export class DayService {
 
   public getDayById(id: string): Observable<Day> {
     return this.http
-      .get<Day>(`${BASE_URL}/daily-events/find/date/${id}`)
+      .get<Day>(`${BASE_URL}/daily-events/find/id/${id}`)
       .pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
   public getToday(): Observable<Day> {
-    return this.http.get<Day>(`${BASE_URL}/daily-events/find/today`).pipe(map((day: Day) => this.sortDayEvents(day)));
+    return this.getDayByDate(getTodayDate());
+    // return this.http.get<Day>(`${BASE_URL}/daily-events/find/today`).pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
   public getLatest(): Observable<Day> {

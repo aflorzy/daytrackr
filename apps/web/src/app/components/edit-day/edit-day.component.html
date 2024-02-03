@@ -2,29 +2,20 @@
   <h2>{{ day.date | date: "mediumDate" }}</h2>
   <div class="event" *ngFor="let event of day.events; trackBy: identify">
     <span class="index">{{ event.idx + 1 }}</span>
-    <span class="arrow up" [class.hidden]="event.idx === 0" (click)="moveEventUp.emit(event)"
-      ><fa-icon [icon]="['fas', 'chevron-up']"></fa-icon
-    ></span>
-    <span class="arrow down" [class.hidden]="event.idx === day.events.length - 1" (click)="moveEventDown.emit(event)"
-      ><fa-icon [icon]="['fas', 'chevron-down']"></fa-icon
-    ></span>
+    <span class="arrow up" [class.hidden]="event.idx === 0" (click)="moveEventUp.emit(event)"><fa-icon
+        [icon]="['fas', 'chevron-up']"></fa-icon></span>
+    <span class="arrow down" [class.hidden]="event.idx === day.events.length - 1"
+      (click)="moveEventDown.emit(event)"><fa-icon [icon]="['fas', 'chevron-down']"></fa-icon></span>
+    <span class="trash-icon" (click)="removeEvent.emit(event)"><fa-icon [icon]="['fas', 'trash']"
+        transform="shrink-2"></fa-icon></span>
     <span class="text">{{ event.name }}</span>
-    <span class="trash-icon" (click)="removeEvent.emit(event)"
-      ><fa-icon [icon]="['fas', 'trash']" transform="shrink-4"></fa-icon
-    ></span>
   </div>
 </div>
 
 <form (submit)="addEvent.emit(eventForm.controls.eventInput.value || ''); eventForm.reset()" [formGroup]="eventForm">
   <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
-  <app-button
-    type="submit"
-    size="sm"
-    fill="fill"
-    color="primary"
-    [disabled]="!eventForm.get('eventInput')?.value?.trim()"
-    >Add</app-button
-  >
+  <app-button type="submit" size="sm" fill="fill" color="primary"
+    [disabled]="!eventForm.get('eventInput')?.value?.trim()">Add</app-button>
 </form>
 
 <app-button (clicked)="saveEdits.emit()" fill="fill" color="primary" [disabled]="!isChanged">Save Changes</app-button>

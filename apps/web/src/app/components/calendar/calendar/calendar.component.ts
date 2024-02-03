@@ -62,7 +62,6 @@ export class CalendarComponent implements OnChanges {
   }
 
   selectDay(day: CalendarDay, month: CalendarMonth) {
-    if (day.month !== month.monthOfYear) return;
     if (day.day.events.length <= 0) {
       this.newDayClick.emit(day);
       return;

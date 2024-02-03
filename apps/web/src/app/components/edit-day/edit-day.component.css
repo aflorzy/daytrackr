@@ -7,19 +7,21 @@
   padding: 5px;
   border-radius: 5px;
 }
+
 .arrow:hover {
   cursor: pointer;
   background-color: #eee;
 }
+
 .arrow.up {
   color: green;
   border-left: 1px solid #777;
   margin-left: 10px;
 }
+
 .arrow.down {
   color: var(--warn-color);
   border-right: 1px solid #777;
-  margin-right: 10px;
 }
 
 .hidden,
@@ -36,6 +38,7 @@
   align-items: center;
   gap: 5px;
 }
+
 .event:last-child {
   border-bottom: none;
 }
@@ -47,8 +50,10 @@
 .trash-icon {
   color: var(--warn-color);
   opacity: 0;
+  padding: 0 2px;
 }
-.trash-icon:hover {
+
+.event:hover .trash-icon {
   opacity: 1;
   cursor: pointer;
 }
