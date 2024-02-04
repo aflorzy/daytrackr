@@ -1,13 +1,7 @@
 <ng-container *ngIf="day$ | async as day; else loading">
-  <app-edit-day
-    [day]="day"
-    [isChanged]="!!(isChanged$ | async)"
-    (saveEdits)="saveEdits()"
-    (cancel)="cancelEdit()"
-    (moveEventUp)="moveEventUp($event)"
-    (moveEventDown)="moveEventDown($event)"
-    (removeEvent)="removeEvent($event)"
-    (addEvent)="addEvent($event)"></app-edit-day>
+  <app-edit-day [day]="day" [isChanged]="!!(isChanged$ | async)" (saveEdits)="saveEdits()" (cancel)="cancelEdit()"
+    (moveEventUp)="moveEventUp($event)" (moveEventDown)="moveEventDown($event)" (moveEvent)="moveEvent($event)"
+    (removeEvent)="removeEvent($event)" (addEvent)="addEvent($event)"></app-edit-day>
 </ng-container>
 
 <ng-template #loading> Loading... </ng-template>

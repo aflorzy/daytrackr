@@ -38,6 +38,11 @@ export class EditDayPageComponent implements OnInit {
     this.store.dispatch(EditDayActions.moveEventDown({ event }));
   }
 
+  moveEvent(payload: { event: Event; newIdx: number }) {
+    console.log("Moving event", payload);
+    this.store.dispatch(EditDayActions.moveEvent(payload));
+  }
+
   removeEvent(event: Event) {
     this.store.dispatch(EditDayActions.removeEvent({ event }));
   }

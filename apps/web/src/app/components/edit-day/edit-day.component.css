@@ -32,18 +32,20 @@
 }
 
 .event {
+  background-color: #f4f4f4;
   padding: 10px;
-  border-bottom: 1px solid #777;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
   display: flex;
   align-items: center;
   gap: 5px;
-}
-
-.event:last-child {
-  border-bottom: none;
+  cursor: move;
 }
 
 .events {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin: 20px;
 }
 
@@ -56,4 +58,35 @@
 .event:hover .trash-icon {
   opacity: 1;
   cursor: pointer;
+}
+
+.event.cdk-drag-preview {
+  opacity: 0.4;
+  background-color: var(--accent-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow:
+    0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.event.last-child {
+  border: none;
+}
+
+.events.cdk-drop-list-dragging .event:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
