@@ -144,14 +144,14 @@ export const dayReducer = createReducer(
     DayApiActions.retrieveTodaySuccess,
     (state, { day }): State => ({ ...state, selectedDay: day || { date: getTodayDate(), events: [] } })
   ),
-  on(DayApiActions.deleteDaySuccess, (state, { day }): State => {
-    console.log("Success", day);
-    return {
+  on(
+    DayApiActions.deleteDaySuccess,
+    (state, { day }): State => ({
       ...state,
       dayList: state.dayList.filter((dayTemp: Day) => dayTemp.id !== day.id),
       selectedDay: { date: day.date, events: [] }
-    };
-  }),
+    })
+  ),
 
   // Overwrite selectedDay in dayList
   on(

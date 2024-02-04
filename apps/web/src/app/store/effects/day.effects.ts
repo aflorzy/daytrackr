@@ -29,7 +29,6 @@ export class DayEffects {
     return this.action$.pipe(
       ofType(DayActions.setDayByDate),
       mergeMap(action => {
-        console.log("Setting day by date", action.date);
         return this.dayService
           .getDayByDate(action.date)
           .pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
@@ -121,5 +120,5 @@ export class DayEffects {
     private action$: Actions,
     private dayService: DayService,
     private store: Store
-  ) {}
+  ) { }
 }
