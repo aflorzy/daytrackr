@@ -1,9 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { Day, Event } from "src/app/interfaces";
 
-@UntilDestroy()
 @Component({
   selector: "app-edit-day",
   templateUrl: "./edit-day.component.html",
@@ -16,6 +14,7 @@ export class EditDayComponent {
   @Output() cancel = new EventEmitter<boolean>();
   @Output() moveEventUp = new EventEmitter<Event>();
   @Output() moveEventDown = new EventEmitter<Event>();
+  @Output() moveEvent = new EventEmitter<{ event: Event; newIdx: number }>();
   @Output() removeEvent = new EventEmitter<Event>();
   @Output() addEvent = new EventEmitter<string>();
 

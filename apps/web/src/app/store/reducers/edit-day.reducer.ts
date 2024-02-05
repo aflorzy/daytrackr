@@ -90,10 +90,9 @@ export const editDayReducer = createReducer(
     };
   }),
   on(EditDayActions.moveEvent, (state, { event, newIdx }): State => {
-    const temp: Event = state.editingDay.events[newIdx];
     const events: Event[] = [...state.editingDay.events];
-    events[newIdx] = events[event.idx];
-    events[event.idx] = temp;
+    const [temp]: Event[] = events.splice(event.idx, 1);
+    events.splice(newIdx, 0, temp);
 
     return {
       ...state,

@@ -124,6 +124,15 @@ export const dayReducer = createReducer(
     };
   }),
   on(DayActions.selectNextDay, (state): State => {
+    // Find nearest next day
+    if (!state.selectedDay.id) {
+      const nextDay = state.dayList.find((day: Day) => new Date(day.date) > new Date(state.selectedDay.date));
+      return {
+        ...state,
+        selectedDay: nextDay || state.selectedDay
+      };
+    }
+
     const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
     return {
       ...state,
@@ -131,6 +140,15 @@ export const dayReducer = createReducer(
     };
   }),
   on(DayActions.selectPreviousDay, (state): State => {
+    // Find nearest preious day
+    if (!state.selectedDay.id) {
+      const reversedDayList: Day[] = [...state.dayList].reverse();
+      const previousDay = reversedDayList.find((day: Day) => new Date(day.date) < new Date(state.selectedDay.date));
+      return {
+        ...state,
+        selectedDay: previousDay || state.selectedDay
+      };
+    }
     const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
     return {
       ...state,
@@ -144,14 +162,14 @@ export const dayReducer = createReducer(
     DayApiActions.retrieveTodaySuccess,
     (state, { day }): State => ({ ...state, selectedDay: day || { date: getTodayDate(), events: [] } })
   ),
-  on(DayApiActions.deleteDaySuccess, (state, { day }): State => {
-    console.log("Success", day);
-    return {
+  on(
+    DayApiActions.deleteDaySuccess,
+    (state, { day }): State => ({
       ...state,
       dayList: state.dayList.filter((dayTemp: Day) => dayTemp.id !== day.id),
       selectedDay: { date: day.date, events: [] }
-    };
-  }),
+    })
+  ),
 
   // Overwrite selectedDay in dayList
   on(
