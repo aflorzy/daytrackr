@@ -54,6 +54,7 @@ export class AuthService {
     this.jwtExpirationSubscription = of(null)
       .pipe(delay(decoded.exp))
       .subscribe(() => {
+        console.log("Token expired, logging out...");
         this.logout();
       });
   }
