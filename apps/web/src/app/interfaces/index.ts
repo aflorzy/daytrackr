@@ -52,6 +52,14 @@ export interface FeedbackMessage {
   attachments: any[];
 }
 
+export interface ProfileDTO {
+  firstName: string;
+  lastName: string;
+  preferredName: string;
+  email: string;
+  phone: string;
+}
+
 export class Profile {
   firstName: string;
   lastName: string;
@@ -59,12 +67,12 @@ export class Profile {
   email: string;
   phone: string;
 
-  constructor(firstName = "", lastName = "", preferredName = "", email = "", phone = "") {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.preferredName = preferredName;
-    this.email = email;
-    this.phone = phone;
+  constructor(profileDto: ProfileDTO) {
+    this.firstName = profileDto.firstName;
+    this.lastName = profileDto.lastName;
+    this.preferredName = profileDto.preferredName;
+    this.email = profileDto.email;
+    this.phone = profileDto.phone;
   }
 
   public getFirstName(): string {

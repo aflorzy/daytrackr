@@ -20,7 +20,6 @@ export class ContactPageComponent {
   handleSubmit(form: FeedbackMessage) {
     this.feedbackService
       .sendFeedback(form)
-      .pipe()
       .pipe(
         untilDestroyed(this),
         tap(() => this.responseMessage$.next({ message: "Sent successfully.", statusType: StatusType.SUCCESS })),

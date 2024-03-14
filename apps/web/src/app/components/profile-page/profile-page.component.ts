@@ -1,20 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { BehaviorSubject, Observable, Subject, switchMap, tap, timer } from "rxjs";
-import { Profile, ResponseMessage } from "src/app/interfaces";
-import { ProfileService } from "src/app/services/profile.service";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { Observable, tap } from "rxjs";
+import { Profile, ProfileDTO } from "src/app/interfaces";
 import { dirtyCheck } from "../../operators/dirty-check.operator";
-
-export const store = new BehaviorSubject({
-  firstName: "",
-  lastName: "",
-  preferredName: "",
-  email: "",
-  phone: ""
-});
-
-export const store$ = store.asObservable();
+import { Store } from "@ngrx/store";
+import { ProfileActions } from "src/app/store/actions/profile.actions";
+import { selectProfile, selectResponseMsg } from "src/app/store/selectors/profile.selectors";
 
 @UntilDestroy()
 @Component({
@@ -22,51 +14,29 @@ export const store$ = store.asObservable();
   templateUrl: "./profile-page.component.html"
 })
 export class ProfilePageComponent implements OnInit {
-  userForm!: FormGroup;
-  responseMessage$ = new Subject<ResponseMessage | null>();
-  isDirty$!: Observable<boolean>;
+  userForm: FormGroup = this.fb.group({
+    firstName: [""],
+    lastName: [""],
+    preferredName: [""],
+    email: ["", [Validators.email]],
+    phone: ["", Validators.pattern(/^\d{10}$/)]
+  });
+  isDirty$: Observable<boolean> = this.userForm.valueChanges.pipe(dirtyCheck(this.store.select(selectProfile)));
+  responseMsg$ = this.store.select(selectResponseMsg);
+  profile$ = this.store.select(selectProfile).pipe(tap((profile: ProfileDTO) => this.patchForm(profile)));
 
   constructor(
     private fb: FormBuilder,
-    private profileService: ProfileService
-  ) {
-    this.userForm = this.fb.group({
-      firstName: ["", Validators.required],
-      lastName: ["", Validators.required],
-      preferredName: [""],
-      email: ["", [Validators.required, Validators.email]],
-      phone: ["", Validators.pattern(/^\d{10}$/)]
-    });
-  }
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
-    this.fetchProfile();
-    this.isDirty$ = this.userForm.valueChanges.pipe(dirtyCheck(store$));
-  }
-
-  private fetchProfile() {
-    this.profileService
-      .fetchProfile()
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (profile: Profile) => {
-          this.patchForm(profile);
-          this.setStore(profile);
-        },
-        error: (e: any) => {
-          console.error("Could not fetch profile", e.message);
-        }
-      });
+    this.store.dispatch(ProfileActions.getProfileDetails());
   }
 
   // Overwrite some form values
   private patchForm(data: Partial<Profile>) {
     this.userForm.patchValue(data);
-  }
-
-  // Set new default form value
-  private setStore(data: Profile) {
-    store.next(data);
   }
 
   private validateAllFormFields(formGroup: FormGroup): void {
@@ -89,18 +59,8 @@ export class ProfilePageComponent implements OnInit {
     if (this.userForm.valid) {
       // Form is valid, perform your action here
       const formValue: Profile = this.userForm.value;
-      this.profileService
-        .save(this.userForm.value)
-        .pipe(
-          tap(response => this.responseMessage$.next(response)),
-          switchMap(() => timer(5000).pipe(tap(() => this.responseMessage$.next(null))))
-        )
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: () => {
-            this.setStore(formValue);
-          }
-        });
+
+      this.store.dispatch(ProfileActions.saveProfileDetails({ profileDto: formValue }));
     } else {
       // Form is invalid, show error messages
       this.validateAllFormFields(this.userForm);

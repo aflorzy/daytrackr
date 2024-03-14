@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from "@angular/common/http";
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -60,7 +59,7 @@ export class LoginComponent {
             this.loginForm.reset();
             this.router.navigate([""]);
           },
-          error: (e: HttpErrorResponse) => {
+          error: () => {
             this.responseMessage$.next({
               message: "Failed to login. Please check your credentials",
               statusType: StatusType.ERROR

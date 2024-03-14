@@ -35,6 +35,8 @@ import { EditDayEffects } from "./store/effects/edit-day.effects";
 import { dayReducer } from "./store/reducers/day.reducer";
 import { editDayReducer } from "./store/reducers/edit-day.reducer";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { profileReducer } from "./store/reducers/profile.reducer";
+import { ProfileEffects } from "./store/effects/profile.effect";
 
 @NgModule({
   declarations: [
@@ -65,8 +67,8 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     FontAwesomeModule,
     HttpClientModule,
     DragDropModule,
-    StoreModule.forRoot({ days: dayReducer, editDay: editDayReducer, router: routerReducer }),
-    EffectsModule.forRoot(DayEffects, EditDayEffects),
+    StoreModule.forRoot({ days: dayReducer, editDay: editDayReducer, profile: profileReducer, router: routerReducer }),
+    EffectsModule.forRoot(DayEffects, EditDayEffects, ProfileEffects),
     StoreRouterConnectingModule.forRoot()
   ],
   providers: [

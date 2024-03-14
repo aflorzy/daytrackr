@@ -88,8 +88,6 @@ export class EditDayEffects {
     );
   });
 
-  // Listen for cancel edits. router.navigate to home
-
   constructor(
     private action$: Actions,
     private dayService: DayService,

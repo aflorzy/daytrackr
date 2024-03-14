@@ -1,15 +1,5 @@
 import * as _ from "lodash";
-import {
-  Observable,
-  Subscription,
-  combineLatest,
-  debounceTime,
-  finalize,
-  fromEvent,
-  map,
-  shareReplay,
-  startWith
-} from "rxjs";
+import { Observable, Subscription, combineLatest, finalize, fromEvent, map, shareReplay, startWith } from "rxjs";
 
 /**
  * Implemented from https://netbasal.com/detect-unsaved-changes-in-angular-forms-75fd8f5f1fa6
@@ -20,7 +10,6 @@ export function dirtyCheck<U>(source: Observable<U>) {
 
   return function <T>(valueChanges: Observable<T>): Observable<boolean> {
     const isDirty$ = combineLatest(source, valueChanges).pipe(
-      debounceTime(300),
       map(([a, b]: [U, T]) => {
         // Irrespective of key order
         return !_.isEqual(a, b);
