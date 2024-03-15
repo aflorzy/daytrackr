@@ -1,5 +1,7 @@
 import { Component } from "@angular/core";
-import { AuthService } from "src/app/services/auth.service";
+import { Store } from "@ngrx/store";
+import { AuthActions } from "src/app/store/actions/auth.actions";
+import { selectIsAuthenticatedUser } from "src/app/store/selectors/auth.selector";
 
 @Component({
   selector: "app-navbar",
@@ -7,13 +9,11 @@ import { AuthService } from "src/app/services/auth.service";
   styleUrls: ["./navbar.component.css"]
 })
 export class NavbarComponent {
-  constructor(private authService: AuthService) {}
+  isAuthenticatedUser$ = this.store.select(selectIsAuthenticatedUser);
 
-  public get isAuthenticatedUser(): boolean {
-    return this.authService.isAuthenticatedUser;
-  }
+  constructor(private store: Store) {}
 
   public logout() {
-    this.authService.logout();
+    this.store.dispatch(AuthActions.logout());
   }
 }

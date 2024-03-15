@@ -1,11 +1,10 @@
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { Subject } from "rxjs";
 import { ResponseMessage } from "src/app/interfaces";
-import { AuthService } from "src/app/services/auth.service";
-import { StatusType } from "../../enums";
+import { Store } from "@ngrx/store";
+import { AuthActions } from "src/app/store/actions/auth.actions";
 
 @UntilDestroy()
 @Component({
@@ -19,8 +18,7 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private store: Store
   ) {
     this.loginForm = this.fb.group({
       username: ["", [Validators.required]],
@@ -42,30 +40,9 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      const username = this.loginForm.get("username")?.value;
-      const password = this.loginForm.get("password")?.value;
+    const username = this.loginForm.get("username")?.value;
+    const password = this.loginForm.get("password")?.value;
 
-      this.authService
-        .login(username, password)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: () => {
-            this.responseMessage$.next({
-              message: "Successfully logged in",
-              statusType: StatusType.SUCCESS
-            });
-
-            this.loginForm.reset();
-            this.router.navigate([""]);
-          },
-          error: () => {
-            this.responseMessage$.next({
-              message: "Failed to login. Please check your credentials",
-              statusType: StatusType.ERROR
-            });
-          }
-        });
-    }
+    this.store.dispatch(AuthActions.login({ username, password }));
   }
 }

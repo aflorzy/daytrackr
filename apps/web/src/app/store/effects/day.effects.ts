@@ -120,5 +120,5 @@ export class DayEffects {
     private action$: Actions,
     private dayService: DayService,
     private store: Store
-  ) { }
+  ) {}
 }

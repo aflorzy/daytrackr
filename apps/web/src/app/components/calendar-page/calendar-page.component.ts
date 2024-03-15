@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
@@ -12,6 +11,7 @@ import {
   selectExistsPreviousDay,
   selectSelectedDay
 } from "../../store/selectors/day.selectors";
+import { RouterActions } from "src/app/store/actions/router.actions";
 
 /**
  * Assuming starting with an empty calendar, selectedDay should be current date.
@@ -36,10 +36,7 @@ export class CalendarPageComponent implements OnInit {
   existsPreviousDay$: Observable<boolean> = this.store.select(selectExistsPreviousDay);
   existsNextDay$: Observable<boolean> = this.store.select(selectExistsNextDay);
 
-  constructor(
-    private store: Store,
-    private router: Router
-  ) {}
+  constructor(private store: Store) {}
 
   ngOnInit(): void {
     this.store.dispatch(DayActions.setInitialDay());
@@ -84,7 +81,7 @@ export class CalendarPageComponent implements OnInit {
   }
 
   enterEditMode(selectedDay: Day) {
-    this.router.navigate([`edit/${selectedDay.date}`]);
+    this.store.dispatch(RouterActions.navigate({ route: `edit/${selectedDay.date}` }));
   }
 
   /** CALENDAR FUNCTIONS */

@@ -3,6 +3,10 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "plugins": ["@ngrx"],
+  "rules": {
+    "@ngrx/good-action-hygiene": "error"
+  },
   "overrides": [
     {
       "files": [

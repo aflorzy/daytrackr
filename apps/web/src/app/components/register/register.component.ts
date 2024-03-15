@@ -1,10 +1,9 @@
-import { HttpErrorResponse } from "@angular/common/http";
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AuthService } from "src/app/services/auth.service";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { StatusType } from "../../enums";
+import { Store } from "@ngrx/store";
+import { AuthActions } from "src/app/store/actions/auth.actions";
 
 @UntilDestroy()
 @Component({
@@ -18,8 +17,7 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private store: Store
   ) {
     this.registerForm = this.fb.group({
       username: ["", [Validators.required]],
@@ -59,20 +57,6 @@ export class RegisterComponent {
       return;
     }
 
-    this.authService
-      .register(this.username, this.password)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (res: { message: string; error: string }) => {
-          this.successMessage = res.message;
-          this.errorMessage = "";
-
-          setTimeout(() => this.router.navigate(["login"]), 2000);
-        },
-        error: (e: HttpErrorResponse) => {
-          this.successMessage = "";
-          this.errorMessage = e.error.error;
-        }
-      });
+    this.store.dispatch(AuthActions.register({ username: this.username, password: this.password }));
   }
 }

@@ -1,6 +1,5 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import * as jwt_decode from "jwt-decode";
 import { Observable, Subscription, delay, of, tap } from "rxjs";
 import { AccessToken } from "src/app/interfaces";
@@ -15,24 +14,14 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private storageService: StorageService,
-    private router: Router
+    private storageService: StorageService
   ) {}
 
-  public get token(): AccessToken {
-    return this.storageService.getItemFromStorage("token");
+  public isAuthenticatedUser(token: AccessToken): boolean {
+    return this.tokenValid(token);
   }
 
-  public set token(token: AccessToken) {
-    this.storageService.setItemInStorage("token", token);
-  }
-
-  public get isAuthenticatedUser(): boolean {
-    return this.tokenValid;
-  }
-
-  private get tokenValid(): boolean {
-    const token = this.token;
+  private tokenValid(token: AccessToken): boolean {
     if (!token || !token.accessToken) return false;
 
     const decoded = this.getDecodedAccessToken(token.accessToken);
@@ -62,7 +51,6 @@ export class AuthService {
   public logout() {
     this.storageService.removeItemFromStorage("token");
     this.jwtExpirationSubscription.unsubscribe();
-    this.router.navigate(["login"]);
   }
 
   public register(username: string, password: string): Observable<{ message: string; error: string }> {
@@ -86,7 +74,6 @@ export class AuthService {
 
     return this.http.post<AccessToken>(loginUrl, loginData).pipe(
       tap((response: AccessToken) => {
-        this.token = response;
         this.startJwtExpirationCounter(response);
       })
     );

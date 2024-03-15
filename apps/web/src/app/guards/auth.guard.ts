@@ -1,29 +1,39 @@
 import { Injectable } from "@angular/core";
-import { CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from "@angular/router";
-import { AuthService } from "../services/auth.service";
+import { CanActivate, CanActivateChild } from "@angular/router";
+import { Store } from "@ngrx/store";
+import { selectIsAuthenticatedUser } from "../store/selectors/auth.selector";
+import { Observable, map } from "rxjs";
+import { RouterActions } from "../store/actions/router.actions";
 
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private store: Store) {}
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.authService.isAuthenticatedUser) {
-      return true;
-    }
+  canActivate(): Observable<boolean> {
+    return this.store.select(selectIsAuthenticatedUser).pipe(
+      map((isAuthenticatedUser: boolean) => {
+        if (isAuthenticatedUser) {
+          return true;
+        } else {
+          this.store.dispatch(RouterActions.navigate({ route: "/login" }));
 
-    this.router.navigate(["/login"]);
-    return false;
+          return false;
+        }
+      })
+    );
   }
 
-  canActivateChild(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.authService.isAuthenticatedUser) {
-      return true;
-    }
+  canActivateChild(): Observable<boolean> {
+    return this.store.select(selectIsAuthenticatedUser).pipe(
+      map((isAuthenticatedUser: boolean) => {
+        if (isAuthenticatedUser) {
+          return true;
+        } else {
+          this.store.dispatch(RouterActions.navigate({ route: "/login" }));
 
-    this.router.navigate(["/login"]);
-    return false;
+          return false;
+        }
+      })
+    );
   }
 }

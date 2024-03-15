@@ -37,6 +37,10 @@ import { editDayReducer } from "./store/reducers/edit-day.reducer";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { profileReducer } from "./store/reducers/profile.reducer";
 import { ProfileEffects } from "./store/effects/profile.effect";
+import { authReducer } from "./store/reducers/auth.reducer";
+import { AuthEffects } from "./store/effects/auth.effects";
+import { environment } from "../environments/environment";
+import { RouterEffects } from "./store/effects/router.effects";
 
 @NgModule({
   declarations: [
@@ -67,9 +71,25 @@ import { ProfileEffects } from "./store/effects/profile.effect";
     FontAwesomeModule,
     HttpClientModule,
     DragDropModule,
-    StoreModule.forRoot({ days: dayReducer, editDay: editDayReducer, profile: profileReducer, router: routerReducer }),
-    EffectsModule.forRoot(DayEffects, EditDayEffects, ProfileEffects),
-    StoreRouterConnectingModule.forRoot()
+    StoreModule.forRoot(
+      {
+        auth: authReducer,
+        days: dayReducer,
+        editDay: editDayReducer,
+        profile: profileReducer,
+        router: routerReducer
+      },
+      {
+        runtimeChecks: {
+          strictStateImmutability: true,
+          strictActionImmutability: true,
+          strictActionTypeUniqueness: true
+        }
+      }
+    ),
+    EffectsModule.forRoot(AuthEffects, DayEffects, EditDayEffects, ProfileEffects, RouterEffects),
+    StoreRouterConnectingModule.forRoot(),
+    environment.imports
   ],
   providers: [
     DatePipe,
