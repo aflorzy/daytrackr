@@ -12,9 +12,11 @@ import { DayListItemComponent } from "./components/day-list-item/day-list-item.c
 import { DayListComponent } from "./components/day-list/day-list.component";
 import { InputBoxComponent } from "./components/input-box/input-box.component";
 
+import { DragDropModule } from "@angular/cdk/drag-drop";
 import { EffectsModule } from "@ngrx/effects";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { StoreModule } from "@ngrx/store";
+import { environment } from "../environments/environment";
 import { BannerComponent } from "./components/banner/banner.component";
 import { ButtonComponent } from "./components/button/button.component";
 import { CalendarPageComponent } from "./components/calendar-page/calendar-page.component";
@@ -27,20 +29,19 @@ import { EditDayComponent } from "./components/edit-day/edit-day.component";
 import { HomeComponent } from "./components/home-page/home/home.component";
 import { LoginComponent } from "./components/login/login.component";
 import { NavbarComponent } from "./components/navbar/navbar.component";
+import { ParserComponent } from "./components/parser/parser.component";
 import { ProfilePageComponent } from "./components/profile-page/profile-page.component";
 import { RegisterComponent } from "./components/register/register.component";
 import { AuthInterceptor } from "./interceptors/auth.interceptor";
+import { AuthEffects } from "./store/effects/auth.effects";
 import { DayEffects } from "./store/effects/day.effects";
 import { EditDayEffects } from "./store/effects/edit-day.effects";
+import { ProfileEffects } from "./store/effects/profile.effect";
+import { RouterEffects } from "./store/effects/router.effects";
+import { authReducer } from "./store/reducers/auth.reducer";
 import { dayReducer } from "./store/reducers/day.reducer";
 import { editDayReducer } from "./store/reducers/edit-day.reducer";
-import { DragDropModule } from "@angular/cdk/drag-drop";
 import { profileReducer } from "./store/reducers/profile.reducer";
-import { ProfileEffects } from "./store/effects/profile.effect";
-import { authReducer } from "./store/reducers/auth.reducer";
-import { AuthEffects } from "./store/effects/auth.effects";
-import { environment } from "../environments/environment";
-import { RouterEffects } from "./store/effects/router.effects";
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { RouterEffects } from "./store/effects/router.effects";
     ContactPageComponent,
     ProfilePageComponent,
     EditDayPageComponent,
-    DateInputComponent
+    DateInputComponent,
+    ParserComponent
   ],
   imports: [
     BrowserModule,

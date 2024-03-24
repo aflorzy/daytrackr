@@ -29,3 +29,7 @@
 </ng-container>
 
 <app-button class="saveData" *ngIf="days.length > 0" (clicked)="saveData()"> Save Data </app-button>
+
+<app-button (click)="parseText()">Parse</app-button>
+
+<app-parser></app-parser>

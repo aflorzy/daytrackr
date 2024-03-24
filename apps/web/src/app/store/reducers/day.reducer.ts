@@ -4,6 +4,8 @@ import { DayActions, DayApiActions } from "../actions/day.actions";
 
 export interface State {
   selectedDay: Day;
+  oldestDay: Day;
+  latestDay: Day;
   dayList: Day[];
   currentDate: Date;
   errorMsg: string;
@@ -12,6 +14,14 @@ export interface State {
 
 export const initialState: State = {
   selectedDay: {
+    events: [],
+    date: getTodayDate()
+  },
+  oldestDay: {
+    events: [],
+    date: getTodayDate()
+  },
+  latestDay: {
     events: [],
     date: getTodayDate()
   },
@@ -123,44 +133,26 @@ export const dayReducer = createReducer(
       }
     };
   }),
-  on(DayActions.selectNextDay, (state): State => {
-    // Find nearest next day
-    if (!state.selectedDay.id) {
-      const nextDay = state.dayList.find((day: Day) => new Date(day.date) > new Date(state.selectedDay.date));
-      return {
-        ...state,
-        selectedDay: nextDay || state.selectedDay
-      };
-    }
-
-    const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
-    return {
-      ...state,
-      selectedDay: state.dayList[selectedDayIndex + 1]
-    };
-  }),
-  on(DayActions.selectPreviousDay, (state): State => {
-    // Find nearest preious day
-    if (!state.selectedDay.id) {
-      const reversedDayList: Day[] = [...state.dayList].reverse();
-      const previousDay = reversedDayList.find((day: Day) => new Date(day.date) < new Date(state.selectedDay.date));
-      return {
-        ...state,
-        selectedDay: previousDay || state.selectedDay
-      };
-    }
-    const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
-    return {
-      ...state,
-      selectedDay: state.dayList[selectedDayIndex - 1]
-    };
-  }),
   on(DayApiActions.saveDaySuccess, (state, { day }): State => ({ ...state, selectedDay: day })),
   on(DayApiActions.retrieveDayListSuccess, (state, { dayList }): State => ({ ...state, dayList })),
   on(DayApiActions.retrieveCurrentDateSuccess, (state, { currentDate }): State => ({ ...state, currentDate })),
   on(
     DayApiActions.retrieveTodaySuccess,
     (state, { day }): State => ({ ...state, selectedDay: day || { date: getTodayDate(), events: [] } })
+  ),
+  on(
+    DayApiActions.retrieveOldestDaySuccess,
+    (state, { day }): State => ({
+      ...state,
+      oldestDay: day
+    })
+  ),
+  on(
+    DayApiActions.retrieveLatestDaySuccess,
+    (state, { day }): State => ({
+      ...state,
+      latestDay: day
+    })
   ),
   on(
     DayApiActions.deleteDaySuccess,
@@ -197,6 +189,10 @@ export const dayReducer = createReducer(
     DayApiActions.retrieveDayListSuccess,
     DayApiActions.retrieveCurrentDateSuccess,
     DayApiActions.retrieveTodaySuccess,
+    DayApiActions.retrieveOldestDaySuccess,
+    DayApiActions.retrieveLatestDaySuccess,
+    DayApiActions.retrievePreviousDaySuccess,
+    DayApiActions.retrieveNextDaySuccess,
     DayApiActions.deleteDaySuccess,
     (state): State => ({ ...state, errorMsg: "" })
   ),
@@ -206,6 +202,10 @@ export const dayReducer = createReducer(
     DayApiActions.retrieveDayListFailure,
     DayApiActions.retrieveCurrentDateFailure,
     DayApiActions.retrieveTodayFailure,
+    DayApiActions.retrieveOldestDayFailure,
+    DayApiActions.retrieveLatestDayFailure,
+    DayApiActions.retrievePreviousDayFailure,
+    DayApiActions.retrieveNextDayFailure,
     DayApiActions.deleteDayFailure,
     (state, { errorMsg }): State => ({ ...state, errorMsg })
   ),
@@ -220,6 +220,14 @@ export const dayReducer = createReducer(
     DayApiActions.retrieveCurrentDateFailure,
     DayApiActions.retrieveTodaySuccess,
     DayApiActions.retrieveTodayFailure,
+    DayApiActions.retrieveOldestDaySuccess,
+    DayApiActions.retrieveOldestDayFailure,
+    DayApiActions.retrieveLatestDaySuccess,
+    DayApiActions.retrieveLatestDayFailure,
+    DayApiActions.retrievePreviousDaySuccess,
+    DayApiActions.retrievePreviousDayFailure,
+    DayApiActions.retrieveNextDaySuccess,
+    DayApiActions.retrieveNextDayFailure,
     DayApiActions.deleteDaySuccess,
     DayApiActions.deleteDayFailure,
     (state): State => ({ ...state, loading: false })
@@ -229,13 +237,15 @@ export const dayReducer = createReducer(
     DayActions.getDayList,
     DayActions.getDayListBetween,
     DayActions.setInitialDay,
+    DayActions.setOldestDay,
+    DayActions.setLatestDay,
     DayActions.addEvent,
     DayActions.removeEvent,
     DayActions.updateEvent,
     DayActions.moveEvent,
     DayActions.combineEvents,
     DayActions.deleteDay,
-    (state): State => ({ ...state, loading: false })
+    (state): State => ({ ...state, loading: true })
   )
 );
 
