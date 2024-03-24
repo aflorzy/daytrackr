@@ -1,24 +1,35 @@
 <div class="content">
   <ng-container *ngIf="selectedDay$ | async as selectedDay; else noData">
-    <app-calendar [dayList]="(dayList$ | async) || []" [initialDate]="selectedDay.date" (dayChange)="dayChange($event)"
-      (newDayClick)="newDayClick($event)" (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
+    <app-calendar
+      [dayList]="(dayList$ | async) || []"
+      [initialDate]="selectedDay.date"
+      (dayChange)="dayChange($event)"
+      (newDayClick)="newDayClick($event)"
+      (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
 
-    <app-button (clicked)="selectPreviousDay()" [disabled]="(existsPreviousDay$ | async) === false">
+    <app-button (clicked)="getPreviousDay()" [disabled]="(existsPreviousDay$ | async) === false">
       <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev
     </app-button>
-    <app-button (clicked)="selectNextDay()" [disabled]="(existsNextDay$ | async) === false">
+    <app-button (clicked)="getNextDay()" [disabled]="(existsNextDay$ | async) === false">
       Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon>
     </app-button>
 
     <!-- <app-date-input [initialDate]="selectedDay.date" (dateChanged)="handleDateInputChange($event)"></app-date-input> -->
 
-    <app-day-list-item [day]="selectedDay" [hideEditIcon]="!selectedDay.events.length"
-      [hideDeleteIcon]="!selectedDay.id" [hideAddEvent]="false" [editable]="true"
-      (enterEditMode)="enterEditMode(selectedDay)" (deleteDay)="deleteDay(selectedDay)"
-      (combineEvents)="combineEvents($event)" (addEvent)="addEvent($event)"
+    <app-day-list-item
+      [day]="selectedDay"
+      [hideEditIcon]="!selectedDay.events.length"
+      [hideDeleteIcon]="!selectedDay.id"
+      [hideAddEvent]="false"
+      [editable]="true"
+      (enterEditMode)="enterEditMode(selectedDay)"
+      (deleteDay)="deleteDay(selectedDay)"
+      (combineEvents)="combineEvents($event)"
+      (addEvent)="addEvent($event)"
       (saveEvent)="saveEvent($event)"></app-day-list-item>
   </ng-container>
 
-  <ng-template #noData><app-banner [type]="StatusType.WARNING" message="No days to display!"
-      [dismissable]="false"></app-banner></ng-template>
+  <ng-template #noData
+    ><app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner
+  ></ng-template>
 </div>

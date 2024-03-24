@@ -5,6 +5,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 import { DAYS_OF_WEEK } from "src/app/constants";
 import { Day } from "src/app/interfaces";
 import { DayService } from "src/app/services/day.service";
+import { ParserService } from "src/app/services/parser.service";
 
 @UntilDestroy()
 @Component({
@@ -25,7 +26,8 @@ export class InputBoxComponent implements OnInit {
 
   constructor(
     private datePipe: DatePipe,
-    private dayService: DayService
+    private dayService: DayService,
+    private parserService: ParserService
   ) {}
 
   ngOnInit(): void {
@@ -142,6 +144,9 @@ export class InputBoxComponent implements OnInit {
 
     this.daysSaved = true;
 
+    console.log("Saved", this.days);
+    return;
+
     this.dayService
       .saveMulti(this.days)
       .pipe(untilDestroyed(this))
@@ -153,5 +158,14 @@ export class InputBoxComponent implements OnInit {
           console.error("Could not save days", e);
         }
       });
+  }
+
+  parseText() {
+    const dayText: string = this.value;
+    const initialDate: Date = new Date("2024/01/28");
+
+    const dayList: Day[] = this.parserService.parseDayText(dayText, initialDate);
+
+    console.log(dayList);
   }
 }

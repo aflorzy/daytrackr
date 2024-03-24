@@ -33,6 +33,7 @@ export class DayService {
 
   public getDayByDate(date: Date | string): Observable<Day> {
     const formattedDate: string = formatDate(date, "yyyy-MM-dd", "en-us");
+
     return this.http
       .get<Day>(`${BASE_URL}/daily-events/find/date/${formattedDate}`)
       .pipe(map((day: Day) => this.sortDayEvents(day)));
@@ -51,6 +52,26 @@ export class DayService {
 
   public getLatest(): Observable<Day> {
     return this.http.get<Day>(`${BASE_URL}/daily-events/find/latest`).pipe(map((day: Day) => this.sortDayEvents(day)));
+  }
+
+  public getOldest(): Observable<Day> {
+    return this.http.get<Day>(`${BASE_URL}/daily-events/find/oldest`).pipe(map((day: Day) => this.sortDayEvents(day)));
+  }
+
+  public getPrevious(selectedDay: Day): Observable<Day> {
+    const formattedDate: string = formatDate(selectedDay.date, "yyyy-MM-dd", "en-us");
+
+    return this.http
+      .get<Day>(`${BASE_URL}/daily-events/find/previous?selectedDate=${formattedDate}`)
+      .pipe(map((day: Day) => this.sortDayEvents(day)));
+  }
+
+  public getNext(selectedDay: Day): Observable<Day> {
+    const formattedDate: string = formatDate(selectedDay.date, "yyyy-MM-dd", "en-us");
+
+    return this.http
+      .get<Day>(`${BASE_URL}/daily-events/find/next?selectedDate=${formattedDate}`)
+      .pipe(map((day: Day) => this.sortDayEvents(day)));
   }
 
   public getAllDays(): Observable<Day[]> {

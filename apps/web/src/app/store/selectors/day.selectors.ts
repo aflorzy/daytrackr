@@ -15,27 +15,44 @@ export const selectCurrentDate = createSelector(selectDayState, (state: DayState
 export const selectErrorMsg = createSelector(selectDayState, (state: DayState): string => state.errorMsg);
 
 export const selectExistsNextDay = createSelector(selectDayState, (state: DayState): boolean => {
-  if (!state.dayList.length) return false;
+  // Can't be next day if the latest saved day doesn't exist
+  if (!state.latestDay.id) return false;
 
-  // SelectedDay might not be saved yet, but next button should still function if date is less than last in list
-  if (!state.selectedDay.id) {
-    return new Date(state.selectedDay.date) < new Date(state.dayList[state.dayList.length - 1].date);
-  }
-
-  const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
-  return selectedDayIndex !== -1 && selectedDayIndex < state.dayList.length - 1;
+  return new Date(state.selectedDay.date) < new Date(state.latestDay.date);
 });
 
 export const selectExistsPreviousDay = createSelector(selectDayState, (state: DayState): boolean => {
-  if (!state.dayList.length) return false;
+  // Can't be previous day if the oldest saved day doesn't exist
+  if (!state.oldestDay.id) return false;
 
-  // SelectedDay might not be saved yet, but next button should still function if date is less than last in list
+  return new Date(state.selectedDay.date) > new Date(state.oldestDay.date);
+});
+
+export const selectPreviousDayFromDayList = createSelector(selectDayState, (state: DayState): Day | null => {
   if (!state.selectedDay.id) {
-    return new Date(state.selectedDay.date) > new Date(state.dayList[0].date);
+    const reversedDayList: Day[] = [...state.dayList].reverse();
+    const previousDay = reversedDayList.find((day: Day) => new Date(day.date) < new Date(state.selectedDay.date));
+
+    return previousDay ?? null;
   }
 
   const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
-  return selectedDayIndex > 0;
+
+  return selectedDayIndex === -1 || selectedDayIndex - 1 < 0 ? null : state.dayList[selectedDayIndex - 1];
+});
+
+export const selectNextDayFromDayList = createSelector(selectDayState, (state: DayState): Day | null => {
+  if (!state.selectedDay.id) {
+    const nextDay = state.dayList.find((day: Day) => new Date(day.date) > new Date(state.selectedDay.date));
+
+    return nextDay ?? null;
+  }
+
+  const selectedDayIndex: number = findSelectedDayIndex(state.dayList, state.selectedDay);
+
+  return selectedDayIndex === -1 || selectedDayIndex + 1 === state.dayList.length
+    ? null
+    : state.dayList[selectedDayIndex + 1];
 });
 
 function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
