@@ -64,11 +64,38 @@ public class DailyEventController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
     }
 
+    @GetMapping("/find/oldest")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<DailyEventDto> findOldest(Principal principal) {
+        UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
+        DailyEvent dailyEvent = dailyEventService.findOldest(user);
+
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
+    }
+
     @GetMapping("/find/latest")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<DailyEventDto> findLatest(Principal principal) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
         DailyEvent dailyEvent = dailyEventService.findLatest(user);
+
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
+    }
+
+    @GetMapping("/find/previous")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<DailyEventDto> findPrevious(Principal principal, @RequestParam LocalDate selectedDate) {
+        UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
+        DailyEvent dailyEvent = dailyEventService.findPrevious(user, selectedDate);
+
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
+    }
+
+    @GetMapping("/find/next")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<DailyEventDto> findNext(Principal principal, @RequestParam LocalDate selectedDate) {
+        UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
+        DailyEvent dailyEvent = dailyEventService.findNext(user, selectedDate);
 
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new DailyEventDto().fromDailyEvent(dailyEvent));
     }

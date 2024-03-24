@@ -52,6 +52,24 @@ public class DailyEventService {
         return latest;
     }
 
+    public DailyEvent findOldest(UserEntity user) {
+        DailyEvent oldest = dailyEventRepository.findTopByUserOrderByDateAsc(user);
+
+        return oldest;
+    }
+
+    public DailyEvent findPrevious(UserEntity user, LocalDate date) {
+        DailyEvent previous = dailyEventRepository.findTopByUserAndDateBeforeOrderByDateDesc(user, date);
+
+        return previous;
+    }
+
+    public DailyEvent findNext(UserEntity user, LocalDate date) {
+        DailyEvent next = dailyEventRepository.findTopByUserAndDateAfterOrderByDateAsc(user, date);
+
+        return next;
+    }
+
     public List<DailyEvent> findDaysBetween(UserEntity user, LocalDate date1, LocalDate date2) {
         return dailyEventRepository.findByUserAndDateBetweenOrderByDateAsc(user, date1, date2);
     }
