@@ -32,7 +32,16 @@ public class DailyEventService {
     }
 
     public DailyEvent findByUserAndDateOrderByDateAsc(UserEntity user, LocalDate date) {
-        return dailyEventRepository.findByUserAndDateOrderByDateAsc(user, date);
+        DailyEvent found = dailyEventRepository.findByUserAndDateOrderByDateAsc(user, date);
+        if (found == null) {
+            DailyEvent result = new DailyEvent();
+            result.setDate(date);
+            result.setEvents(new HashSet<Event>());
+
+            return result;
+        }
+
+        return found;
     }
 
     public List<DailyEvent> findByUserOrderByDateAsc(UserEntity user) {
