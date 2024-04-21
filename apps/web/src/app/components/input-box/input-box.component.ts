@@ -121,7 +121,7 @@ export class InputBoxComponent implements OnInit {
       days.push(day);
 
       const newDate = new Date(this.initialDate);
-      newDate.setDate(newDate.getDate() + 1);
+      newDate.setUTCDate(newDate.getUTCDate() + 1);
       this.initialDate = newDate;
     });
 

@@ -76,12 +76,12 @@ export class CalendarService {
     const day: CalendarDay = this.dayFromDate(dateObj);
 
     const firstDayOfWeekObj: Date = new Date(dateObj);
-    firstDayOfWeekObj.setDate(firstDayOfWeekObj.getDate() - day.dayOfWeek);
+    firstDayOfWeekObj.setUTCDate(firstDayOfWeekObj.getUTCDate() - day.dayOfWeek);
 
     const week: CalendarWeek = this.INITIAL_WEEK;
     week.days = week.days.map((_: CalendarDay, dayOfWeek: number) => {
       const dayOfWeekTemp: Date = new Date(firstDayOfWeekObj);
-      dayOfWeekTemp.setDate(dayOfWeekTemp.getDate() + dayOfWeek);
+      dayOfWeekTemp.setUTCDate(dayOfWeekTemp.getUTCDate() + dayOfWeek);
       return this.dayFromDate(dayOfWeekTemp);
     });
 
@@ -93,11 +93,12 @@ export class CalendarService {
   monthFromDate(dateObj: Date): CalendarMonth {
     const month: CalendarMonth = this.INITIAL_MONTH;
     const firstDayOfMonthObj: Date = new Date(dateObj);
-    firstDayOfMonthObj.setDate(1);
+
+    firstDayOfMonthObj.setUTCDate(1);
 
     month.weeks = month.weeks.map((_: CalendarWeek, weekOfMonth: number) => {
       const dayOfWeekTemp: Date = new Date(firstDayOfMonthObj);
-      dayOfWeekTemp.setDate(dayOfWeekTemp.getDate() + 7 * weekOfMonth);
+      dayOfWeekTemp.setUTCDate(dayOfWeekTemp.getUTCDate() + 7 * weekOfMonth);
       const week: CalendarWeek = this.weekFromDate(new Date(dayOfWeekTemp));
       return JSON.parse(JSON.stringify(week));
     });
@@ -111,26 +112,31 @@ export class CalendarService {
   }
 
   initializeCalendar(date: Date, selectedDate?: Date): CalendarMonth[] | void {
-    const monthChanged: boolean = this.datePipe.transform(selectedDate, "MM") !== this.datePipe.transform(date, "MM");
+    const monthChanged: boolean =
+      this.datePipe.transform(selectedDate, "yyyy-MM") !== this.datePipe.transform(date, "yyyy-MM");
+
     const shouldEmitFirstLast: boolean = !selectedDate || monthChanged;
-    selectedDate = date;
 
     if (!shouldEmitFirstLast) return;
+
+    // Set date to 15 since calendar population does not care about selected day
+    date = new Date(date);
+    date.setUTCDate(15);
 
     const currentMonth: CalendarMonth = {
       ...this.monthFromDate(date)
     };
 
     const previousMonthDate: Date = new Date(date);
-    previousMonthDate.setDate(15);
-    previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
+    previousMonthDate.setUTCMonth(previousMonthDate.getUTCMonth() - 1);
+    previousMonthDate.setUTCDate(15);
     const previousMonth: CalendarMonth = {
       ...this.monthFromDate(previousMonthDate)
     };
 
     const nextMonthDate: Date = new Date(date);
-    nextMonthDate.setDate(15);
-    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    nextMonthDate.setUTCMonth(nextMonthDate.getUTCMonth() + 1);
+    nextMonthDate.setUTCDate(15);
     const nextMonth: CalendarMonth = { ...this.monthFromDate(nextMonthDate) };
 
     return [previousMonth, currentMonth, nextMonth];

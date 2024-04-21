@@ -55,6 +55,44 @@ export const selectNextDayFromDayList = createSelector(selectDayState, (state: D
     : state.dayList[selectedDayIndex + 1];
 });
 
-function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
+export const selectOldestDay = createSelector(
+  selectDayState,
+  (state: DayState): Day => state.oldestDay ?? state.selectedDay
+);
+export const selectLatestDay = createSelector(
+  selectDayState,
+  (state: DayState): Day => state.latestDay ?? state.selectedDay
+);
+
+export const selectCalendarMonthDropdownData = createSelector(
+  selectOldestDay,
+  selectLatestDay,
+  selectSelectedDay,
+  selectCurrentDate,
+  (oldest: Day, latest: Day, selected: Day, current: Date): { month: number; year: number }[] => {
+    const monthsData: { month: number; year: number }[] = [];
+
+    const oldestDate = new Date(oldest.date);
+    const latestDate = new Date(latest.date);
+    const selectedDate = new Date(selected.date);
+    const currentDate = new Date(current);
+
+    // Find oldest and latest dates given those available
+    const tempDate = new Date(Math.min(oldestDate.getTime(), selectedDate.getTime()));
+    const maxDate: Date = new Date(Math.max(selectedDate.getTime(), latestDate.getTime(), currentDate.getTime()));
+
+    // Directly comparing dates is not reliable here (tempDate <= maxDate) since timezones could be different
+    // Instead, compare years first, then months if the years are equal
+    while (tempDate.getUTCFullYear() < maxDate.getUTCFullYear() || tempDate.getUTCMonth() <= maxDate.getUTCMonth()) {
+      monthsData.unshift({ month: tempDate.getUTCMonth(), year: tempDate.getUTCFullYear() });
+
+      tempDate.setUTCMonth(tempDate.getUTCMonth() + 1);
+    }
+
+    return monthsData;
+  }
+);
+
+const findSelectedDayIndex = (dayList: Day[], selectedDay: Day): number => {
   return dayList.findIndex((day: Day) => day.id === selectedDay.id);
-}
+};

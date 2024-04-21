@@ -204,6 +204,18 @@ export class DayEffects {
     );
   });
 
+  handleCalendarMonthChange$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(DayActions.setCalendarMonth),
+      mergeMap(action => {
+        const monthData: { month: number; year: number } = action.month;
+        const monthDate = new Date(monthData.year, monthData.month, 1);
+
+        return of(DayActions.setDayByDate({ date: monthDate }));
+      })
+    );
+  });
+
   // Save multiple days
 
   constructor(
