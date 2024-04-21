@@ -3,9 +3,11 @@
     <app-calendar
       [dayList]="(dayList$ | async) || []"
       [initialDate]="selectedDay.date"
+      [monthDropdownData]="(monthDropdownData$ | async) || []"
       (dayChange)="dayChange($event)"
       (newDayClick)="newDayClick($event)"
-      (firstLastDate)="setFirstLastCalendarDates($event)"></app-calendar>
+      (calendarDateRange)="setFirstLastCalendarDates($event)"
+      (monthChange)="monthChange($event)"></app-calendar>
 
     <app-button (clicked)="getPreviousDay()" [disabled]="(existsPreviousDay$ | async) === false">
       <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev

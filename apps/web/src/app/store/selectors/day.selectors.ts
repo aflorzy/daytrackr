@@ -55,6 +55,44 @@ export const selectNextDayFromDayList = createSelector(selectDayState, (state: D
     : state.dayList[selectedDayIndex + 1];
 });
 
+export const selectOldestDay = createSelector(
+  selectDayState,
+  (state: DayState): Day => state.oldestDay ?? state.selectedDay
+);
+export const selectLatestDay = createSelector(
+  selectDayState,
+  (state: DayState): Day => state.latestDay ?? state.selectedDay
+);
+
+export const selectCalendarMonthDropdownData = createSelector(
+  selectOldestDay,
+  selectLatestDay,
+  selectSelectedDay,
+  selectCurrentDate,
+  (oldest: Day, latest: Day, selected: Day, current: Date): { month: number; year: number }[] => {
+    const monthsData: { month: number; year: number }[] = [];
+
+    const oldestDate = new Date(oldest.date);
+    const latestDate = new Date(latest.date);
+    const selectedDate = new Date(selected.date);
+    const currentDate = new Date(current);
+
+    const oldestMonth = oldestDate.getUTCMonth();
+    const oldestYear = oldestDate.getUTCFullYear();
+
+    const tempDate = new Date(oldestYear, oldestMonth);
+
+    const maxDate: Date = new Date(Math.max(selectedDate.getTime(), latestDate.getTime(), currentDate.getTime()));
+
+    while (tempDate <= maxDate) {
+      monthsData.unshift({ month: tempDate.getUTCMonth(), year: tempDate.getUTCFullYear() });
+      tempDate.setUTCMonth(tempDate.getUTCMonth() + 1);
+    }
+
+    return monthsData;
+  }
+);
+
 function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
   return dayList.findIndex((day: Day) => day.id === selectedDay.id);
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { days_of_week } from "src/app/constants";
-import { Event, Day } from "../interfaces";
+import { Day, Event } from "../interfaces";
 
 @Injectable({
   providedIn: "root"
@@ -22,7 +22,7 @@ export class ParserService {
       const eventList: Event[] = this.parseEventStringListToEventList(dayStr);
 
       const date = new Date(initialDate);
-      date.setDate(initialDate.getDate() + dayList.length);
+      date.setUTCDate(initialDate.getUTCDate() + dayList.length);
 
       dayList.push({
         date,

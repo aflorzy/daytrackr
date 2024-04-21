@@ -25,11 +25,29 @@
   padding: 0;
   margin: 0;
   width: 100%;
+
   text-align: center;
   font-weight: 700;
   font-size: 20px;
   line-height: 20px;
   text-decoration: underline;
+}
+
+.month form select {
+  appearance: none; /* remove default appearance set by the browser */
+  outline: none; /* remove the outline shown on focus */
+  cursor: pointer; /* change the mouse cursor icon */
+  border: none;
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 20px;
+  text-decoration: underline;
+  width: 100%;
+}
+
+.month form select:hover {
+  filter: brightness(0.95);
 }
 
 .month table {

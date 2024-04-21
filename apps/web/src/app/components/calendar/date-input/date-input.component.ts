@@ -24,15 +24,14 @@ export class DateInputComponent implements OnChanges {
   }
 
   convertDateToString(date: Date): string {
-    const year: number = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+    const year: number = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");
     const dayStr = `${year}-${month}-${day}`;
     return dayStr;
   }
 
   handleBlur(date: Date) {
-    console.log("Blurred", date);
     this.dateChanged.emit(date);
   }
 }

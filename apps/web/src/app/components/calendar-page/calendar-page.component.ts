@@ -7,6 +7,7 @@ import { StatusType } from "../../enums";
 import { CalendarDay, Day, Event } from "../../interfaces";
 import { DayActions } from "../../store/actions/day.actions";
 import {
+  selectCalendarMonthDropdownData,
   selectDayList,
   selectExistsNextDay,
   selectExistsPreviousDay,
@@ -35,6 +36,9 @@ export class CalendarPageComponent implements OnInit {
   dayList$: Observable<Day[]> = this.store.select(selectDayList);
   existsPreviousDay$: Observable<boolean> = this.store.select(selectExistsPreviousDay);
   existsNextDay$: Observable<boolean> = this.store.select(selectExistsNextDay);
+  monthDropdownData$: Observable<{ month: number; year: number }[]> = this.store.select(
+    selectCalendarMonthDropdownData
+  );
 
   constructor(private store: Store) {}
 
@@ -87,6 +91,12 @@ export class CalendarPageComponent implements OnInit {
   /** CALENDAR FUNCTIONS */
   dayChange(calendarDay: CalendarDay) {
     this.selectedDay = calendarDay.day;
+  }
+
+  monthChange(monthData: { month: number; year: number } | null) {
+    if (!monthData) return;
+
+    this.store.dispatch(DayActions.setCalendarMonth({ month: monthData }));
   }
 
   newDayClick(calendarDay: CalendarDay) {

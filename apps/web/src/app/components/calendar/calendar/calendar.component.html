@@ -1,6 +1,23 @@
 <div class="months" *ngIf="selectedDate">
-  <div class="month" *ngFor="let month of monthList">
-    <p class="name">{{ month.name }} {{ month.year }}</p>
+  <div class="month" *ngFor="let month of monthList; let i = index">
+    <ng-container
+      *ngIf="(i > 0 && i < monthList.length - 1) || (i === 0 && monthList.length === 1); else defaultMonthTitle">
+      <form [formGroup]="monthDropdownForm">
+        <select formControlName="data" class="name">
+          <option [value]="-1">-------</option>
+          <ng-container *ngFor="let monthData of monthDropdownData; let i = index; trackBy: trackByIndex">
+            <ng-container *ngIf="formatMonthDropdownItem(monthData) as formattedMonth">
+              <option [value]="+i">{{ formattedMonth }}</option>
+            </ng-container>
+          </ng-container>
+        </select>
+      </form>
+    </ng-container>
+
+    <ng-template #defaultMonthTitle>
+      <p class="name">{{ month.name }} {{ month.year }}</p>
+    </ng-template>
+
     <table>
       <tr>
         <th>Sun</th>
