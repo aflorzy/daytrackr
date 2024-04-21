@@ -18,17 +18,19 @@
 
     <!-- <app-date-input [initialDate]="selectedDay.date" (dateChanged)="handleDateInputChange($event)"></app-date-input> -->
 
-    <app-day-list-item
-      [day]="selectedDay"
-      [hideEditIcon]="!selectedDay.events.length"
-      [hideDeleteIcon]="!selectedDay.id"
-      [hideAddEvent]="false"
-      [editable]="true"
-      (enterEditMode)="enterEditMode(selectedDay)"
-      (deleteDay)="deleteDay(selectedDay)"
-      (combineEvents)="combineEvents($event)"
-      (addEvent)="addEvent($event)"
-      (saveEvent)="saveEvent($event)"></app-day-list-item>
+    <div class="day-list-item">
+      <app-day-list-item
+        [day]="selectedDay"
+        [hideEditIcon]="!selectedDay.events.length"
+        [hideDeleteIcon]="!selectedDay.id"
+        [hideAddEvent]="false"
+        [editable]="true"
+        (enterEditMode)="enterEditMode(selectedDay)"
+        (deleteDay)="deleteDay(selectedDay)"
+        (combineEvents)="combineEvents($event)"
+        (addEvent)="addEvent($event)"
+        (saveEvent)="saveEvent($event)"></app-day-list-item>
+    </div>
   </ng-container>
 
   <ng-template #noData

@@ -6,6 +6,10 @@
   display: none;
 }
 
+.day-list-item {
+  max-width: 1000px;
+}
+
 @media(width < 1000px) {
   .content {
     margin: 2%;
