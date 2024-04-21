@@ -84,8 +84,11 @@ export const selectCalendarMonthDropdownData = createSelector(
 
     const maxDate: Date = new Date(Math.max(selectedDate.getTime(), latestDate.getTime(), currentDate.getTime()));
 
-    while (tempDate <= maxDate) {
+    // Directly comparing dates is not reliable here (tempDate <= maxDate) since timezones could be different
+    // Instead, compare years first, then months if the years are equal
+    while (tempDate.getUTCFullYear() < maxDate.getUTCFullYear() || tempDate.getUTCMonth() <= maxDate.getUTCMonth()) {
       monthsData.unshift({ month: tempDate.getUTCMonth(), year: tempDate.getUTCFullYear() });
+
       tempDate.setUTCMonth(tempDate.getUTCMonth() + 1);
     }
 
@@ -93,6 +96,6 @@ export const selectCalendarMonthDropdownData = createSelector(
   }
 );
 
-function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
+const findSelectedDayIndex = (dayList: Day[], selectedDay: Day): number => {
   return dayList.findIndex((day: Day) => day.id === selectedDay.id);
-}
+};

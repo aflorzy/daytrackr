@@ -259,9 +259,10 @@ function findSelectedDayIndex(dayList: Day[], selectedDay: Day): number {
 
 export function getTodayDate(): Date {
   const today: Date = new Date();
-  const year: number = today.getFullYear();
-  const month = (today.getMonth() + 1).toString().padStart(2, "0");
-  const day = today.getDate().toString().padStart(2, "0");
+  const year: number = today.getUTCFullYear();
+  const month = (today.getUTCMonth() + 1).toString().padStart(2, "0");
+  const day = today.getUTCDate().toString().padStart(2, "0");
   const dayStr = `${year}/${month}/${day}`;
+
   return new Date(dayStr);
 }
