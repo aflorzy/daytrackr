@@ -77,11 +77,8 @@ export const selectCalendarMonthDropdownData = createSelector(
     const selectedDate = new Date(selected.date);
     const currentDate = new Date(current);
 
-    const oldestMonth = oldestDate.getUTCMonth();
-    const oldestYear = oldestDate.getUTCFullYear();
-
-    const tempDate = new Date(oldestYear, oldestMonth);
-
+    // Find oldest and latest dates given those available
+    const tempDate = new Date(Math.min(oldestDate.getTime(), selectedDate.getTime()));
     const maxDate: Date = new Date(Math.max(selectedDate.getTime(), latestDate.getTime(), currentDate.getTime()));
 
     // Directly comparing dates is not reliable here (tempDate <= maxDate) since timezones could be different
