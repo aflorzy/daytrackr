@@ -5,7 +5,7 @@ import { Day, Event } from "src/app/interfaces";
 @Component({
   selector: "app-day-list-item",
   templateUrl: "./day-list-item.component.html",
-  styleUrls: ["./day-list-item.component.css"]
+  styleUrls: ["./day-list-item.component.scss"]
 })
 export class DayListItemComponent {
   @Input() day?: Day;

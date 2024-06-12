@@ -45,17 +45,10 @@ textarea {
   font-size: 16px;
   color: #333; /* Dark text color */
   font-family: "Roboto", sans-serif;
-}
 
-/* Add a hover effect to the input fields */
-input[type='text']:hover,
-input[type='password']:hover,
-input[type='email']:hover,
-input[type='tel']:hover,
-input[type='file']:hover,
-input[type='date']:hover
-textarea:hover {
-  border: 1px solid #007d71; /* Slightly darker green border on hover */
+  &:hover {
+    border: 1px solid #007d71; /* Slightly darker green border on hover */
+  }
 }
 
 /* Style error messages */
@@ -69,16 +62,15 @@ textarea:hover {
 .auth-alt {
   text-align: center; /* Center-align the link text */
   margin-top: 10px; /* Add some top margin for separation */
-}
 
-.auth-alt a {
-  color: var(--primary-color); /* Set the link text color */
-  text-decoration: none; /* Remove the default underline */
-  font-weight: bold; /* Make the link text bold */
-  transition: color 0.3s; /* Add a color transition effect on hover */
-}
+  a {
+    color: var(--primary-color); /* Set the link text color */
+    text-decoration: none; /* Remove the default underline */
+    font-weight: bold; /* Make the link text bold */
+    transition: color 0.3s; /* Add a color transition effect on hover */
 
-/* Change link color on hover */
-.auth-alt a:hover {
-  color: #007d71;
+    &:hover {
+      color: #007d71;
+    }
+  }
 }

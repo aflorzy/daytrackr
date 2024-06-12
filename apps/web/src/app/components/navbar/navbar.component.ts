@@ -6,7 +6,7 @@ import { selectIsAuthenticatedUser } from "src/app/store/selectors/auth.selector
 @Component({
   selector: "app-navbar",
   templateUrl: "./navbar.component.html",
-  styleUrls: ["./navbar.component.css"]
+  styleUrls: ["./navbar.component.scss"]
 })
 export class NavbarComponent {
   isAuthenticatedUser$ = this.store.select(selectIsAuthenticatedUser);

@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <app-button type="submit" [disabled]="!registerForm.valid || password !== confirmPassword">Register</app-button>
+    <app-button type="submit" [disabled]="!registerForm.valid || !passwordsMatch">Register</app-button>
   </form>
 
   <p class="auth-alt">Already have an account? <a routerLink="/login">Login Now</a></p>

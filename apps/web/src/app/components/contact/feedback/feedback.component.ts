@@ -1,26 +1,25 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 
 @Component({
   selector: "app-feedback",
   templateUrl: "./feedback.component.html",
-  styleUrls: ["./feedback.component.css"]
+  styleUrls: ["./feedback.component.scss"]
 })
 export class FeedbackComponent implements OnChanges {
   @Input() responseMessage!: ResponseMessage | null;
   @Input() resetForm!: boolean;
   @Output() submitForm = new EventEmitter<FeedbackMessage>();
 
-  feedbackForm: FormGroup;
+  feedbackForm = this.fb.group({
+    subject: new FormControl("", [Validators.required]),
+    message: new FormControl("", [Validators.required]),
+    file: new FormControl(null)
+  });
 
-  constructor(private fb: FormBuilder) {
-    this.feedbackForm = this.fb.group({
-      subject: ["", Validators.required],
-      message: ["", Validators.required],
-      file: [null, [this.validateFileType]]
-    });
-  }
+  constructor(private fb: FormBuilder) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.resetForm && this.resetForm) {
       this.feedbackForm.reset();
@@ -33,23 +32,14 @@ export class FeedbackComponent implements OnChanges {
   }
 
   onSubmit() {
-    if (this.feedbackForm.valid) {
-      this.submitForm.emit(this.feedbackForm.getRawValue());
-    } else {
-      console.error("Form invalid");
-    }
-    this.submitForm.emit(this.feedbackForm.getRawValue());
-  }
+    const feedbackFormValue = this.feedbackForm.value;
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-
-    if (file && this.validateFileType(file)) {
-      this.feedbackForm.patchValue({ file });
-    } else {
-      this.feedbackForm.patchValue({ file: null });
-      event.target.value = null; // Clear the input
-    }
+    const feedbackMessage: FeedbackMessage = {
+      subject: feedbackFormValue.subject ?? "",
+      body: feedbackFormValue.message ?? "",
+      attachments: [feedbackFormValue.file]
+    };
+    this.submitForm.emit(feedbackMessage);
   }
 
   validateFileType(file: File): boolean {

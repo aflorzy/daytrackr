@@ -1,14 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { Store } from "@ngrx/store";
 import { Observable, tap } from "rxjs";
 import { Profile, ProfileDTO } from "src/app/interfaces";
-import { dirtyCheck } from "../../operators/dirty-check.operator";
-import { Store } from "@ngrx/store";
 import { ProfileActions } from "src/app/store/actions/profile.actions";
 import { selectProfile, selectResponseMsg } from "src/app/store/selectors/profile.selectors";
+import { dirtyCheck } from "../../operators/dirty-check.operator";
 
-@UntilDestroy()
 @Component({
   selector: "app-profile-page",
   templateUrl: "./profile-page.component.html"

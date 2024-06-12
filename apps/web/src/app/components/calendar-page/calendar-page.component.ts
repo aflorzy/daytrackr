@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { RouterActions } from "src/app/store/actions/router.actions";
@@ -25,11 +24,10 @@ import {
  * If selectedDay has events, it exists in the DB
  */
 
-@UntilDestroy()
 @Component({
   selector: "app-calendar-page",
   templateUrl: "./calendar-page.component.html",
-  styleUrls: ["./calendar-page.component.css"]
+  styleUrls: ["./calendar-page.component.scss"]
 })
 export class CalendarPageComponent implements OnInit {
   selectedDay$: Observable<Day> = this.store.select(selectSelectedDay);

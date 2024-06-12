@@ -6,12 +6,14 @@
         ><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon
       ></span>
     </ng-container>
+
     <ng-container *ngIf="!hideDeleteIcon">
       <span class="delete-day" (click)="delete()" tooltip="Reorder Events"
         ><fa-icon [icon]="['fas', 'trash']"></fa-icon
       ></span>
     </ng-container>
   </div>
+
   <div class="events">
     <div class="event" *ngFor="let event of day.events; let i = index">
       <span
@@ -43,6 +45,7 @@
     "
     [formGroup]="eventForm">
     <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
+
     <app-button
       type="submit"
       size="md"

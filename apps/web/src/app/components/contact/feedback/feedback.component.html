@@ -13,7 +13,7 @@
 
   <div class="form-group">
     <label for="file">File (Image only):</label>
-    <input type="file" id="file" (change)="onFileChange($event)" />
+    <input type="file" id="file" accept="image/jpeg,image/png,image/gif" />
     <div *ngIf="hasError('file', 'required')" class="error-message">File is required.</div>
     <div *ngIf="hasError('file', 'invalidFileType')" class="error-message">
       Invalid file type. Please upload an image.

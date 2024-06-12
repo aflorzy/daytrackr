@@ -9,7 +9,7 @@ import { selectRouteParam } from "../../store/selectors/router.selectors";
 @Component({
   selector: "app-edit-day-page",
   templateUrl: "./edit-day-page.component.html",
-  styleUrls: ["./edit-day-page.component.css"]
+  styleUrls: ["./edit-day-page.component.scss"]
 })
 export class EditDayPageComponent implements OnInit {
   date$: Observable<string | undefined> = this.store.select(selectRouteParam("date"));

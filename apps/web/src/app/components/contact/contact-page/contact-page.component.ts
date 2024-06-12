@@ -9,7 +9,7 @@ import { FeedbackService } from "../../../services/feedback.service";
 @Component({
   selector: "app-contact-page",
   templateUrl: "./contact-page.component.html",
-  styleUrls: ["./contact-page.component.css"]
+  styleUrls: ["./contact-page.component.scss"]
 })
 export class ContactPageComponent {
   responseMessage$ = new Subject<ResponseMessage | null>();

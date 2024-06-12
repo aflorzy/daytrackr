@@ -19,15 +19,17 @@ nav {
   width: 20%;
   max-width: 500px;
   gap: 10px;
-}
-.tab a {
-  text-decoration: none;
-  color: #000;
-  font-size: 1.2rem;
-  font-weight: 500;
-  text-decoration: underline;
-}
-.tab a:hover {
-  color: #444;
-  text-decoration-color: #444;
+
+  a {
+    text-decoration: none;
+    color: #000;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-decoration: underline;
+
+    &:hover {
+      color: #444;
+      text-decoration-color: #444;
+    }
+  }
 }
