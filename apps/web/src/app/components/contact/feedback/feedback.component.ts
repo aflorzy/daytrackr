@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 
@@ -7,28 +7,36 @@ import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
   templateUrl: "./feedback.component.html",
   styleUrls: ["./feedback.component.scss"]
 })
-export class FeedbackComponent implements OnChanges {
+export class FeedbackComponent {
   @Input() responseMessage!: ResponseMessage | null;
-  @Input() resetForm!: boolean;
+  @Input() set resetForm(shouldReset: boolean) {
+    if (shouldReset) {
+      this.feedbackForm.reset();
+    }
+  }
   @Output() submitForm = new EventEmitter<FeedbackMessage>();
 
   feedbackForm = this.fb.group({
     subject: new FormControl("", [Validators.required]),
     message: new FormControl("", [Validators.required]),
-    file: new FormControl(null)
+    file: new FormControl<File | null>(null)
   });
 
   constructor(private fb: FormBuilder) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.resetForm && this.resetForm) {
-      this.feedbackForm.reset();
-    }
-  }
-
   hasError(fieldName: string, error: string): boolean {
     const field = this.feedbackForm.get(fieldName);
     return !!(field?.touched && field?.hasError(error));
+  }
+
+  handleFileChange(event: any) {
+    const files = event?.target?.files;
+
+    if (!files?.length) {
+      this.feedbackForm.get("file")?.reset();
+    }
+
+    this.feedbackForm.patchValue({ file: files[0] });
   }
 
   onSubmit() {

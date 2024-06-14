@@ -17,9 +17,9 @@ export class ContactPageComponent {
 
   constructor(private feedbackService: FeedbackService) {}
 
-  handleSubmit(form: FeedbackMessage) {
+  handleSubmit(payload: FeedbackMessage) {
     this.feedbackService
-      .sendFeedback(form)
+      .sendFeedback(payload)
       .pipe(
         untilDestroyed(this),
         tap(() => this.responseMessage$.next({ message: "Sent successfully.", statusType: StatusType.SUCCESS })),
