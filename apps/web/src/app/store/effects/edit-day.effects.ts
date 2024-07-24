@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { catchError, filter, map, mergeMap, of, switchMap } from "rxjs";
@@ -86,7 +85,6 @@ export class EditDayEffects {
   constructor(
     private action$: Actions,
     private dayService: DayService,
-    private store: Store,
-    private router: Router
+    private store: Store
   ) {}
 }

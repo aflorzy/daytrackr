@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ButtonComponent } from "../../button/button.component";
 import { FeedbackComponent } from "./feedback.component";
 
 describe("FeedbackComponent", () => {
@@ -8,7 +10,8 @@ describe("FeedbackComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FeedbackComponent]
+      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [FeedbackComponent, ButtonComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FeedbackComponent);

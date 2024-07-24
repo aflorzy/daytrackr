@@ -18,6 +18,7 @@ export class DayListItemComponent {
   @Output() combineEvents = new EventEmitter<{ event1: Event; event2: Event }>();
   @Output() addEvent = new EventEmitter<string>();
   @Output() saveEvent = new EventEmitter<Event>();
+
   editingEvent = "";
   originalEvent = "";
 

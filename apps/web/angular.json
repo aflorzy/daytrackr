@@ -95,7 +95,10 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "codeCoverage": true,
+            "progress": true,
+            "karmaConfig": "karma.conf.js"
           }
         },
         "lint": {

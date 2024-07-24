@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { provideMockStore } from "@ngrx/store/testing";
+import { BannerComponent } from "../banner/banner.component";
 import { CalendarPageComponent } from "./calendar-page.component";
 
 describe("CalendarComponent", () => {
@@ -8,7 +10,8 @@ describe("CalendarComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CalendarPageComponent]
+      declarations: [CalendarPageComponent, BannerComponent],
+      providers: [provideMockStore()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CalendarPageComponent);

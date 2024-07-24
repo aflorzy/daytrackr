@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideMockStore } from "@ngrx/store/testing";
 
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ButtonComponent } from "../button/button.component";
 import { RegisterComponent } from "./register.component";
 
 describe("RegisterComponent", () => {
@@ -8,7 +11,9 @@ describe("RegisterComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RegisterComponent]
+      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [RegisterComponent, ButtonComponent],
+      providers: [provideMockStore()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegisterComponent);

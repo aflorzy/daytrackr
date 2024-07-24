@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { provideMockStore } from "@ngrx/store/testing";
+import { ButtonComponent } from "../button/button.component";
 import { LoginComponent } from "./login.component";
 
 describe("LoginComponent", () => {
@@ -8,7 +11,9 @@ describe("LoginComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LoginComponent]
+      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [LoginComponent, ButtonComponent],
+      providers: [provideMockStore()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);

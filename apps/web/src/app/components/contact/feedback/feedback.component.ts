@@ -29,11 +29,15 @@ export class FeedbackComponent {
     return !!(field?.touched && field?.hasError(error));
   }
 
-  handleFileChange(event: any) {
-    const files = event?.target?.files;
+  handleFileChange(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+
+    const files = inputElement.files;
 
     if (!files?.length) {
       this.feedbackForm.get("file")?.reset();
+
+      return;
     }
 
     this.feedbackForm.patchValue({ file: files[0] });
@@ -47,6 +51,7 @@ export class FeedbackComponent {
       body: feedbackFormValue.message ?? "",
       attachments: [feedbackFormValue.file]
     };
+
     this.submitForm.emit(feedbackMessage);
   }
 

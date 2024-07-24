@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { DAYS_OF_WEEK } from "src/app/constants";
 import { Day } from "src/app/interfaces";
 import { DayService } from "src/app/services/day.service";
@@ -22,7 +22,7 @@ export class InputBoxComponent implements OnInit {
   days: Day[] = [];
   daysSaved = false;
 
-  error$: Subject<any> = new BehaviorSubject({ isError: false, errorMsg: "" });
+  error$ = new BehaviorSubject({ isError: false, errorMsg: "" });
 
   constructor(
     private datePipe: DatePipe,
@@ -36,7 +36,7 @@ export class InputBoxComponent implements OnInit {
 
   initFields() {
     if (localStorage.getItem("fields")) {
-      const fields = JSON.parse(localStorage.getItem("fields")!);
+      const fields = JSON.parse(localStorage.getItem("fields") ?? "");
       if (fields.date && fields.text) {
         this.initialDate = new Date(fields.date);
         this.value = fields.text;

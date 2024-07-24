@@ -1,5 +1,11 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { DatePipe } from "@angular/common";
+import { HttpClientModule } from "@angular/common/http";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ButtonComponent } from "../button/button.component";
+import { DayListComponent } from "../day-list/day-list.component";
+import { ParserComponent } from "../parser/parser.component";
 import { InputBoxComponent } from "./input-box.component";
 
 describe("InputBoxComponent", () => {
@@ -8,7 +14,9 @@ describe("InputBoxComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InputBoxComponent]
+      imports: [HttpClientModule, FormsModule, ReactiveFormsModule],
+      declarations: [InputBoxComponent, ButtonComponent, DayListComponent, ParserComponent],
+      providers: [DatePipe]
     }).compileComponents();
 
     fixture = TestBed.createComponent(InputBoxComponent);
