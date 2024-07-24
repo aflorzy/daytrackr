@@ -4,7 +4,7 @@ import { StatusType } from "../../enums";
 @Component({
   selector: "app-banner",
   templateUrl: "./banner.component.html",
-  styleUrls: ["./banner.component.css"]
+  styleUrls: ["./banner.component.scss"]
 })
 export class BannerComponent implements OnInit {
   @Input() message = "";
@@ -19,7 +19,7 @@ export class BannerComponent implements OnInit {
   }
 
   getBannerClass(): string {
-    return `banner-${this.type}`;
+    return `banner__${this.type}`;
   }
 
   dismissBanner(): void {

@@ -9,23 +9,9 @@ import { selectNextDayFromDayList, selectPreviousDayFromDayList, selectSelectedD
 
 @Injectable()
 export class DayEffects {
-  setInitialDay$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(DayActions.initializeCalendarPage),
-      map(() => DayActions.setInitialDay())
-    );
-  });
-
-  setOldestDayAfterInitializeCalendarPage$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(DayActions.initializeCalendarPage),
-      map(() => DayActions.setOldestDay())
-    );
-  });
-
   setOldestDay$ = createEffect(() => {
     return this.action$.pipe(
-      ofType(DayActions.setOldestDay),
+      ofType(DayActions.setOldestDay, DayActions.initializeCalendarPage),
       mergeMap(() =>
         this.dayService.getOldest().pipe(
           map((day: Day) => DayApiActions.retrieveOldestDaySuccess({ day })),
@@ -37,16 +23,9 @@ export class DayEffects {
     );
   });
 
-  setLatestDayAfterInitializeCalendarPage$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(DayActions.initializeCalendarPage),
-      map(() => DayActions.setLatestDay())
-    );
-  });
-
   setLatestDay$ = createEffect(() => {
     return this.action$.pipe(
-      ofType(DayActions.setLatestDay),
+      ofType(DayActions.setLatestDay, DayActions.initializeCalendarPage),
       mergeMap(() =>
         this.dayService.getLatest().pipe(
           map((day: Day) => DayApiActions.retrieveLatestDaySuccess({ day })),
@@ -60,9 +39,9 @@ export class DayEffects {
 
   loadToday$ = createEffect(() => {
     return this.action$.pipe(
-      ofType(DayActions.setInitialDay),
+      ofType(DayActions.setInitialDay, DayActions.initializeCalendarPage),
       concatLatestFrom(() => this.store.select(selectSelectedDay)),
-      mergeMap(([_, selectedDay]) => {
+      mergeMap(([, selectedDay]) => {
         if (selectedDay.id) {
           return this.dayService
             .getDayById(selectedDay.id)

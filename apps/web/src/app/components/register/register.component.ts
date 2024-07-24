@@ -1,48 +1,40 @@
 import { Component } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { UntilDestroy } from "@ngneat/until-destroy";
-import { StatusType } from "../../enums";
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { AuthActions } from "src/app/store/actions/auth.actions";
+import { StatusType } from "../../enums";
 
-@UntilDestroy()
 @Component({
   selector: "app-register",
   templateUrl: "./register.component.html"
 })
 export class RegisterComponent {
-  registerForm: FormGroup;
+  registerForm = this.fb.group({
+    username: new FormControl("", [Validators.required]),
+    password: new FormControl("", [Validators.required, Validators.minLength(6)]),
+    confirmPassword: new FormControl("", [Validators.required])
+  });
+
   successMessage = "";
   errorMessage = "";
 
   constructor(
     private fb: FormBuilder,
     private store: Store
-  ) {
-    this.registerForm = this.fb.group({
-      username: ["", [Validators.required]],
-      password: ["", [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ["", [Validators.required]]
-    });
-  }
+  ) {}
 
-  get username(): string {
-    return this.registerForm.get("username")?.value;
-  }
   get usernameField() {
     return this.registerForm.get("username");
   }
 
-  get password(): string {
-    return this.registerForm.get("password")?.value;
-  }
   get passwordField() {
     return this.registerForm.get("password");
   }
 
-  get confirmPassword(): string {
-    return this.registerForm.get("confirmPassword")?.value;
+  get passwordsMatch(): boolean {
+    return this.registerForm.get("password")?.value === this.registerForm.get("confirmPassword")?.value;
   }
+
   get confirmPasswordField() {
     return this.registerForm.get("confirmPassword");
   }
@@ -52,11 +44,14 @@ export class RegisterComponent {
   }
 
   onSubmit() {
-    if (this.password !== this.confirmPassword) {
+    if (!this.passwordsMatch) {
       this.errorMessage = "Passwords do not match.";
       return;
     }
 
-    this.store.dispatch(AuthActions.register({ username: this.username, password: this.password }));
+    const username = this.usernameField?.value ?? "";
+    const password = this.passwordField?.value ?? "";
+
+    this.store.dispatch(AuthActions.register({ username, password }));
   }
 }

@@ -1,9 +1,9 @@
 import { TestBed } from "@angular/core/testing";
 
+import { Day, Event } from "../interfaces";
 import { ParserService } from "./parser.service";
-import { Event, Day } from "../interfaces";
 
-fdescribe("ParserService", () => {
+describe("ParserService", () => {
   let service: ParserService;
 
   beforeEach(() => {

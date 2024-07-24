@@ -1,55 +1,58 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 
 @Component({
   selector: "app-feedback",
   templateUrl: "./feedback.component.html",
-  styleUrls: ["./feedback.component.css"]
+  styleUrls: ["./feedback.component.scss"]
 })
-export class FeedbackComponent implements OnChanges {
+export class FeedbackComponent {
   @Input() responseMessage!: ResponseMessage | null;
-  @Input() resetForm!: boolean;
-  @Output() submitForm = new EventEmitter<FeedbackMessage>();
-
-  feedbackForm: FormGroup;
-
-  constructor(private fb: FormBuilder) {
-    this.feedbackForm = this.fb.group({
-      subject: ["", Validators.required],
-      message: ["", Validators.required],
-      file: [null, [this.validateFileType]]
-    });
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.resetForm && this.resetForm) {
+  @Input() set resetForm(shouldReset: boolean) {
+    if (shouldReset) {
       this.feedbackForm.reset();
     }
   }
+  @Output() submitForm = new EventEmitter<FeedbackMessage>();
+
+  feedbackForm = this.fb.group({
+    subject: new FormControl("", [Validators.required]),
+    message: new FormControl("", [Validators.required]),
+    file: new FormControl<File | null>(null)
+  });
+
+  constructor(private fb: FormBuilder) {}
 
   hasError(fieldName: string, error: string): boolean {
     const field = this.feedbackForm.get(fieldName);
     return !!(field?.touched && field?.hasError(error));
   }
 
-  onSubmit() {
-    if (this.feedbackForm.valid) {
-      this.submitForm.emit(this.feedbackForm.getRawValue());
-    } else {
-      console.error("Form invalid");
+  handleFileChange(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+
+    const files = inputElement.files;
+
+    if (!files?.length) {
+      this.feedbackForm.get("file")?.reset();
+
+      return;
     }
-    this.submitForm.emit(this.feedbackForm.getRawValue());
+
+    this.feedbackForm.patchValue({ file: files[0] });
   }
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
+  onSubmit() {
+    const feedbackFormValue = this.feedbackForm.value;
 
-    if (file && this.validateFileType(file)) {
-      this.feedbackForm.patchValue({ file });
-    } else {
-      this.feedbackForm.patchValue({ file: null });
-      event.target.value = null; // Clear the input
-    }
+    const feedbackMessage: FeedbackMessage = {
+      subject: feedbackFormValue.subject ?? "",
+      body: feedbackFormValue.message ?? "",
+      attachments: [feedbackFormValue.file]
+    };
+
+    this.submitForm.emit(feedbackMessage);
   }
 
   validateFileType(file: File): boolean {

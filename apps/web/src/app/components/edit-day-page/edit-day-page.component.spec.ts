@@ -1,23 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { EditDayPageComponent } from './edit-day-page.component';
+import { provideMockStore } from "@ngrx/store/testing";
+import { EditDayPageComponent } from "./edit-day-page.component";
 
-describe('EditDayPageComponent', () => {
+describe("EditDayPageComponent", () => {
   let component: EditDayPageComponent;
   let fixture: ComponentFixture<EditDayPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EditDayPageComponent ]
-    })
-    .compileComponents();
+      declarations: [EditDayPageComponent],
+      providers: [provideMockStore()]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditDayPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

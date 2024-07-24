@@ -1,33 +1,31 @@
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { catchError, filter, map, mergeMap, of, switchMap } from "rxjs";
 import { Day } from "../../interfaces";
 import { DayService } from "../../services/day.service";
 import { EditDayActions, EditDayApiActions } from "../actions/edit-day.actions";
+import { RouterActions } from "../actions/router.actions";
 import { selectEditingDay } from "../selectors/edit-day.selector";
 import { selectRouteParam } from "../selectors/router.selectors";
-import { RouterActions } from "../actions/router.actions";
 
 @Injectable()
 export class EditDayEffects {
   loadDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(EditDayActions.loadDay),
-      switchMap(() =>
+      concatLatestFrom(() =>
         this.store.select(selectRouteParam("date")).pipe(
-          filter(param => !!param),
-          mergeMap(date =>
-            this.dayService.getDayByDate(date || "").pipe(
-              map((day: Day) => EditDayApiActions.loadDaySuccess({ day })),
-              catchError((error: { message: string }) =>
-                of(EditDayApiActions.loadDayFailure({ errorMsg: error.message }))
-              )
-            )
-          )
+          filter(Boolean),
+          filter(date => !Number.isNaN(Date.parse(date)))
         )
-      )
+      ),
+      switchMap(([, date]) => {
+        return this.dayService.getDayByDate(date).pipe(
+          map((day: Day) => EditDayApiActions.loadDaySuccess({ day })),
+          catchError((error: { message: string }) => of(EditDayApiActions.loadDayFailure({ errorMsg: error.message })))
+        );
+      })
     );
   });
 
@@ -87,7 +85,6 @@ export class EditDayEffects {
   constructor(
     private action$: Actions,
     private dayService: DayService,
-    private store: Store,
-    private router: Router
+    private store: Store
   ) {}
 }

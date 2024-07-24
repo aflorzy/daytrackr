@@ -9,7 +9,7 @@ import { FeedbackService } from "../../../services/feedback.service";
 @Component({
   selector: "app-contact-page",
   templateUrl: "./contact-page.component.html",
-  styleUrls: ["./contact-page.component.css"]
+  styleUrls: ["./contact-page.component.scss"]
 })
 export class ContactPageComponent {
   responseMessage$ = new Subject<ResponseMessage | null>();
@@ -17,9 +17,9 @@ export class ContactPageComponent {
 
   constructor(private feedbackService: FeedbackService) {}
 
-  handleSubmit(form: FeedbackMessage) {
+  handleSubmit(payload: FeedbackMessage) {
     this.feedbackService
-      .sendFeedback(form)
+      .sendFeedback(payload)
       .pipe(
         untilDestroyed(this),
         tap(() => this.responseMessage$.next({ message: "Sent successfully.", statusType: StatusType.SUCCESS })),

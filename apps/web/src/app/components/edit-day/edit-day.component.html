@@ -1,20 +1,25 @@
 <div class="events" cdkDropList *ngIf="day; else loading">
   <h2>{{ day.date | date: "mediumDate" }}</h2>
+
   <div
     class="event"
     cdkDrag
     *ngFor="let event of day.events; trackBy: identify"
     (cdkDragDropped)="moveEvent.emit({ event, newIdx: $event.currentIndex })">
     <span class="index">{{ event.idx + 1 }}</span>
+
     <span class="arrow up" [class.hidden]="event.idx === 0" (click)="moveEventUp.emit(event)"
       ><fa-icon [icon]="['fas', 'chevron-up']"></fa-icon
     ></span>
+
     <span class="arrow down" [class.hidden]="event.idx === day.events.length - 1" (click)="moveEventDown.emit(event)"
       ><fa-icon [icon]="['fas', 'chevron-down']"></fa-icon
     ></span>
+
     <span class="trash-icon" (click)="removeEvent.emit(event)"
       ><fa-icon [icon]="['fas', 'trash']" transform="shrink-2"></fa-icon
     ></span>
+
     <span class="text">{{ event.name }}</span>
   </div>
 
@@ -35,6 +40,7 @@
     <app-button (clicked)="saveEdits.emit()" fill="fill" color="primary" [disabled]="!isChanged"
       >Save Changes</app-button
     >
+
     <app-button (clicked)="cancel.emit(true)" fill="outline" color="primary">Cancel</app-button>
   </div>
 </div>

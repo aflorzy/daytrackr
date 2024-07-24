@@ -5,7 +5,7 @@ import { Day, Event } from "src/app/interfaces";
 @Component({
   selector: "app-edit-day",
   templateUrl: "./edit-day.component.html",
-  styleUrls: ["./edit-day.component.css"]
+  styleUrls: ["./edit-day.component.scss"]
 })
 export class EditDayComponent {
   @Input() day!: Day;

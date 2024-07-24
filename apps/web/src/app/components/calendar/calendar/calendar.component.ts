@@ -9,16 +9,14 @@ import {
   SimpleChanges
 } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { Observable, defer, filter, map } from "rxjs";
 import { CalendarDay, CalendarMonth, Day as DayObj } from "src/app/interfaces";
 import { CalendarService } from "../../../services/calendar.service";
 
-@UntilDestroy()
 @Component({
   selector: "app-calendar",
   templateUrl: "./calendar.component.html",
-  styleUrls: ["./calendar.component.css"],
+  styleUrls: ["./calendar.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent implements OnChanges {

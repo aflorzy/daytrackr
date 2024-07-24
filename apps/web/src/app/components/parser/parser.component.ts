@@ -7,7 +7,7 @@ import { ParserService } from "src/app/services/parser.service";
 @Component({
   selector: "app-parser",
   templateUrl: "./parser.component.html",
-  styleUrls: ["./parser.component.css"]
+  styleUrls: ["./parser.component.scss"]
 })
 export class ParserComponent {
   parserForm: FormGroup = new FormGroup({

@@ -1,23 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ParserComponent } from './parser.component';
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ButtonComponent } from "../button/button.component";
+import { ParserComponent } from "./parser.component";
 
-describe('ParserComponent', () => {
+describe("ParserComponent", () => {
   let component: ParserComponent;
   let fixture: ComponentFixture<ParserComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ParserComponent ]
-    })
-    .compileComponents();
+      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [ParserComponent, ButtonComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ParserComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

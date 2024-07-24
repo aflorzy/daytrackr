@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, of, switchMap, take } from "rxjs";
+import { StatusType } from "src/app/enums";
+import { AuthService } from "src/app/services/auth.service";
+import { StorageService } from "src/app/services/storage.service";
 import { AccessToken } from "../../interfaces";
 import { AuthActions, AuthApiActions } from "../actions/auth.actions";
-import { AuthService } from "src/app/services/auth.service";
-import { Router } from "@angular/router";
-import { StorageService } from "src/app/services/storage.service";
 import { RouterActions } from "../actions/router.actions";
-import { StatusType } from "src/app/enums";
 
 @Injectable()
 export class AuthEffects {
@@ -17,7 +17,12 @@ export class AuthEffects {
       switchMap(() => {
         const token: AccessToken = this.storageService.getItemFromStorage("token");
 
-        if (token) return of(AuthApiActions.loginSuccess({ token }));
+        if (token)
+          return of(
+            AuthActions.setToken({
+              token
+            })
+          );
         else return of();
       })
     );
