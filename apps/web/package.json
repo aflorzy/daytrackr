@@ -5,8 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:ci": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --browsers ChromeHeadless",
+    "test": "ng test",
+    "test:ci": "ng test --watch false",
     "lint": "ng lint --fix",
     "lint:ci": "ng lint"
   },
