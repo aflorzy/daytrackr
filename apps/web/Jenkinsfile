@@ -6,17 +6,35 @@ pipeline {
     }
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
-        REGISTRY="localhost:5000"
+        REGISTRY="gitea.local.aflorzy.com"
         IMAGE_NAME="daytrackr-frontend"
     }
 
-    tools {
-        'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
-    }
     stages {
         stage ('Checkout SCM') {
             steps {
-                git branch: 'main', credentialsId: 'github-daytrackr-parser', url: 'git@github.com:aflorzy/daytrackr-parser.git'
+                git branch: 'main', credentialsId: 'gitea', url: 'git@gitea.local.aflorzy.com/aflorzy/daytrackr-parser.git'
+            }
+        }
+        stage ('Setup') {
+            steps {
+                sh 'docker build -f runner.dockerfile -t runner:latest'
+            }
+        }
+        stage ('Install Dependencies') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh 'docker run --rm -v ${workspace}:/workspace runner:latest npm install --prefix /workspace'
+            }
+        }
+        stage ('Run Tests') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh 'docker run --rm -v ${workspace}:/workspace runner:latest npm run test:ci --prefix /workspace'
             }
         }
         stage ('Build Docker Image') {
@@ -24,28 +42,11 @@ pipeline {
                 sh 'docker build -t ${IMAGE_NAME} .'
             }
         }
-        stage ('Push Image to Registry') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'f4b22f31-c51c-4a5c-b998-efd520b5b9f9', passwordVariable: 'REGISTRY_PSW', usernameVariable: 'REGISTRY_USR')]) {
-                        echo 'Login Docker'
-                        sh 'docker login localhost:5000 -u $REGISTRY_USR -p $REGISTRY_PSW'
-                        echo 'Tag and push versioned image'
-                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL"
-                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL'
-
-                        echo 'Tag and push latest image'
-                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:latest"
-                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:latest' // Keep latest up to date
-                    }
-                }
-            }
-        }
     }
     post {
         always {
             echo 'Logout Docker'
-            sh 'docker logout localhost:5000'
+            sh 'docker logout ${REGISTRY}'
         }
     }
 }
