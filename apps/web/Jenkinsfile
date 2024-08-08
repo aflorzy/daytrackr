@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     options {
         ansiColor('xterm')
     }
@@ -9,12 +9,13 @@ pipeline {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
         REGISTRY="gitea.local.aflorzy.com"
         IMAGE_NAME="daytrackr-frontend"
+        BRANCH_NAME="${BRANCH_NAME}"
     }
 
     stages {
         stage ('Checkout SCM') {
             steps {
-                git branch: 'chore/overhaul-jenkins', credentialsId: 'gitea', url: 'git@192.168.1.205:aflorzy/daytrackr-parser.git'
+                git branch: "${BRANCH_NAME}", credentialsId: 'gitea', url: 'git@192.168.1.205:aflorzy/daytrackr-parser.git'
             }
         }
         stage ('Setup') {
