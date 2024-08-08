@@ -26,7 +26,15 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm install --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm install --configuration=production --prefix /workspace"
+            }
+        }
+        stage ('Run Linting') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run lint:ci --prefix /workspace"
             }
         }
         stage ('Run Tests') {
