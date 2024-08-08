@@ -1,9 +1,10 @@
 pipeline {
     agent any
+    
     options {
-        // This is required if you want to clean before build
-        skipDefaultCheckout(true)
+        ansiColor('xterm')
     }
+
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
         REGISTRY="gitea.local.aflorzy.com"
@@ -26,7 +27,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm --cap-add=SYS_ADMIN -v ${workspace}:/workspace runner:latest npm install --configuration=production --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm install --configuration=production --prefix /workspace"
             }
         }
         stage ('Run Linting') {
