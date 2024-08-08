@@ -18,7 +18,7 @@ pipeline {
         }
         stage ('Setup') {
             steps {
-                sh 'docker build -f runner.dockerfile -t runner:latest'
+                sh 'docker build -f runner.dockerfile -t runner:latest .'
             }
         }
         stage ('Install Dependencies') {
