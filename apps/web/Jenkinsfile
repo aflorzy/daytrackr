@@ -26,6 +26,9 @@ pipeline {
                 workspace = pwd()
             }
             steps {
+                sh 'echo ${workspace}'
+                sh "echo ${workspace}"
+                sh "echo ${pwd()}"
                 sh 'docker run --rm -v ${workspace}:/workspace runner:latest npm install --prefix /workspace'
             }
         }
