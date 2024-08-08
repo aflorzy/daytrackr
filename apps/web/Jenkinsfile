@@ -26,7 +26,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm install --configuration=production --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace -cap-add=SYS_ADMIN runner:latest npm install --configuration=production --prefix /workspace"
             }
         }
         stage ('Run Linting') {
