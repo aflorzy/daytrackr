@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage ('Checkout SCM') {
             steps {
-                git branch: 'main', credentialsId: 'gitea', url: 'git@gitea.local.aflorzy.com/aflorzy/daytrackr-parser.git'
+                git branch: 'main', credentialsId: 'gitea', url: 'git@gitea.local.aflorzy.com:aflorzy/daytrackr-parser.git'
             }
         }
         stage ('Setup') {
