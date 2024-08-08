@@ -18,7 +18,7 @@ pipeline {
         }
         stage ('Setup') {
             steps {
-                sh 'docker build -f runner.dockerfile -t runner:latest .'
+                sh "docker build -f runner.dockerfile -t runner:latest ."
             }
         }
         stage ('Install Dependencies') {
@@ -26,10 +26,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh 'echo ${workspace}'
-                sh "echo ${workspace}"
-                sh "echo ${pwd()}"
-                sh 'docker run --rm -v ${workspace}:/workspace runner:latest npm install --prefix /workspace'
+                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm install --prefix /workspace"
             }
         }
         stage ('Run Tests') {
@@ -37,19 +34,19 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh 'docker run --rm -v ${workspace}:/workspace runner:latest npm run test:ci --prefix /workspace'
+                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run test:ci --prefix /workspace"
             }
         }
         stage ('Build Docker Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME} .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
     }
     post {
         always {
             echo 'Logout Docker'
-            sh 'docker logout ${REGISTRY}'
+            sh "docker logout ${REGISTRY}"
         }
     }
 }
