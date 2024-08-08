@@ -1,1 +1,1 @@
-FROM node:20.16-alpine
+FROM zenika/alpine-chrome:with-node
