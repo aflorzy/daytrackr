@@ -16,6 +16,7 @@ pipeline {
         REGISTRY_URL="gitea.local.aflorzy.com"
         REGISTRY_CREDENTIALS = credentials('gitea')
         IMAGE_NAME="aflorzy/daytrackr-frontend"
+        ENV = "${ENV}"
         BRANCH_NAME="${BRANCH_NAME}"
     }
 
@@ -84,7 +85,7 @@ pipeline {
                     sh "docker image rm -f ${VERSIONED_TAG}"
 
                     // Conditionally push the latest tag based on the environment
-                    if (BRANCH_NAME == 'prod') {
+                    if (ENV == 'prod') {
                         def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
 
                         sh "docker push ${LATEST_TAG}"
