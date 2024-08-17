@@ -74,14 +74,6 @@ pipeline {
                     // Using Docker Pipeline plugin
                     docker.withRegistry(REGISTRY_URL, REGISTRY_CREDENTIALS_ID) {
                         // Push the versioned tag
-                        docker.push("${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}")
-
-                        // Conditionally push the latest tag based on the environment
-                        if (env.BRANCH_NAME == 'prod') {
-                            docker.push("${REGISTRY_URL}/${IMAGE_NAME}:latest")
-                        }
-
-                        // Push the versioned tag
                         def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
 
                         sh "docker push ${VERSIONED_TAG}"
