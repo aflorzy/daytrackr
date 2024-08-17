@@ -5,6 +5,10 @@ pipeline {
         ansiColor('xterm')
     }
 
+    parameters {
+        string(name: 'ENV1', defaultValue: 'dev', description: 'Deployment environment')
+    }
+
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
         REGISTRY_URL="gitea.local.aflorzy.com"
@@ -69,9 +73,13 @@ pipeline {
                     echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
                 """
 
-                // Push the versioned and latest tags
+                // Push the versioned tag
                 sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
-                sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
+
+                // Only push latest if prod env
+                if (env.ENV == 'prod') {
+                    sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
+                }
             }
         }
     }
