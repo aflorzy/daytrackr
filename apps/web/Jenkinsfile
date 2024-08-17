@@ -9,7 +9,7 @@ pipeline {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
         REGISTRY_URL="gitea.local.aflorzy.com"
         REGISTRY_CREDENTIALS = credentials('gitea')
-        IMAGE_NAME="daytrackr/frontend"
+        IMAGE_NAME="aflorzy/daytrackr-frontend"
         BRANCH_NAME="${BRANCH_NAME}"
     }
 
