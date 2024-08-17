@@ -72,8 +72,27 @@ pipeline {
             steps {
                 script {
                     // Using Docker Pipeline plugin
-                    docker.withRegistry(REGISTRY_URL, REGISTRY_CREDENTIALS_ID) {
-                        // Push the versioned tag
+                    // docker.withRegistry(REGISTRY_URL, REGISTRY_CREDENTIALS_ID) {
+                    //     // Push the versioned tag
+                    //     def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
+
+                    //     sh "docker push ${VERSIONED_TAG}"
+
+                    //     // Remove image to save disk space
+                    //     sh "docker image rm -f ${VERSIONED_TAG}"
+
+                    //     // Conditionally push the latest tag based on the environment
+                    //     if (env.BRANCH_NAME == 'prod') {
+                    //         def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+
+                    //         sh "docker push ${LATEST_TAG}"
+
+                    //         // Remove image to save disk space
+                    //         sh "docker image rm -f ${LATEST_TAG}"
+                    //     }
+                    // }
+
+                    withCredentials([usernamePassword(credentialsId: 'gitea', passwordVariable: 'REGISTRY_CREDENTIALS_PSW', usernameVariable: 'REGISTRY_CREDENTIALS_USR')]) {
                         def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
 
                         sh "docker push ${VERSIONED_TAG}"
@@ -91,21 +110,6 @@ pipeline {
                             sh "docker image rm -f ${LATEST_TAG}"
                         }
                     }
-
-                    // withCredentials([usernamePassword(credentialsId: 'gitea', passwordVariable: 'REGISTRY_CREDENTIALS_PSW', usernameVariable: 'REGISTRY_CREDENTIALS_USR')]) {
-                    //     // Log in to the Docker registry
-                    //     sh """
-                    //         echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
-                    //     """
-                        
-                    //     // Push the versioned tag
-                    //     sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
-
-                    //     // Conditionally push the latest tag based on the environment
-                    //     if (env.BRANCH_NAME == 'prod') {
-                    //         sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
-                    //     }
-                    // }
                 }
             }
         }
