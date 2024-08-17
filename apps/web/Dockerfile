@@ -1,19 +1,21 @@
 FROM node:20-alpine as build
 
-WORKDIR /app
+WORKDIR /workspace
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm install -g npm@10.8.2
+
+RUN npm install --configuration=production
 
 COPY . .
 
-RUN npm run build:ci
+RUN npm run build:ci 
 
 
 FROM nginx:alpine
 
-COPY --from=build /app/dist/my-angular-app /usr/share/nginx/html
+COPY --from=build /workspace/dist/daytrackr-parser /usr/share/nginx/html
 
 COPY nginx-custom.conf /etc/nginx/conf.d/default.conf
 
