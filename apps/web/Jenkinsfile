@@ -13,7 +13,7 @@ pipeline {
 
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
-        REGISTRY_URL="https://gitea.local.aflorzy.com"
+        REGISTRY_URL="gitea.local.aflorzy.com"
         REGISTRY_CREDENTIALS_ID="gitea"
         IMAGE_NAME="aflorzy/daytrackr-frontend"
         BRANCH_NAME="${BRANCH_NAME}"
