@@ -7,8 +7,9 @@ pipeline {
 
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
-        REGISTRY="gitea.local.aflorzy.com"
-        IMAGE_NAME="daytrackr-frontend"
+        REGISTRY_URL="gitea.local.aflorzy.com"
+        REGISTRY_CREDENTIALS = credentials('gitea')
+        IMAGE_NAME="daytrackr/frontend"
         BRANCH_NAME="${BRANCH_NAME}"
     }
 
@@ -47,16 +48,37 @@ pipeline {
                 sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run test:ci --prefix /workspace"
             }
         }
+        stage ('Compile') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run build --prefix /workspace"
+            }
+        }
         stage ('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME} ."
+                // Tag with version and with latest
+                sh "docker build -t ${IMAGE_NAME}:${VERSION_IMAGE_LABEL} -t ${IMAGE_NAME}:latest ."
+            }
+        }
+        stage ('Push Docker Image to Registry') {
+            steps {
+                // Log in to the Docker registry
+                sh """
+                    echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
+                """
+
+                // Push the versioned and latest tags
+                sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
+                sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
             }
         }
     }
     post {
         always {
-            echo 'Logout Docker'
-            sh "docker logout ${REGISTRY}"
+            echo 'Log Out of Docker Registry'
+            sh "docker logout ${REGISTRY_URL}"
         }
     }
 }

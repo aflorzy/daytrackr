@@ -1,30 +1,24 @@
-FROM node as build
+FROM node:20-alpine as build
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
 
-COPY . ./
+RUN npm ci
 
-ARG configuration=production
+COPY . .
 
-RUN npm run build
-
-#### Stage 2, use the compiled app, ready for production with Nginx
-FROM nginx
-
-# Copy the angular build from Stage 1
-COPY --from=build /app/dist/daytrackr-parser/ /usr/share/nginx/html
-
-# Copy our custom nginx config
-COPY /nginx-custom.conf /etc/nginx/conf.d/default.conf
+RUN npm run build:ci
 
 
-# Change nginx permissions
-RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
-    chmod -R 777 /var/cache/nginx /var/run /var/log/nginx
+FROM nginx:alpine
+
+COPY --from=build /app/dist/my-angular-app /usr/share/nginx/html
+
+COPY nginx-custom.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
+
+HEALTHCHECK CMD curl --fail http://localhost:80 || exit 1
 
 ENTRYPOINT ["nginx","-g","daemon off;"]
