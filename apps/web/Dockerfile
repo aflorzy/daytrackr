@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:20.16-alpine as build
 
 WORKDIR /workspace
 
