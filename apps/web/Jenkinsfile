@@ -12,7 +12,6 @@ pipeline {
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
         REGISTRY_URL="gitea.local.aflorzy.com"
-        REGISTRY_CREDENTIALS = credentials('gitea')
         IMAGE_NAME="aflorzy/daytrackr-frontend"
         BRANCH_NAME="${BRANCH_NAME}"
     }
@@ -68,17 +67,21 @@ pipeline {
         }
         stage ('Push Docker Image to Registry') {
             steps {
-                // Log in to the Docker registry
-                sh """
-                    echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
-                """
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'gitea', passwordVariable: 'REGISTRY_CREDENTIALS_PSW', usernameVariable: 'REGISTRY_CREDENTIALS_USR')]) {
+                        // Log in to the Docker registry
+                        sh """
+                            echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
+                        """
+                        
+                        // Push the versioned tag
+                        sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
 
-                // Push the versioned tag
-                sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
-
-                // Only push latest if prod env
-                if (env.ENV == 'prod') {
-                    sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
+                        // Conditionally push the latest tag based on the environment
+                        if (env.BRANCH_NAME == 'prod') {
+                            sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest"
+                        }
+                    }
                 }
             }
         }
