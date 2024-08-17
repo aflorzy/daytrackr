@@ -14,7 +14,8 @@ pipeline {
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
         REGISTRY_URL="gitea.local.aflorzy.com"
-        REGISTRY_CREDENTIALS_ID="gitea"
+        REGISTRY_CREDENTIALS_ID = "gitea"
+        REGISTRY_CREDENTIALS = credentials('gitea')
         IMAGE_NAME="aflorzy/daytrackr-frontend"
         BRANCH_NAME="${BRANCH_NAME}"
     }
@@ -91,8 +92,12 @@ pipeline {
                     //         sh "docker image rm -f ${LATEST_TAG}"
                     //     }
                     // }
+                    // Log in to the Docker registry
+                    sh """
+                        echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
+                    """
 
-                    withCredentials([usernamePassword(credentialsId: 'gitea', passwordVariable: 'REGISTRY_CREDENTIALS_PSW', usernameVariable: 'REGISTRY_CREDENTIALS_USR')]) {
+                    // withCredentials([usernamePassword(credentialsId: 'gitea', passwordVariable: 'REGISTRY_CREDENTIALS_PSW', usernameVariable: 'REGISTRY_CREDENTIALS_USR')]) {
                         def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
 
                         sh "docker push ${VERSIONED_TAG}"
@@ -109,7 +114,7 @@ pipeline {
                             // Remove image to save disk space
                             sh "docker image rm -f ${LATEST_TAG}"
                         }
-                    }
+                    // }
                 }
             }
         }
