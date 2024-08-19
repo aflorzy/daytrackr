@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     options {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
@@ -18,6 +19,7 @@ pipeline {
         REGISTRY_CREDENTIALS = credentials('gitea')
         IMAGE_NAME="aflorzy/daytrackr-backend"
         ENV = "${ENV}"
+        BRANCH_NAME="${BRANCH_NAME}"
     }
     tools {
         maven "Maven 3.6.3"
@@ -42,26 +44,29 @@ pipeline {
         stage ('Push Image to Registry') {
             steps {
                 script {
-                    // Log in to the Docker registry
-                    sh """
-                        echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'gitea', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        // Log in to the Docker registry
+                        sh "docker login ${REGISTRY_URL} -u ${DOCKER_USER} -p ${DOCKER_PASS}"
 
-                    def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
+                        def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
 
-                    sh "docker push ${VERSIONED_TAG}"
-
-                    // Remove image to save disk space
-                    sh "docker image rm -f ${VERSIONED_TAG}"
-
-                    // Conditionally push the latest tag based on the environment
-                    if (ENV == 'prod') {
-                        def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
-
-                        sh "docker push ${LATEST_TAG}"
+                        sh "docker push ${VERSIONED_TAG}"
 
                         // Remove image to save disk space
-                        sh "docker image rm -f ${LATEST_TAG}"
+                        sh "docker image rm -f ${VERSIONED_TAG}"
+
+                        // Conditionally push the latest tag based on the environment
+                        if (ENV == 'prod') {
+                            def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+
+                            sh "docker push ${LATEST_TAG}"
+
+                            // Remove image to save disk space
+                            sh "docker image rm -f ${LATEST_TAG}"
+                        }
+
+                        // Log out from Docker registry
+                        sh "docker logout ${REGISTRY_URL}"
                     }
                 }
             }
