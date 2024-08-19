@@ -14,8 +14,10 @@ pipeline {
 
     environment {
         VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
-        REGISTRY="localhost:5000"
-        IMAGE_NAME="daytrackr-backend"
+        REGISTRY_URL="gitea.local.aflorzy.com"
+        REGISTRY_CREDENTIALS = credentials('gitea')
+        IMAGE_NAME="aflorzy/daytrackr-backend"
+        ENV = "${ENV}"
     }
     tools {
         maven "Maven 3.6.3"
@@ -24,7 +26,7 @@ pipeline {
     stages {
         stage ('Checkout SCM') {
             steps {
-                git branch: 'main', credentialsId: 'github-jenkins15', url: 'git@github.com:aflorzy/daytrackr-backend.git'
+                git branch: "${BRANCH_NAME}", credentialsId: 'gitea', url: 'git@192.168.1.205:aflorzy/daytrackr-backend.git'
             }
         }
         stage ('Build Maven') {
@@ -34,22 +36,32 @@ pipeline {
         }
         stage ('Build Docker Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME} .'
+                sh "docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL} -t ${REGISTRY_URL}/${IMAGE_NAME}:latest ."
             }
         }
         stage ('Push Image to Registry') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'f4b22f31-c51c-4a5c-b998-efd520b5b9f9', passwordVariable: 'REGISTRY_PSW', usernameVariable: 'REGISTRY_USR')]) {
-                        echo 'Login Docker'
-                        sh 'docker login localhost:5000 -u $REGISTRY_USR -p $REGISTRY_PSW'
-                        echo 'Tag and push versioned image'
-                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL"
-                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL'
+                    // Log in to the Docker registry
+                    sh """
+                        echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
+                    """
 
-                        echo 'Tag and push latest image'
-                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:latest"
-                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:latest' // Keep latest up to date
+                    def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
+
+                    sh "docker push ${VERSIONED_TAG}"
+
+                    // Remove image to save disk space
+                    sh "docker image rm -f ${VERSIONED_TAG}"
+
+                    // Conditionally push the latest tag based on the environment
+                    if (ENV == 'prod') {
+                        def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+
+                        sh "docker push ${LATEST_TAG}"
+
+                        // Remove image to save disk space
+                        sh "docker image rm -f ${LATEST_TAG}"
                     }
                 }
             }
@@ -57,8 +69,8 @@ pipeline {
     }
     post {
         always {
-            echo 'Logout Docker'
-            sh 'docker logout localhost:5000'
+            echo 'Log Out of Docker Registry'
+            sh "docker logout ${REGISTRY_URL}"
         }
     }
 }
