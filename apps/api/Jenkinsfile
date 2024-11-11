@@ -29,6 +29,12 @@ pipeline {
     stages {
         stage ('Build Maven') {
             steps {
+                echo "PWD"
+                sh "pwd"
+
+                echo "List contents"
+                sh "ls -la"
+
                 sh 'mvn clean install -DskipTests'
             }
         }
