@@ -1,26 +1,39 @@
-FROM node:20.16-alpine as build
+# Stage 1: Build
+FROM node:20.16-alpine as builder
 
-WORKDIR /workspace
+# Set working directory
+WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 
-RUN npm install -g npm@10.8.2
+# Install dependencies
+RUN npm ci
 
-RUN npm install --configuration=production
-
+# Copy project files
 COPY . .
 
-RUN npm run build:ci 
+# Build for production
+RUN npm run build:ci
 
-
+# Stage 2: Production
 FROM nginx:alpine
 
-COPY --from=build /workspace/dist/daytrackr-parser /usr/share/nginx/html
+# Remove default nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
 
-COPY nginx-custom.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration
+COPY nginx-custom.conf /etc/nginx/conf.d/
 
+# Copy built assets from builder stage
+COPY --from=builder /app/dist/daytrackr-parser /usr/share/nginx/html
+
+# Expose port 80
 EXPOSE 80
 
-HEALTHCHECK CMD curl --fail http://localhost:80 || exit 1
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
 
-ENTRYPOINT ["nginx","-g","daemon off;"]
+# Optional healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1
