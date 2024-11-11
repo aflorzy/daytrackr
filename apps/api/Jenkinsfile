@@ -6,19 +6,20 @@ pipeline {
         skipDefaultCheckout(true)
         ansiColor('xterm')
     }
-    
+
     parameters {
-        choice(name: 'ENV', choices: ['dev', 'prod'], description: 'Select the deployment environment')
-        
+        // choice(name: 'ENV', choices: ['dev', 'prod'], description: 'Select the deployment environment')
+
         string(name: 'MAJOR_MINOR', defaultValue: '1.0', description: 'Major and minor version of build. Patch number set after build.')
     }
 
     environment {
-        VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
+        // VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
+        VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}"
         REGISTRY_URL="gitea.local.aflorzy.com"
         REGISTRY_CREDENTIALS = credentials('gitea')
-        IMAGE_NAME="aflorzy/daytrackr-backend"
-        ENV = "${ENV}"
+        IMAGE_NAME="florzytech/daytrackr-backend"
+        // ENV = "${ENV}"
         BRANCH_NAME="${BRANCH_NAME}"
     }
     tools {
@@ -26,11 +27,6 @@ pipeline {
         'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
     }
     stages {
-        stage ('Checkout SCM') {
-            steps {
-                git branch: "${BRANCH_NAME}", credentialsId: 'gitea', url: 'git@192.168.1.205:aflorzy/daytrackr-backend.git'
-            }
-        }
         stage ('Build Maven') {
             steps {
                 sh 'mvn clean install -DskipTests'
@@ -55,15 +51,12 @@ pipeline {
                         // Remove image to save disk space
                         sh "docker image rm -f ${VERSIONED_TAG}"
 
-                        // Conditionally push the latest tag based on the environment
-                        if (ENV == 'prod') {
-                            def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+                        def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
 
-                            sh "docker push ${LATEST_TAG}"
+                        sh "docker push ${LATEST_TAG}"
 
-                            // Remove image to save disk space
-                            sh "docker image rm -f ${LATEST_TAG}"
-                        }
+                        // Remove image to save disk space
+                        sh "docker image rm -f ${LATEST_TAG}"
 
                         // Log out from Docker registry
                         sh "docker logout ${REGISTRY_URL}"
