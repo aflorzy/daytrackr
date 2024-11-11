@@ -96,7 +96,7 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "codeCoverage": true,
+            "codeCoverage": false,
             "progress": true,
             "karmaConfig": "karma.conf.js"
           }

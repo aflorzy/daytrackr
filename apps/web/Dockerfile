@@ -1,43 +1,39 @@
-#### Stage 1: Build the angular application
-FROM node as build
+# Stage 1: Build
+FROM node:20.16-alpine as builder
 
-# Configure the main working directory inside the docker image.
-# This is the base directory used in any further RUN, COPY, and ENTRYPOINT
-# commands.
+# Set working directory
 WORKDIR /app
 
-# Copy the package.json as well as the package-lock.json and install
-# the dependencies. This is a separate step so the dependencies
-# will be cached unless changes to one of those two files
-# are made.
+# Copy package files
 COPY package*.json ./
-RUN npm install
 
-# Copy the main application
-COPY . ./
+# Install dependencies
+RUN npm ci
 
-# Arguments
-ARG configuration=production
+# Copy project files
+COPY . .
 
-# Build the application
-RUN npm run build
+# Build for production
+RUN npm run build:ci
 
-#### Stage 2, use the compiled app, ready for production with Nginx
-FROM nginx
+# Stage 2: Production
+FROM nginx:alpine
 
-# Copy the angular build from Stage 1
-COPY --from=build /app/dist/daytrackr-parser/ /usr/share/nginx/html
+# Remove default nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy our custom nginx config
-COPY /nginx-custom.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration
+COPY nginx-custom.conf /etc/nginx/conf.d/
 
+# Copy built assets from builder stage
+COPY --from=builder /app/dist/daytrackr-parser /usr/share/nginx/html
 
-# Change nginx permissions
-RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
-    chmod -R 777 /var/cache/nginx /var/run /var/log/nginx
-
-# Expose port 80 to the Docker host, so we can access it
-# from the outside.
+# Expose port 80
 EXPOSE 80
 
-ENTRYPOINT ["nginx","-g","daemon off;"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+# Optional healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1

@@ -36,19 +36,25 @@ module.exports = function (config) {
       },
       reporters: ['spec', 'kjhtml'],
       specReporter: {
-        maxLogLines: Infinity,         // limit number of lines logged per test
+        maxLogLines: 30,         // limit number of lines logged per test
         suppressErrorSummary: true,  // do not print error summary
         suppressFailed: false,  // do not print information about failed tests
-        suppressPassed: true,  // do not print information about passed tests
+        suppressPassed: false,  // do not print information about passed tests
         suppressSkipped: true,  // do not print information about skipped tests
         showSpecTiming: false,  // print the time elapsed for each spec
         failFast: false          // test would finish with error when a first fail occurs.
       },
       port: 9876,
-      colors: true,
+      colors: false,
       logLevel: config.LOG_INFO,
       autoWatch: true,
-      browsers: ['ChromeHeadless'],
+      browsers: ['ChromeHeadlessNoSandbox'],
+      customLaunchers: {
+        ChromeHeadlessNoSandbox: {
+          base: 'ChromeHeadless',
+          flags: ['--no-sandbox']
+        }
+      },
       singleRun: false,
       restartOnFileChange: true
     });
