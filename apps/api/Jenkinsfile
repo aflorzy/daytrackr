@@ -33,11 +33,15 @@ pipeline {
             }
         }
         stage ('Build Docker Image') {
+            when { equals expected: true, actual: BRANCH_NAME == 'main' }
+
             steps {
                 sh "docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL} -t ${REGISTRY_URL}/${IMAGE_NAME}:latest ."
             }
         }
         stage ('Push Image to Registry') {
+            when { equals expected: true, actual: BRANCH_NAME == 'main' }
+
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'gitea', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -69,6 +73,9 @@ pipeline {
         always {
             echo 'Log Out of Docker Registry'
             sh "docker logout ${REGISTRY_URL}"
+
+            echo "Prune Docker Images"
+            sh "docker system prune -af"
         }
     }
 }
