@@ -28,7 +28,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm install --configuration=production --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm install --configuration=production --prefix /workspace"
             }
         }
         stage ('Run Linting') {
@@ -36,7 +36,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run lint:ci --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm run lint:ci --prefix /workspace"
             }
         }
         stage ('Run Tests') {
@@ -44,7 +44,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run test:ci --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm run test:ci --prefix /workspace"
             }
         }
         stage ('Compile') {
@@ -52,7 +52,7 @@ pipeline {
                 workspace = pwd()
             }
             steps {
-                sh "docker run --rm -v ${workspace}:/workspace runner:latest npm run build --prefix /workspace"
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm run build --prefix /workspace"
             }
         }
         stage ('Build Docker Image') {
