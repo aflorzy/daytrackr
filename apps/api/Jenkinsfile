@@ -1,47 +1,75 @@
 pipeline {
     agent any
+
     options {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
+        ansiColor('xterm')
     }
+
+    parameters {
+        // choice(name: 'ENV', choices: ['dev', 'prod'], description: 'Select the deployment environment')
+
+        string(name: 'MAJOR_MINOR', defaultValue: '1.0', description: 'Major and minor version of build. Patch number set after build.')
+    }
+
     environment {
-        VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
-        REGISTRY="localhost:5000"
-        IMAGE_NAME="daytrackr-backend"
+        // VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
+        VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}"
+        REGISTRY_URL="gitea.local.aflorzy.com"
+        REGISTRY_CREDENTIALS = credentials('gitea')
+        IMAGE_NAME="florzytech/daytrackr-backend"
+        // ENV = "${ENV}"
+        BRANCH_NAME="${BRANCH_NAME}"
     }
     tools {
         maven "Maven 3.6.3"
         'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
     }
     stages {
-        stage ('Checkout SCM') {
-            steps {
-                git branch: 'main', credentialsId: 'github-jenkins15', url: 'git@github.com:aflorzy/daytrackr-backend.git'
-            }
-        }
         stage ('Build Maven') {
             steps {
+                echo "PWD"
+                sh "pwd"
+
+                echo "List contents"
+                sh "ls -la"
+
                 sh 'mvn clean install -DskipTests'
             }
         }
         stage ('Build Docker Image') {
+            when { equals expected: true, actual: BRANCH_NAME == 'main' }
+
             steps {
-                sh 'docker build -t ${IMAGE_NAME} .'
+                sh "docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL} -t ${REGISTRY_URL}/${IMAGE_NAME}:latest ."
             }
         }
         stage ('Push Image to Registry') {
+            when { equals expected: true, actual: BRANCH_NAME == 'main' }
+
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'f4b22f31-c51c-4a5c-b998-efd520b5b9f9', passwordVariable: 'REGISTRY_PSW', usernameVariable: 'REGISTRY_USR')]) {
-                        echo 'Login Docker'
-                        sh 'docker login localhost:5000 -u $REGISTRY_USR -p $REGISTRY_PSW'
-                        echo 'Tag and push versioned image'
-                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL"
-                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:$VERSION_IMAGE_LABEL'
+                    withCredentials([usernamePassword(credentialsId: 'gitea', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        // Log in to the Docker registry
+                        sh "docker login ${REGISTRY_URL} -u ${DOCKER_USER} -p ${DOCKER_PASS}"
 
-                        echo 'Tag and push latest image'
-                        sh "docker tag ${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:latest"
-                        sh 'docker push ${REGISTRY}/${IMAGE_NAME}:latest' // Keep latest up to date
+                        def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}"
+
+                        sh "docker push ${VERSIONED_TAG}"
+
+                        // Remove image to save disk space
+                        sh "docker image rm -f ${VERSIONED_TAG}"
+
+                        def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+
+                        sh "docker push ${LATEST_TAG}"
+
+                        // Remove image to save disk space
+                        sh "docker image rm -f ${LATEST_TAG}"
+
+                        // Log out from Docker registry
+                        sh "docker logout ${REGISTRY_URL}"
                     }
                 }
             }
@@ -49,8 +77,11 @@ pipeline {
     }
     post {
         always {
-            echo 'Logout Docker'
-            sh 'docker logout localhost:5000'
+            echo 'Log Out of Docker Registry'
+            sh "docker logout ${REGISTRY_URL}"
+
+            echo "Prune Docker Images"
+            sh "docker system prune -af"
         }
     }
 }
