@@ -27,11 +27,6 @@ pipeline {
         'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
     }
     stages {
-        stage ('Checkout SCM') {
-            steps {
-                git branch: "${BRANCH_NAME}", credentialsId: 'gitea', url: 'git@192.168.1.205:florzytech/daytrackr-backend.git'
-            }
-        }
         stage ('Build Maven') {
             steps {
                 sh 'mvn clean install -DskipTests'
