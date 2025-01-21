@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { catchError, filter, map, mergeMap, of, switchMap } from "rxjs";
@@ -11,6 +11,10 @@ import { selectRouteParam } from "../selectors/router.selectors";
 
 @Injectable()
 export class EditDayEffects {
+  private action$ = inject(Actions);
+  private dayService = inject(DayService);
+  private store = inject(Store);
+
   loadDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(EditDayActions.loadDay),
@@ -81,10 +85,4 @@ export class EditDayEffects {
       )
     );
   });
-
-  constructor(
-    private action$: Actions,
-    private dayService: DayService,
-    private store: Store
-  ) {}
 }

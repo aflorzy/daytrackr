@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 
@@ -8,6 +8,8 @@ import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
   styleUrls: ["./feedback.component.scss"]
 })
 export class FeedbackComponent {
+  private fb = inject(FormBuilder);
+
   @Input() responseMessage!: ResponseMessage | null;
   @Input() set resetForm(shouldReset: boolean) {
     if (shouldReset) {
@@ -21,8 +23,6 @@ export class FeedbackComponent {
     message: new FormControl("", [Validators.required]),
     file: new FormControl<File | null>(null)
   });
-
-  constructor(private fb: FormBuilder) {}
 
   hasError(fieldName: string, error: string): boolean {
     const field = this.feedbackForm.get(fieldName);

@@ -9,12 +9,15 @@
       (calendarDateRange)="setFirstLastCalendarDates($event)"
       (monthChange)="monthChange($event)"></app-calendar>
 
-    <app-button (clicked)="getPreviousDay()" [disabled]="(existsPreviousDay$ | async) === false">
-      <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev
-    </app-button>
-    <app-button (clicked)="getNextDay()" [disabled]="(existsNextDay$ | async) === false">
-      Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon>
-    </app-button>
+    <div class="buttons">
+      <app-button (clicked)="getPreviousDay()" [disabled]="(existsPreviousDay$ | async) === false">
+        <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev
+      </app-button>
+
+      <app-button (clicked)="getNextDay()" [disabled]="(existsNextDay$ | async) === false">
+        Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon>
+      </app-button>
+    </div>
 
     <!-- <app-date-input [initialDate]="selectedDay.date" (dateChanged)="handleDateInputChange($event)"></app-date-input> -->
 

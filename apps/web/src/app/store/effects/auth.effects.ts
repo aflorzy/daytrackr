@@ -1,29 +1,24 @@
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
+import { HttpErrorResponse } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap, take } from "rxjs";
-import { StatusType } from "src/app/enums";
-import { AuthService } from "src/app/services/auth.service";
-import { StorageService } from "src/app/services/storage.service";
-import { AccessToken } from "../../interfaces";
-import { AuthActions, AuthApiActions } from "../actions/auth.actions";
+import { catchError, map, of, switchMap, tap } from "rxjs";
+import { AuthService } from "../../services/auth.service";
+import { AuthActions } from "../actions/auth.actions";
 import { RouterActions } from "../actions/router.actions";
 
 @Injectable()
 export class AuthEffects {
+  private action$ = inject(Actions);
+  private authService = inject(AuthService);
+
   checkForToken$ = createEffect(() => {
     return this.action$.pipe(
       ofType(AuthActions.checkForToken),
       switchMap(() => {
-        const token: AccessToken = this.storageService.getItemFromStorage("token");
+        const tokenValid = this.authService.isTokenValid();
 
-        if (token)
-          return of(
-            AuthActions.setToken({
-              token
-            })
-          );
-        else return of();
+        if (tokenValid) return of(AuthActions.setToken({ token: this.authService.token }));
+        else return of(AuthActions.logout());
       })
     );
   });
@@ -33,12 +28,14 @@ export class AuthEffects {
       ofType(AuthActions.register),
       switchMap(payload =>
         this.authService.register(payload.username, payload.password).pipe(
-          map((response: { message: string; error: string }) =>
+          map(response =>
             response.error
-              ? AuthApiActions.registerFailure({ errorMsg: response.error })
-              : AuthApiActions.registerSuccess({ message: response.message })
+              ? AuthActions.registerFailure({ errorMsg: response.error ?? "" })
+              : AuthActions.registerSuccess()
           ),
-          catchError((error: { message: string }) => of(AuthApiActions.registerFailure({ errorMsg: error.message })))
+          catchError((error: HttpErrorResponse) =>
+            of(AuthActions.registerFailure({ errorMsg: error.error.error ?? "" }))
+          )
         )
       )
     );
@@ -49,106 +46,36 @@ export class AuthEffects {
       ofType(AuthActions.login),
       switchMap(({ username, password }) =>
         this.authService.login(username, password).pipe(
-          take(1),
-          map((token: AccessToken) => AuthApiActions.loginSuccess({ token })),
-          catchError((error: { message: string }) => of(AuthApiActions.loginFailure({ errorMsg: error.message })))
+          map(token => AuthActions.loginSuccess({ token })),
+          catchError((error: HttpErrorResponse) => of(AuthActions.loginFailure({ errorMsg: error.error.error })))
         )
       )
     );
   });
 
-  loginSuccess$ = createEffect(() => {
+  navigateToLogin$ = createEffect(() => {
     return this.action$.pipe(
-      ofType(AuthApiActions.loginSuccess),
-      switchMap(({ token }) =>
-        of(
-          AuthActions.setToken({
-            token
-          }),
-          RouterActions.navigate({ route: "" })
-        )
-      )
+      ofType(AuthActions.logout, AuthActions.registerSuccess),
+      switchMap(() => of(RouterActions.navigate({ route: "login" })))
     );
   });
-
-  logout$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(AuthActions.logout),
-      switchMap(() =>
-        of(
-          AuthActions.setToken({
-            token: {
-              accessToken: "",
-              tokenType: ""
-            }
-          }),
-          RouterActions.navigate({ route: "login" })
-        )
-      )
-    );
-  });
-
-  // Always update isAuthenticatedUser when token is set
-  setIsAuthenticatedUser$ = createEffect(() => {
-    return this.action$.pipe(
-      ofType(AuthActions.setToken),
-      map(({ token }) => {
-        this.storageService.setItemInStorage("token", token);
-
-        return AuthActions.setIsAuthenticatedUser({
-          isAuthenticatedUser: this.authService.isAuthenticatedUser(token)
-        });
-      })
-    );
-  });
-
-  navigateToLogin$ = createEffect(
-    () => {
-      return this.action$.pipe(
-        ofType(AuthApiActions.registerSuccess),
-        switchMap(() =>
-          of(
-            RouterActions.navigate({ route: "login" }),
-            AuthActions.setResponseMessage({
-              responseMsg: {
-                message: "Successfully registered. Please login using your new credentials.",
-                statusType: StatusType.SUCCESS
-              }
-            })
-          )
-        )
-      );
-    },
-    { dispatch: false }
-  );
 
   navigateHome$ = createEffect(() => {
     return this.action$.pipe(
-      ofType(AuthApiActions.loginSuccess),
+      ofType(AuthActions.loginSuccess),
       switchMap(() => of(RouterActions.navigate({ route: "" })))
     );
   });
 
-  // Hide response message after timer
-  // hideResponseMsg$ = createEffect(() => {
-  //   return this.action$.pipe(
-  //     ofType(ProfileApiActions.saveProfileSuccess),
-  //     concatLatestFrom(() => this.store.select(selectResponseMsg)),
-  //     mergeMap(([_, responseMsg]: [any, ResponseMessage]) => {
-  //       if (responseMsg.message)
-  //         return of(
-  //           ProfileActions.setResponseMessage({ responseMsg: { message: "", statusType: StatusType.NULL } })
-  //         ).pipe(delay(5000));
-
-  //       return of();
-  //     })
-  //   );
-  // });
-
-  constructor(
-    private action$: Actions,
-    private authService: AuthService,
-    private storageService: StorageService,
-    private router: Router
-  ) {}
+  logout$ = createEffect(
+    () => {
+      return this.action$.pipe(
+        ofType(AuthActions.logout),
+        tap(() => {
+          this.authService.logout();
+        })
+      );
+    },
+    { dispatch: false }
+  );
 }

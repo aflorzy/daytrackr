@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { catchError, map, mergeMap, of } from "rxjs";
@@ -9,6 +9,10 @@ import { selectNextDayFromDayList, selectPreviousDayFromDayList, selectSelectedD
 
 @Injectable()
 export class DayEffects {
+  private action$ = inject(Actions);
+  private dayService = inject(DayService);
+  private store = inject(Store);
+
   setOldestDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.setOldestDay, DayActions.initializeCalendarPage),
@@ -196,10 +200,4 @@ export class DayEffects {
   });
 
   // Save multiple days
-
-  constructor(
-    private action$: Actions,
-    private dayService: DayService,
-    private store: Store
-  ) {}
 }

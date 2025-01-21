@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { AuthActions } from "src/app/store/actions/auth.actions";
 import { selectIsAuthenticatedUser } from "src/app/store/selectors/auth.selector";
@@ -9,11 +9,11 @@ import { selectIsAuthenticatedUser } from "src/app/store/selectors/auth.selector
   styleUrls: ["./navbar.component.scss"]
 })
 export class NavbarComponent {
+  private store = inject(Store);
+
   isAuthenticatedUser$ = this.store.select(selectIsAuthenticatedUser);
 
-  constructor(private store: Store) {}
-
-  public logout() {
+  logout(): void {
     this.store.dispatch(AuthActions.logout());
   }
 }

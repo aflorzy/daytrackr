@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from "@ngrx/store";
-import { AccessToken, ResponseMessage } from "src/app/interfaces";
+import { AccessToken } from "../../interfaces";
 
 export const AuthActions = createActionGroup({
   source: "Auth",
@@ -7,20 +7,12 @@ export const AuthActions = createActionGroup({
     Login: props<{ username: string; password: string }>(),
     Register: props<{ username: string; password: string }>(),
     Logout: emptyProps(),
-    "Expire Token": emptyProps(),
+    "Check for Token": emptyProps(),
     "Set Token": props<{ token: AccessToken }>(),
-    "Set Is Authenticated User": props<{ isAuthenticatedUser: boolean }>(),
-    "Set Response Message": props<{ responseMsg: ResponseMessage }>(),
-    "Check For Token": emptyProps()
-  }
-});
-
-export const AuthApiActions = createActionGroup({
-  source: "Auth API",
-  events: {
+    "Expire Token": emptyProps(),
     "Login Success": props<{ token: AccessToken }>(),
     "Login Failure": props<{ errorMsg: string }>(),
-    "Register Success": props<{ message: string }>(),
+    "Register Success": emptyProps(),
     "Register Failure": props<{ errorMsg: string }>()
   }
 });

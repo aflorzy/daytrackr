@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
@@ -7,15 +7,15 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   styleUrls: ["./date-input.component.scss"]
 })
 export class DateInputComponent implements OnChanges {
-  form: FormGroup = this.formBuilder.group({
+  private fb = inject(FormBuilder);
+
+  form: FormGroup = this.fb.group({
     date: ["", [Validators.required, Validators.pattern(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/)]]
   });
 
   @Input() initialDate!: Date;
   // @Output() dateChanged = this.form.valueChanges.pipe(map(formValue => formValue.date));
   @Output() dateChanged = new EventEmitter<Date>();
-
-  constructor(private formBuilder: FormBuilder) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.initialDate && this.initialDate) {

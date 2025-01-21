@@ -16,14 +16,14 @@ export const selectErrorMsg = createSelector(selectDayState, (state: DayState): 
 
 export const selectExistsNextDay = createSelector(selectDayState, (state: DayState): boolean => {
   // Can't be next day if the latest saved day doesn't exist
-  if (!state.latestDay.id) return false;
+  if (!state.latestDay?.id) return false;
 
   return new Date(state.selectedDay.date) < new Date(state.latestDay.date);
 });
 
 export const selectExistsPreviousDay = createSelector(selectDayState, (state: DayState): boolean => {
   // Can't be previous day if the oldest saved day doesn't exist
-  if (!state.oldestDay.id) return false;
+  if (!state.oldestDay?.id) return false;
 
   return new Date(state.selectedDay.date) > new Date(state.oldestDay.date);
 });
@@ -42,7 +42,7 @@ export const selectPreviousDayFromDayList = createSelector(selectDayState, (stat
 });
 
 export const selectNextDayFromDayList = createSelector(selectDayState, (state: DayState): Day | null => {
-  if (!state.selectedDay.id) {
+  if (!state.selectedDay?.id) {
     const nextDay = state.dayList.find((day: Day) => new Date(day.date) > new Date(state.selectedDay.date));
 
     return nextDay ?? null;

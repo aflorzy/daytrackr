@@ -1,38 +1,32 @@
-import { Component } from "@angular/core";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { Component, inject } from "@angular/core";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
-import { Subject } from "rxjs";
-import { ResponseMessage } from "src/app/interfaces";
 import { AuthActions } from "src/app/store/actions/auth.actions";
+import { selectLoginIsLoading, selectResponseMsg } from "../../store/selectors/auth.selector";
 
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html"
 })
 export class LoginComponent {
-  loginForm = this.fb.group({
-    username: new FormControl("", [Validators.required]),
-    password: new FormControl("", [Validators.required])
+  private store = inject(Store);
+
+  username = new FormControl("", [Validators.required]);
+  password = new FormControl("", [Validators.required]);
+
+  loginForm = new FormGroup({
+    username: this.username,
+    password: this.password
   });
 
-  loginError: string | null = null;
-  responseMessage$ = new Subject<ResponseMessage>();
+  responseMessage$ = this.store.select(selectResponseMsg);
+  loading$ = this.store.select(selectLoginIsLoading);
 
-  constructor(
-    private fb: FormBuilder,
-    private store: Store
-  ) {}
+  handleSubmitClicked(): void {
+    const username = this.username.value ?? "";
+    const password = this.password.value ?? "";
 
-  get usernameField() {
-    return this.loginForm.get("username");
-  }
-  get passwordField() {
-    return this.loginForm.get("password");
-  }
-
-  onSubmit() {
-    const username = this.usernameField?.value ?? "";
-    const password = this.passwordField?.value ?? "";
+    if (this.loginForm.invalid) return;
 
     this.store.dispatch(AuthActions.login({ username, password }));
   }

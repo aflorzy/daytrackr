@@ -1,7 +1,7 @@
 import { DatePipe, formatDate } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Observable, map } from "rxjs";
+import { inject, Injectable } from "@angular/core";
+import { map, Observable } from "rxjs";
 import { Day, Event } from "src/app/interfaces";
 import { BASE_URL } from "../constants";
 import { getTodayDate } from "../store/reducers/day.reducer";
@@ -10,13 +10,13 @@ import { getTodayDate } from "../store/reducers/day.reducer";
   providedIn: "root"
 })
 export class DayService {
+  private http = inject(HttpClient);
+  private datePipe = inject(DatePipe);
+
   day!: Day;
   days: Day[];
 
-  constructor(
-    private http: HttpClient,
-    private datePipe: DatePipe
-  ) {
+  constructor() {
     const days = localStorage.getItem("days") || "[]";
     this.days = JSON.parse(days);
   }

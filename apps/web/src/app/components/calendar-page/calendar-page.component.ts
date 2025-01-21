@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { RouterActions } from "src/app/store/actions/router.actions";
@@ -30,6 +30,8 @@ import {
   styleUrls: ["./calendar-page.component.scss"]
 })
 export class CalendarPageComponent implements OnInit {
+  private store = inject(Store);
+
   selectedDay$: Observable<Day> = this.store.select(selectSelectedDay);
   dayList$: Observable<Day[]> = this.store.select(selectDayList);
   existsPreviousDay$: Observable<boolean> = this.store.select(selectExistsPreviousDay);
@@ -37,8 +39,6 @@ export class CalendarPageComponent implements OnInit {
   monthDropdownData$: Observable<{ month: number; year: number }[]> = this.store.select(
     selectCalendarMonthDropdownData
   );
-
-  constructor(private store: Store) {}
 
   ngOnInit(): void {
     this.store.dispatch(DayActions.initializeCalendarPage());

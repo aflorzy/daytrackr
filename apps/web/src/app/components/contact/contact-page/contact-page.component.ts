@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Subject, switchMap, tap, timer } from "rxjs";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
@@ -12,10 +12,10 @@ import { FeedbackService } from "../../../services/feedback.service";
   styleUrls: ["./contact-page.component.scss"]
 })
 export class ContactPageComponent {
+  private feedbackService = inject(FeedbackService);
+
   responseMessage$ = new Subject<ResponseMessage | null>();
   resetForm$ = new Subject<boolean>();
-
-  constructor(private feedbackService: FeedbackService) {}
 
   handleSubmit(payload: FeedbackMessage) {
     this.feedbackService
