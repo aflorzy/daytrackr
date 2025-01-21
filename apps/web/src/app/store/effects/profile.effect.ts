@@ -1,15 +1,19 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
+import { Store } from "@ngrx/store";
 import { catchError, delay, map, mergeMap, of, switchMap } from "rxjs";
+import { StatusType } from "src/app/enums";
+import { ProfileService } from "src/app/services/profile.service";
 import { ProfileDTO, ResponseMessage } from "../../interfaces";
 import { ProfileActions, ProfileApiActions } from "../actions/profile.actions";
-import { ProfileService } from "src/app/services/profile.service";
-import { Store } from "@ngrx/store";
 import { selectResponseMsg } from "../selectors/profile.selectors";
-import { StatusType } from "src/app/enums";
 
 @Injectable()
 export class ProfileEffects {
+  private action$ = inject(Actions);
+  private store = inject(Store);
+  private profileService = inject(ProfileService);
+
   loadProfile$ = createEffect(() => {
     return this.action$.pipe(
       ofType(ProfileActions.getProfileDetails),
@@ -58,10 +62,4 @@ export class ProfileEffects {
       })
     );
   });
-
-  constructor(
-    private action$: Actions,
-    private profileService: ProfileService,
-    private store: Store
-  ) {}
 }

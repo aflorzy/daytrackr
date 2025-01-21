@@ -3,13 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   Output,
   SimpleChanges
 } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { Observable, defer, filter, map } from "rxjs";
+import { defer, filter, map, Observable } from "rxjs";
 import { CalendarDay, CalendarMonth, Day as DayObj } from "src/app/interfaces";
 import { CalendarService } from "../../../services/calendar.service";
 
@@ -20,6 +21,8 @@ import { CalendarService } from "../../../services/calendar.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent implements OnChanges {
+  private calendarService = inject(CalendarService);
+
   @Input() dayList!: DayObj[];
   @Input() initialDate!: Date;
   @Input() monthDropdownData: { month: number; year: number }[] = [];
@@ -59,8 +62,6 @@ export class CalendarComponent implements OnChanges {
   monthDropdownForm = new FormGroup({
     data: new FormControl(-1, [])
   });
-
-  constructor(private calendarService: CalendarService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.dayList && this.dayList) {

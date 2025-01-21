@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { AuthActions } from "./store/actions/auth.actions";
 
@@ -8,9 +8,9 @@ import { AuthActions } from "./store/actions/auth.actions";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  title = "DayTrackr";
+  private store = inject(Store);
 
-  constructor(private store: Store) {}
+  title = "DayTrackr";
 
   ngOnInit(): void {
     this.store.dispatch(AuthActions.checkForToken());

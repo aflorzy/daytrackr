@@ -56,11 +56,8 @@
       background-color: #eee;
     }
 
-    .hidden,
-    .hidden:hover {
-      color: transparent !important;
-      background-color: transparent;
-      cursor: default;
+    &.hidden {
+      visibility: hidden;
     }
   }
 

@@ -1,11 +1,13 @@
 import { DatePipe } from "@angular/common";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { CalendarDay, CalendarMonth, CalendarWeek, Day } from "src/app/interfaces";
 
 @Injectable({
   providedIn: "root"
 })
 export class CalendarService {
+  private datePipe = inject(DatePipe);
+
   private readonly INITIAL_DAY_OBJ: Day = {
     date: new Date(),
     events: []
@@ -36,8 +38,6 @@ export class CalendarService {
     monthOfYear: -1,
     year: -1
   };
-
-  constructor(private datePipe: DatePipe) {}
 
   /* Calendar Methods */
   dayFromDate(dateObj: Date): CalendarDay {

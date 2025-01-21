@@ -1,56 +1,46 @@
-import { Component } from "@angular/core";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { Component, inject } from "@angular/core";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
+import { combineLatest, map, Observable } from "rxjs";
 import { AuthActions } from "src/app/store/actions/auth.actions";
-import { StatusType } from "../../enums";
+import { ResponseMessage } from "../../interfaces";
+import { selectResponseMsg } from "../../store/selectors/auth.selector";
 
 @Component({
   selector: "app-register",
   templateUrl: "./register.component.html"
 })
 export class RegisterComponent {
-  registerForm = this.fb.group({
-    username: new FormControl("", [Validators.required]),
-    password: new FormControl("", [Validators.required, Validators.minLength(6)]),
-    confirmPassword: new FormControl("", [Validators.required])
+  private store = inject(Store);
+
+  username = new FormControl("", [Validators.required]);
+  password = new FormControl("", [Validators.required, Validators.minLength(6)]);
+  confirmPassword = new FormControl("", [Validators.required]);
+
+  registerForm = new FormGroup({
+    username: this.username,
+    password: this.password,
+    confirmPassword: this.confirmPassword
   });
 
-  successMessage = "";
-  errorMessage = "";
+  responseMessage$: Observable<ResponseMessage | null> = this.store.select(selectResponseMsg);
 
-  constructor(
-    private fb: FormBuilder,
-    private store: Store
-  ) {}
+  passwordsMatch$ = combineLatest({
+    password: this.password.valueChanges,
+    confirmPassword: this.confirmPassword.valueChanges
+  }).pipe(
+    map(({ password, confirmPassword }) => {
+      return password && confirmPassword && password === confirmPassword;
+    })
+  );
 
-  get usernameField() {
-    return this.registerForm.get("username");
-  }
+  onSubmit(): void {
+    const username = this.username.value ?? "";
+    const password = this.password.value ?? "";
+    const confirmPassword = this.confirmPassword.value ?? "";
 
-  get passwordField() {
-    return this.registerForm.get("password");
-  }
-
-  get passwordsMatch(): boolean {
-    return this.registerForm.get("password")?.value === this.registerForm.get("confirmPassword")?.value;
-  }
-
-  get confirmPasswordField() {
-    return this.registerForm.get("confirmPassword");
-  }
-
-  get StatusType() {
-    return StatusType;
-  }
-
-  onSubmit() {
-    if (!this.passwordsMatch) {
-      this.errorMessage = "Passwords do not match.";
-      return;
-    }
-
-    const username = this.usernameField?.value ?? "";
-    const password = this.passwordField?.value ?? "";
+    // Do not submit if form is invalid or paswords are not equal
+    if (this.registerForm.invalid || !(password && confirmPassword && password === confirmPassword)) return;
 
     this.store.dispatch(AuthActions.register({ username, password }));
   }

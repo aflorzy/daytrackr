@@ -1,24 +1,28 @@
 <div class="form-container">
   <h2>Login</h2>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+  <form [formGroup]="loginForm" (submit)="handleSubmitClicked()">
     <div class="form-group">
       <label for="username">Username</label>
+
       <input type="text" id="username" formControlName="username" class="form-control" />
-      <div *ngIf="usernameField?.hasError('required') && usernameField?.touched" class="error-message">
-        Username is required.
-      </div>
+
+      <div *ngIf="username.hasError('required') && username.touched" class="error-message">Username is required.</div>
     </div>
 
     <div class="form-group">
       <label for="password">Password</label>
+
       <input type="password" id="password" formControlName="password" class="form-control" />
-      <div *ngIf="passwordField?.hasError('required') && passwordField?.touched" class="error-message">
-        Password is required.
-      </div>
+
+      <div *ngIf="password.hasError('required') && password.touched" class="error-message">Password is required.</div>
     </div>
 
-    <app-button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</app-button>
+    <app-button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || (loading$ | async) || false"
+      >Login</app-button
+    >
   </form>
+
   <p class="auth-alt">Don't have an account? <a routerLink="/register">Sign up!</a></p>
 
   <ng-container *ngIf="responseMessage$ | async as responseMessage"

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { Observable, tap } from "rxjs";
@@ -12,7 +12,10 @@ import { dirtyCheck } from "../../operators/dirty-check.operator";
   templateUrl: "./profile-page.component.html"
 })
 export class ProfilePageComponent implements OnInit {
-  userForm: FormGroup = this.fb.group({
+  private store = inject(Store);
+  private fb = inject(FormBuilder);
+
+  userForm = this.fb.group({
     firstName: [""],
     lastName: [""],
     preferredName: [""],
@@ -22,11 +25,6 @@ export class ProfilePageComponent implements OnInit {
   isDirty$: Observable<boolean> = this.userForm.valueChanges.pipe(dirtyCheck(this.store.select(selectProfile)));
   responseMsg$ = this.store.select(selectResponseMsg);
   profile$ = this.store.select(selectProfile).pipe(tap((profile: ProfileDTO) => this.patchForm(profile)));
-
-  constructor(
-    private fb: FormBuilder,
-    private store: Store
-  ) {}
 
   ngOnInit(): void {
     this.store.dispatch(ProfileActions.getProfileDetails());
@@ -56,9 +54,16 @@ export class ProfilePageComponent implements OnInit {
   onSubmit(): void {
     if (this.userForm.valid) {
       // Form is valid, perform your action here
-      const formValue: Profile = this.userForm.value;
+      const formValue = this.userForm.value;
+      const profileDto: ProfileDTO = {
+        firstName: formValue.firstName ?? "",
+        lastName: formValue.lastName ?? "",
+        preferredName: formValue.preferredName ?? "",
+        email: formValue.email ?? "",
+        phone: formValue.phone ?? ""
+      };
 
-      this.store.dispatch(ProfileActions.saveProfileDetails({ profileDto: formValue }));
+      this.store.dispatch(ProfileActions.saveProfileDetails({ profileDto }));
     } else {
       // Form is invalid, show error messages
       this.validateAllFormFields(this.userForm);

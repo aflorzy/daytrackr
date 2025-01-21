@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { Day, Event } from "../../interfaces";
@@ -11,10 +11,10 @@ import { selectEditingDay, selectIsChanged } from "../../store/selectors/edit-da
   styleUrls: ["./edit-day-page.component.scss"]
 })
 export class EditDayPageComponent implements OnInit {
+  private store = inject(Store);
+
   day$: Observable<Day> = this.store.select(selectEditingDay);
   isChanged$: Observable<boolean> = this.store.select(selectIsChanged);
-
-  constructor(private store: Store) {}
 
   ngOnInit(): void {
     this.store.dispatch(EditDayActions.loadDay());

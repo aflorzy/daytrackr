@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
 import { DAYS_OF_WEEK } from "src/app/constants";
@@ -14,6 +14,10 @@ import { ParserService } from "src/app/services/parser.service";
   styleUrls: ["./input-box.component.scss"]
 })
 export class InputBoxComponent implements OnInit {
+  private datePipe = inject(DatePipe);
+  private dayService = inject(DayService);
+  private parserService = inject(ParserService);
+
   value = "";
   realInitialDate?: Date;
   initialDate?: Date;
@@ -23,12 +27,6 @@ export class InputBoxComponent implements OnInit {
   daysSaved = false;
 
   error$ = new BehaviorSubject({ isError: false, errorMsg: "" });
-
-  constructor(
-    private datePipe: DatePipe,
-    private dayService: DayService,
-    private parserService: ParserService
-  ) {}
 
   ngOnInit(): void {
     this.initFields();

@@ -1,24 +1,42 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import * as jwt_decode from "jwt-decode";
-import { Observable, Subscription, delay, of, tap } from "rxjs";
+import { delay, Observable, of, Subscription, take, tap } from "rxjs";
 import { AccessToken } from "src/app/interfaces";
-import { BASE_URL } from "../constants";
+import { BASE_URL, StorageKey } from "../constants";
 import { StorageService } from "./storage.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private storageService = inject(StorageService);
+
   private jwtExpirationSubscription = new Subscription();
 
-  constructor(
-    private http: HttpClient,
-    private storageService: StorageService
-  ) {}
+  get token(): AccessToken {
+    return this.getTokenFromStorage();
+  }
+
+  private setTokenInStorage(token: AccessToken): void {
+    this.storageService.setItemInStorage(StorageKey.Token, token);
+  }
+
+  private removeTokenFromStorage(): void {
+    this.storageService.removeItemFromStorage(StorageKey.Token);
+  }
+
+  private getTokenFromStorage(): AccessToken {
+    return this.storageService.getItemFromStorage(StorageKey.Token);
+  }
 
   public isAuthenticatedUser(token: AccessToken): boolean {
     return this.tokenValid(token);
+  }
+
+  public isTokenValid(): boolean {
+    return this.tokenValid(this.getTokenFromStorage());
   }
 
   private tokenValid(token: AccessToken): boolean {
@@ -26,6 +44,7 @@ export class AuthService {
 
     const decoded = this.getDecodedAccessToken(token.accessToken);
     const tokenExpired = Math.floor(new Date().getTime() / 1000) >= decoded.exp;
+
     return !tokenExpired;
   }
 
@@ -48,12 +67,7 @@ export class AuthService {
       });
   }
 
-  public logout() {
-    this.storageService.removeItemFromStorage("token");
-    this.jwtExpirationSubscription.unsubscribe();
-  }
-
-  public register(username: string, password: string): Observable<{ message: string; error: string }> {
+  public register(username: string, password: string) {
     const registerUrl = `${BASE_URL}/auth/register`;
 
     const registerData = {
@@ -61,21 +75,27 @@ export class AuthService {
       password: password
     };
 
-    return this.http.post<any>(registerUrl, registerData, { responseType: "json" });
+    return this.http.post<{ message: string | null; error: string | null }>(registerUrl, registerData);
   }
 
   public login(username: string, password: string): Observable<AccessToken> {
     const loginUrl = `${BASE_URL}/auth/login`;
 
-    const loginData = {
-      username: username,
-      password: password
-    };
+    const loginData = { username, password };
+
+    // Check for existing VALID token in storage before making API call
 
     return this.http.post<AccessToken>(loginUrl, loginData).pipe(
-      tap((response: AccessToken) => {
-        this.startJwtExpirationCounter(response);
+      take(1),
+      tap(token => {
+        this.setTokenInStorage(token);
       })
     );
+  }
+
+  public logout() {
+    this.removeTokenFromStorage();
+
+    this.jwtExpirationSubscription.unsubscribe();
   }
 }

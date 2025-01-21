@@ -1,23 +1,21 @@
-import { Injectable } from "@angular/core";
-import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { switchMap } from "rxjs";
+import { inject, Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { exhaustMap } from "rxjs";
 import { RouterActions } from "../actions/router.actions";
 
 @Injectable()
 export class RouterEffects {
+  private action$ = inject(Actions);
+  private router = inject(Router);
+
   navigate$ = createEffect(
     () => {
       return this.action$.pipe(
         ofType(RouterActions.navigate),
-        switchMap(({ route }) => this.router.navigate([route]))
+        exhaustMap(({ route }) => this.router.navigate([route]))
       );
     },
     { dispatch: false }
   );
-
-  constructor(
-    private action$: Actions,
-    private router: Router
-  ) {}
 }

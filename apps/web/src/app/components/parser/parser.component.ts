@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { BehaviorSubject } from "rxjs";
 import { Day } from "src/app/interfaces";
@@ -10,14 +10,14 @@ import { ParserService } from "src/app/services/parser.service";
   styleUrls: ["./parser.component.scss"]
 })
 export class ParserComponent {
-  parserForm: FormGroup = new FormGroup({
+  private parserService = inject(ParserService);
+
+  parserForm = new FormGroup({
     date: new FormControl("", [Validators.required]),
     text: new FormControl("", [Validators.required])
   });
 
   dayList$: BehaviorSubject<Day[]> = new BehaviorSubject<Day[]>([]);
-
-  constructor(private parserService: ParserService) {}
 
   submit(formValue: any) {
     const hyphenRegex = /-/gi;
