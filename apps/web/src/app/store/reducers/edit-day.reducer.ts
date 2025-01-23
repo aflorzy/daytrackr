@@ -194,7 +194,8 @@ export const editDayReducer = createReducer(
     EditDayApiActions.saveEditsFailure,
     EditDayApiActions.deleteDayFailure,
     (state, { errorMsg }): State => ({ ...state, errorMsg })
-  )
+  ),
+  on(EditDayActions.reset, (): State => ({ ...initialState }))
 );
 
 function reorderEvents(events: Event[]): Event[] {

@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { catchError, map, mergeMap, of } from "rxjs";
-import { Day } from "../../interfaces";
+import { catchError, map, of, switchMap } from "rxjs";
 import { DayService } from "../../services/day.service";
+import { AuthActions } from "../actions/auth.actions";
 import { DayActions, DayApiActions } from "../actions/day.actions";
 import { selectNextDayFromDayList, selectPreviousDayFromDayList, selectSelectedDay } from "../selectors/day.selectors";
 
@@ -16,10 +17,10 @@ export class DayEffects {
   setOldestDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.setOldestDay, DayActions.initializeCalendarPage),
-      mergeMap(() =>
+      switchMap(() =>
         this.dayService.getOldest().pipe(
-          map((day: Day) => DayApiActions.retrieveOldestDaySuccess({ day })),
-          catchError((error: { message: string }) =>
+          map(day => DayApiActions.retrieveOldestDaySuccess({ day })),
+          catchError((error: HttpErrorResponse) =>
             of(DayApiActions.retrieveOldestDayFailure({ errorMsg: error.message }))
           )
         )
@@ -30,10 +31,10 @@ export class DayEffects {
   setLatestDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.setLatestDay, DayActions.initializeCalendarPage),
-      mergeMap(() =>
+      switchMap(() =>
         this.dayService.getLatest().pipe(
-          map((day: Day) => DayApiActions.retrieveLatestDaySuccess({ day })),
-          catchError((error: { message: string }) =>
+          map(day => DayApiActions.retrieveLatestDaySuccess({ day })),
+          catchError((error: HttpErrorResponse) =>
             of(DayApiActions.retrieveLatestDayFailure({ errorMsg: error.message }))
           )
         )
@@ -45,13 +46,21 @@ export class DayEffects {
     return this.action$.pipe(
       ofType(DayActions.setInitialDay, DayActions.initializeCalendarPage),
       concatLatestFrom(() => this.store.select(selectSelectedDay)),
-      mergeMap(([, selectedDay]) => {
+      switchMap(([, selectedDay]) => {
         if (selectedDay.id) {
-          return this.dayService
-            .getDayById(selectedDay.id)
-            .pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
+          return this.dayService.getDayById(selectedDay.id).pipe(
+            map(day => DayApiActions.retrieveTodaySuccess({ day })),
+            catchError((error: HttpErrorResponse) =>
+              of(DayApiActions.retrieveTodayFailure({ errorMsg: error.message }))
+            )
+          );
         } else {
-          return this.dayService.getToday().pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
+          return this.dayService.getToday().pipe(
+            map(day => DayApiActions.retrieveTodaySuccess({ day })),
+            catchError((error: HttpErrorResponse) =>
+              of(DayApiActions.retrieveTodayFailure({ errorMsg: error.message }))
+            )
+          );
         }
       })
     );
@@ -61,12 +70,12 @@ export class DayEffects {
     return this.action$.pipe(
       ofType(DayActions.getPreviousDay),
       concatLatestFrom(() => [this.store.select(selectPreviousDayFromDayList), this.store.select(selectSelectedDay)]),
-      mergeMap(([_, previousDay, selectedDay]) => {
+      switchMap(([_, previousDay, selectedDay]) => {
         if (previousDay) return of(DayApiActions.retrieveNextDaySuccess({ day: previousDay }));
 
         return this.dayService.getPrevious(selectedDay).pipe(
-          map((day: Day) => DayApiActions.retrievePreviousDaySuccess({ day })),
-          catchError((error: { message: string }) =>
+          map(day => DayApiActions.retrievePreviousDaySuccess({ day })),
+          catchError((error: HttpErrorResponse) =>
             of(DayApiActions.retrievePreviousDayFailure({ errorMsg: error.message }))
           )
         );
@@ -78,12 +87,12 @@ export class DayEffects {
     return this.action$.pipe(
       ofType(DayActions.getNextDay),
       concatLatestFrom(() => [this.store.select(selectNextDayFromDayList), this.store.select(selectSelectedDay)]),
-      mergeMap(([_, nextDay, selectedDay]) => {
+      switchMap(([_, nextDay, selectedDay]) => {
         if (nextDay) return of(DayApiActions.retrieveNextDaySuccess({ day: nextDay }));
 
         return this.dayService.getNext(selectedDay).pipe(
-          map((day: Day) => DayApiActions.retrieveNextDaySuccess({ day })),
-          catchError((error: { message: string }) =>
+          map(day => DayApiActions.retrieveNextDaySuccess({ day })),
+          catchError((error: HttpErrorResponse) =>
             of(DayApiActions.retrieveNextDayFailure({ errorMsg: error.message }))
           )
         );
@@ -94,28 +103,29 @@ export class DayEffects {
   setSelectedDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayApiActions.retrievePreviousDaySuccess, DayApiActions.retrieveNextDaySuccess),
-      mergeMap(action => of(DayActions.setSelectedDay({ day: action.day })))
+      switchMap(action => of(DayActions.setSelectedDay({ day: action.day })))
     );
   });
 
   setDayByDate$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.setDayByDate),
-      mergeMap(action => {
-        return this.dayService
-          .getDayByDate(action.date)
-          .pipe(map((day: Day) => DayApiActions.retrieveTodaySuccess({ day })));
-      })
+      switchMap(action =>
+        this.dayService.getDayByDate(action.date).pipe(
+          map(day => DayApiActions.retrieveTodaySuccess({ day })),
+          catchError((error: HttpErrorResponse) => of(DayApiActions.retrieveTodayFailure({ errorMsg: error.message })))
+        )
+      )
     );
   });
 
   loadDayList$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.getDayList),
-      mergeMap(() =>
+      switchMap(() =>
         this.dayService.getAllDays().pipe(
-          map((dayList: Day[]) => DayApiActions.retrieveDayListSuccess({ dayList })),
-          catchError((error: { message: string }) =>
+          map(dayList => DayApiActions.retrieveDayListSuccess({ dayList })),
+          catchError((error: HttpErrorResponse) =>
             of(DayApiActions.retrieveDayListFailure({ errorMsg: error.message }))
           )
         )
@@ -126,10 +136,10 @@ export class DayEffects {
   loadDayListBetween$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.getDayListBetween),
-      mergeMap(action =>
-        this.dayService.getDaysBetween(action.date1, action.date2).pipe(
-          map((dayList: Day[]) => DayApiActions.retrieveDayListSuccess({ dayList })),
-          catchError((error: { message: string }) =>
+      switchMap(({ date1, date2 }) =>
+        this.dayService.getDaysBetween(date1, date2).pipe(
+          map(dayList => DayApiActions.retrieveDayListSuccess({ dayList })),
+          catchError((error: HttpErrorResponse) =>
             of(DayApiActions.retrieveDayListFailure({ errorMsg: error.message }))
           )
         )
@@ -140,7 +150,7 @@ export class DayEffects {
   saveEvent$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.saveEvent),
-      mergeMap(action => {
+      switchMap(action => {
         if (!action.event.name) {
           // Dispatch removeEvent action for events with empty names
           return of(DayActions.removeEvent({ event: action.event }));
@@ -163,13 +173,13 @@ export class DayEffects {
         DayActions.combineEvents
       ),
       concatLatestFrom(() => this.store.select(selectSelectedDay)),
-      mergeMap(([_, selectedDay]: [any, Day]) => {
+      switchMap(([_, selectedDay]) => {
         // Delete day if last event removed
         if (!selectedDay.events.length) return of(DayActions.deleteDay({ day: selectedDay }));
 
         return this.dayService.saveDay(selectedDay).pipe(
-          map((day: Day) => DayApiActions.saveDaySuccess({ day })),
-          catchError((error: { message: string }) => of(DayApiActions.saveDayFailure({ errorMsg: error.message })))
+          map(day => DayApiActions.saveDaySuccess({ day })),
+          catchError((error: HttpErrorResponse) => of(DayApiActions.saveDayFailure({ errorMsg: error.message })))
         );
       })
     );
@@ -178,10 +188,10 @@ export class DayEffects {
   deleteDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.deleteDay),
-      mergeMap(action =>
+      switchMap(action =>
         this.dayService.deleteById(action.day.id || "").pipe(
           map(() => DayApiActions.deleteDaySuccess({ day: action.day })),
-          catchError((error: { message: string }) => of(DayApiActions.deleteDayFailure({ errorMsg: error.message })))
+          catchError((error: HttpErrorResponse) => of(DayApiActions.deleteDayFailure({ errorMsg: error.message })))
         )
       )
     );
@@ -190,8 +200,8 @@ export class DayEffects {
   handleCalendarMonthChange$ = createEffect(() => {
     return this.action$.pipe(
       ofType(DayActions.setCalendarMonth),
-      mergeMap(action => {
-        const monthData: { month: number; year: number } = action.month;
+      switchMap(action => {
+        const monthData = action.month;
         const monthDate = new Date(monthData.year, monthData.month, 1);
 
         return of(DayActions.setDayByDate({ date: monthDate }));
@@ -200,4 +210,11 @@ export class DayEffects {
   });
 
   // Save multiple days
+
+  reset$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(AuthActions.logout),
+      switchMap(() => of(DayActions.reset()))
+    );
+  });
 }

@@ -13,6 +13,7 @@ export const AuthActions = createActionGroup({
     "Login Success": props<{ token: AccessToken }>(),
     "Login Failure": props<{ errorMsg: string }>(),
     "Register Success": emptyProps(),
-    "Register Failure": props<{ errorMsg: string }>()
+    "Register Failure": props<{ errorMsg: string }>(),
+    Reset: emptyProps()
   }
 });

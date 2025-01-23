@@ -1,10 +1,11 @@
 import { inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { catchError, delay, map, mergeMap, of, switchMap } from "rxjs";
+import { catchError, delay, map, of, switchMap } from "rxjs";
 import { StatusType } from "src/app/enums";
 import { ProfileService } from "src/app/services/profile.service";
 import { ProfileDTO, ResponseMessage } from "../../interfaces";
+import { AuthActions } from "../actions/auth.actions";
 import { ProfileActions, ProfileApiActions } from "../actions/profile.actions";
 import { selectResponseMsg } from "../selectors/profile.selectors";
 
@@ -52,7 +53,7 @@ export class ProfileEffects {
     return this.action$.pipe(
       ofType(ProfileApiActions.saveProfileSuccess),
       concatLatestFrom(() => this.store.select(selectResponseMsg)),
-      mergeMap(([_, responseMsg]: [any, ResponseMessage]) => {
+      switchMap(([_, responseMsg]: [any, ResponseMessage]) => {
         if (responseMsg.message)
           return of(
             ProfileActions.setResponseMessage({ responseMsg: { message: "", statusType: StatusType.NULL } })
@@ -60,6 +61,13 @@ export class ProfileEffects {
 
         return of();
       })
+    );
+  });
+
+  reset$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(AuthActions.logout),
+      switchMap(() => of(ProfileActions.reset()))
     );
   });
 }

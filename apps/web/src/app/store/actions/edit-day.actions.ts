@@ -15,7 +15,8 @@ export const EditDayActions = createActionGroup({
     "Move Event": props<{ event: Event; newIdx: number }>(),
     "Move Event Up": props<{ event: Event }>(),
     "Move Event Down": props<{ event: Event }>(),
-    "Combine Events": props<{ event1: Event; event2: Event }>()
+    "Combine Events": props<{ event1: Event; event2: Event }>(),
+    Reset: emptyProps()
   }
 });
 

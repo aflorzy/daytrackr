@@ -6,7 +6,8 @@ export const ProfileActions = createActionGroup({
   events: {
     "Get Profile Details": emptyProps(),
     "Save Profile Details": props<{ profileDto: ProfileDTO }>(),
-    "Set Response Message": props<{ responseMsg: ResponseMessage }>()
+    "Set Response Message": props<{ responseMsg: ResponseMessage }>(),
+    Reset: emptyProps()
   }
 });
 

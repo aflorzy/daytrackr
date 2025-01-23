@@ -1,7 +1,7 @@
 import { createReducer, on } from "@ngrx/store";
-import { ProfileActions, ProfileApiActions } from "../actions/profile.actions";
-import { ProfileDTO, ResponseMessage } from "src/app/interfaces";
 import { StatusType } from "src/app/enums";
+import { ProfileDTO, ResponseMessage } from "src/app/interfaces";
+import { ProfileActions, ProfileApiActions } from "../actions/profile.actions";
 
 export interface State {
   profile: ProfileDTO;
@@ -58,5 +58,6 @@ export const profileReducer = createReducer(
     ProfileActions.setResponseMessage,
     ProfileApiActions.saveProfileSuccess,
     (state, { responseMsg }): State => ({ ...state, responseMsg })
-  )
+  ),
+  on(ProfileActions.reset, (): State => ({ ...initialState }))
 );

@@ -26,7 +26,8 @@ export const DayActions = createActionGroup({
     "Combine Events": props<{ event1: Event; event2: Event }>(),
     "Get Next Day": emptyProps(),
     "Get Previous Day": emptyProps(),
-    "Set Calendar Month": props<{ month: { month: number; year: number } }>()
+    "Set Calendar Month": props<{ month: { month: number; year: number } }>(),
+    Reset: emptyProps()
   }
 });
 

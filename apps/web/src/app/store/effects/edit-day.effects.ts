@@ -1,9 +1,11 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { catchError, filter, map, mergeMap, of, switchMap } from "rxjs";
+import { catchError, filter, map, of, switchMap } from "rxjs";
 import { Day } from "../../interfaces";
 import { DayService } from "../../services/day.service";
+import { AuthActions } from "../actions/auth.actions";
 import { EditDayActions, EditDayApiActions } from "../actions/edit-day.actions";
 import { RouterActions } from "../actions/router.actions";
 import { selectEditingDay } from "../selectors/edit-day.selector";
@@ -24,26 +26,24 @@ export class EditDayEffects {
           filter(date => !Number.isNaN(Date.parse(date)))
         )
       ),
-      switchMap(([, date]) => {
-        return this.dayService.getDayByDate(date).pipe(
-          map((day: Day) => EditDayApiActions.loadDaySuccess({ day })),
-          catchError((error: { message: string }) => of(EditDayApiActions.loadDayFailure({ errorMsg: error.message })))
-        );
-      })
+      switchMap(([, date]) =>
+        this.dayService.getDayByDate(date).pipe(map((day: Day) => EditDayApiActions.loadDaySuccess({ day })))
+      ),
+      catchError((error: HttpErrorResponse) => of(EditDayApiActions.loadDayFailure({ errorMsg: error.message })))
     );
   });
 
   moveEventUp$ = createEffect(() => {
     return this.action$.pipe(
       ofType(EditDayActions.moveEventUp),
-      mergeMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx - 1 })))
+      switchMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx - 1 })))
     );
   });
 
   moveEventDown$ = createEffect(() => {
     return this.action$.pipe(
       ofType(EditDayActions.moveEventDown),
-      mergeMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx + 1 })))
+      switchMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx + 1 })))
     );
   });
 
@@ -51,17 +51,13 @@ export class EditDayEffects {
     return this.action$.pipe(
       ofType(EditDayActions.saveEdits),
       concatLatestFrom(() => this.store.select(selectEditingDay)),
-      mergeMap(([_, editingDay]: [any, Day]) => {
+      switchMap(([_, editingDay]: [any, Day]) => {
         // Delete day if last event removed
         if (!editingDay.events.length) return of(EditDayActions.deleteDay({ day: editingDay }));
 
-        return this.dayService.saveDay(editingDay).pipe(
-          map((day: Day) => EditDayApiActions.saveEditsSuccess({ day })),
-          catchError((error: { message: string }) =>
-            of(EditDayApiActions.saveEditsFailure({ errorMsg: error.message }))
-          )
-        );
-      })
+        return this.dayService.saveDay(editingDay).pipe(map((day: Day) => EditDayApiActions.saveEditsSuccess({ day })));
+      }),
+      catchError((error: HttpErrorResponse) => of(EditDayApiActions.saveEditsFailure({ errorMsg: error.message })))
     );
   });
 
@@ -75,14 +71,19 @@ export class EditDayEffects {
   deleteDay$ = createEffect(() => {
     return this.action$.pipe(
       ofType(EditDayActions.deleteDay),
-      mergeMap(action =>
-        this.dayService.deleteById(action.day.id || "").pipe(
-          map(() => EditDayApiActions.deleteDaySuccess({ day: action.day })),
-          catchError((error: { message: string }) =>
-            of(EditDayApiActions.deleteDayFailure({ errorMsg: error.message }))
-          )
-        )
-      )
+      switchMap(action =>
+        this.dayService
+          .deleteById(action.day.id || "")
+          .pipe(map(() => EditDayApiActions.deleteDaySuccess({ day: action.day })))
+      ),
+      catchError((error: HttpErrorResponse) => of(EditDayApiActions.deleteDayFailure({ errorMsg: error.message })))
+    );
+  });
+
+  reset$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(AuthActions.logout),
+      switchMap(() => of(EditDayActions.reset()))
     );
   });
 }
