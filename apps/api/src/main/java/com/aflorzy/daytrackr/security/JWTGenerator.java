@@ -1,9 +1,11 @@
 package com.aflorzy.daytrackr.security;
 
+import com.aflorzy.daytrackr.domain.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JWTGenerator {
 
     private final SecurityConstants securityConstants;
@@ -21,24 +24,21 @@ public class JWTGenerator {
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
-        Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + securityConstants.getJWT_EXPIRATION());
 
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(expireDate)
+                .setExpiration(new Date(new Date().getTime() + securityConstants.getJWT_EXPIRATION()))
                 .signWith(SignatureAlgorithm.HS512, securityConstants.getJWT_SECRET())
                 .compact();
-        return token;
     }
 
     public String getUsernameFromJWT(String token) {
-        Claims claims = Jwts.parser()
+        return Jwts.parser()
                 .setSigningKey(securityConstants.getJWT_SECRET())
                 .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateToken(String token) {
@@ -46,7 +46,7 @@ public class JWTGenerator {
             Jwts.parser().setSigningKey(securityConstants.getJWT_SECRET()).parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect");
+            return false;
         }
     }
 }

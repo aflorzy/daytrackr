@@ -22,28 +22,44 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
   private CustomUserDetailsService customUserDetailsService;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request,
+  protected void doFilterInternal(
+      HttpServletRequest request,
       HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
-    String token = getJWTFromRequest(request);
-    if (StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
-      String username = tokenGenerator.getUsernameFromJWT(token);
+      FilterChain filterChain
+  ) throws ServletException, IOException {
+    try {
+      String token = getJWTFromRequest(request);
 
-      UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
-          null,
-          userDetails.getAuthorities());
-      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      if (StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
+        String username = tokenGenerator.getUsernameFromJWT(token);
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      }
+
+    }  catch (Exception e) {
+      logger.error("Cannot set user authentication: {}", e);
     }
+
     filterChain.doFilter(request, response);
   }
 
   private String getJWTFromRequest(HttpServletRequest request) {
     String bearerToken = request.getHeader("Authorization");
+
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-      return bearerToken.substring(7, bearerToken.length());
+      return bearerToken.substring(7);
     }
+
     return null;
   }
 }
