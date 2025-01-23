@@ -83,5 +83,6 @@ export const authReducer = createReducer(
         statusType: StatusType.ERROR
       }
     })
-  )
+  ),
+  on(AuthActions.reset, (): State => ({ ...initialState }))
 );

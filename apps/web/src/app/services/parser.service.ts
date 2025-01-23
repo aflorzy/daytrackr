@@ -44,16 +44,13 @@ export class ParserService {
 
   private validateDayText(dayStrList: string[]): boolean {
     const PREFIX_DELIMETER = "- ";
-    console.log("Validating text", dayStrList);
     const validFormat: boolean = dayStrList.every((dayStr: string) => dayStr.split(PREFIX_DELIMETER).length === 2);
 
-    console.log("Valid format?", validFormat);
     if (!validFormat) return false;
 
     const firstDayOfWeek: string = dayStrList[0].split(PREFIX_DELIMETER)[0].toLowerCase().trim();
     const firstDayOfWeekIdx: number = days_of_week.indexOf(firstDayOfWeek);
 
-    console.log("First day of week", firstDayOfWeek, firstDayOfWeekIdx);
     let tempIdx: number = firstDayOfWeekIdx;
     for (let i = 1; i < dayStrList.length; i++) {
       const nextIdx: number = tempIdx + 1 >= days_of_week.length ? 0 : tempIdx + 1;

@@ -246,7 +246,8 @@ export const dayReducer = createReducer(
     DayActions.combineEvents,
     DayActions.deleteDay,
     (state): State => ({ ...state, loading: true })
-  )
+  ),
+  on(DayActions.reset, (): State => ({ ...initialState }))
 );
 
 function reorderEvents(events: Event[]): Event[] {

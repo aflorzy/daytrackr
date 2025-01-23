@@ -84,4 +84,11 @@ export class AuthEffects {
     },
     { dispatch: false }
   );
+
+  reset$ = createEffect(() => {
+    return this.action$.pipe(
+      ofType(AuthActions.logout),
+      switchMap(() => of(AuthActions.reset()))
+    );
+  });
 }
