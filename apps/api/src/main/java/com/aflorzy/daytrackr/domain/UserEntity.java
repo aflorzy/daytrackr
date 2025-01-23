@@ -27,7 +27,7 @@ public class UserEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private UUID id;
 
-  @Column(unique = true)
+  @Column(unique = true, nullable = false)
   private String username;
 
   private String password;

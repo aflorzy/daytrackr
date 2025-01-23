@@ -1,6 +1,7 @@
 package com.aflorzy.daytrackr.services;
 
 import com.aflorzy.daytrackr.domain.FeedbackMessage;
+import com.aflorzy.daytrackr.domain.FileEntity;
 import com.aflorzy.daytrackr.domain.UserEntity;
 import com.aflorzy.daytrackr.domain.responses.ResponseMessage;
 import com.aflorzy.daytrackr.dto.FeedbackMessageDto;
@@ -14,6 +15,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -88,6 +90,10 @@ public class FeedbackService {
             helper.setFrom(new InternetAddress("DayTrackr Support <tbillform@gmail.com>"));
             helper.setSubject("DayTrackr | Feedback Received");
 
+            for(FileEntity file : feedbackMessage.getFiles()) {
+                helper.addAttachment(file.getFileName(), new ByteArrayResource(file.getData()));
+            }
+
             String name = user.getName() == null ? user.getUsername() : user.getFullName();
             String email = user.getEmail();
             String emailBody = ""
@@ -107,6 +113,10 @@ public class FeedbackService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setFrom(new InternetAddress("DayTrackr Support <tbillform@gmail.com>"));
             helper.setSubject("DayTrackr | We've received your feedback!");
+
+            for(FileEntity file : feedbackMessage.getFiles()) {
+                helper.addAttachment(file.getFileName(), new ByteArrayResource(file.getData()));
+            }
 
             String name = user.getName() == null ? user.getUsername() : user.getFullName();
             String email = user.getEmail();
