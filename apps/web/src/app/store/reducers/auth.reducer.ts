@@ -70,20 +70,16 @@ export const authReducer = createReducer(
     (state, { token }): State => ({
       ...state,
       token,
-      loading: { ...state.loading, login: false },
-      responseMsg: {
-        message: "Successfully logged in",
-        statusType: StatusType.SUCCESS
-      }
+      loading: { ...state.loading, login: false }
     })
   ),
   on(
     AuthActions.loginFailure,
-    (state): State => ({
+    (state, { errorMsg }): State => ({
       ...state,
       loading: { ...state.loading, login: false },
       responseMsg: {
-        message: "Failed to login. Please check your credentials",
+        message: errorMsg,
         statusType: StatusType.ERROR
       }
     })

@@ -47,7 +47,13 @@ export class AuthEffects {
       switchMap(({ username, password }) =>
         this.authService.login(username, password).pipe(
           map(token => AuthActions.loginSuccess({ token })),
-          catchError((error: HttpErrorResponse) => of(AuthActions.loginFailure({ errorMsg: error.error.error })))
+          catchError((error: HttpErrorResponse) =>
+            of(
+              AuthActions.loginFailure({
+                errorMsg: error.error?.message ?? "Oops! Something went wrong. Please try again later."
+              })
+            )
+          )
         )
       )
     );
