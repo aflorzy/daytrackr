@@ -10,12 +10,12 @@ import { selectNextDayFromDayList, selectPreviousDayFromDayList, selectSelectedD
 
 @Injectable()
 export class DayEffects {
-  private action$ = inject(Actions);
+  private actions$ = inject(Actions);
   private dayService = inject(DayService);
   private store = inject(Store);
 
   setOldestDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.setOldestDay, DayActions.initializeCalendarPage),
       switchMap(() =>
         this.dayService.getOldest().pipe(
@@ -29,7 +29,7 @@ export class DayEffects {
   });
 
   setLatestDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.setLatestDay, DayActions.initializeCalendarPage),
       switchMap(() =>
         this.dayService.getLatest().pipe(
@@ -43,7 +43,7 @@ export class DayEffects {
   });
 
   loadToday$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.setInitialDay, DayActions.initializeCalendarPage),
       concatLatestFrom(() => this.store.select(selectSelectedDay)),
       switchMap(([, selectedDay]) => {
@@ -67,7 +67,7 @@ export class DayEffects {
   });
 
   getPreviousDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.getPreviousDay),
       concatLatestFrom(() => [this.store.select(selectPreviousDayFromDayList), this.store.select(selectSelectedDay)]),
       switchMap(([_, previousDay, selectedDay]) => {
@@ -84,7 +84,7 @@ export class DayEffects {
   });
 
   getNextDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.getNextDay),
       concatLatestFrom(() => [this.store.select(selectNextDayFromDayList), this.store.select(selectSelectedDay)]),
       switchMap(([_, nextDay, selectedDay]) => {
@@ -101,14 +101,14 @@ export class DayEffects {
   });
 
   setSelectedDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayApiActions.retrievePreviousDaySuccess, DayApiActions.retrieveNextDaySuccess),
       switchMap(action => of(DayActions.setSelectedDay({ day: action.day })))
     );
   });
 
   setDayByDate$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.setDayByDate),
       switchMap(action =>
         this.dayService.getDayByDate(action.date).pipe(
@@ -120,7 +120,7 @@ export class DayEffects {
   });
 
   loadDayList$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.getDayList),
       switchMap(() =>
         this.dayService.getAllDays().pipe(
@@ -134,7 +134,7 @@ export class DayEffects {
   });
 
   loadDayListBetween$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.getDayListBetween),
       switchMap(({ date1, date2 }) =>
         this.dayService.getDaysBetween(date1, date2).pipe(
@@ -148,7 +148,7 @@ export class DayEffects {
   });
 
   saveEvent$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.saveEvent),
       switchMap(action => {
         if (!action.event.name) {
@@ -163,7 +163,7 @@ export class DayEffects {
   });
 
   saveSelectedDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(
         DayActions.saveDay,
         DayActions.addEvent,
@@ -186,7 +186,7 @@ export class DayEffects {
   });
 
   deleteDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.deleteDay),
       switchMap(action =>
         this.dayService.deleteById(action.day.id || "").pipe(
@@ -198,7 +198,7 @@ export class DayEffects {
   });
 
   handleCalendarMonthChange$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(DayActions.setCalendarMonth),
       switchMap(action => {
         const monthData = action.month;
@@ -212,7 +212,7 @@ export class DayEffects {
   // Save multiple days
 
   reset$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.logout),
       switchMap(() => of(DayActions.reset()))
     );

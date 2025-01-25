@@ -1,22 +1,17 @@
+import { DragDropModule } from "@angular/cdk/drag-drop";
+import { DatePipe } from "@angular/common";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-
-import { DatePipe } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { BrowserModule } from "@angular/platform-browser";
 import { FaIconLibrary, FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import { AppRoutingModule } from "./app-routing.module";
-import { AppComponent } from "./app.component";
-import { DayListItemComponent } from "./components/day-list-item/day-list-item.component";
-import { DayListComponent } from "./components/day-list/day-list.component";
-import { InputBoxComponent } from "./components/input-box/input-box.component";
-
-import { DragDropModule } from "@angular/cdk/drag-drop";
 import { EffectsModule } from "@ngrx/effects";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { StoreModule } from "@ngrx/store";
 import { environment } from "../environments/environment";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
 import { BannerComponent } from "./components/banner/banner.component";
 import { ButtonComponent } from "./components/button/button.component";
 import { CalendarPageComponent } from "./components/calendar-page/calendar-page.component";
@@ -24,9 +19,12 @@ import { CalendarComponent } from "./components/calendar/calendar/calendar.compo
 import { DateInputComponent } from "./components/calendar/date-input/date-input.component";
 import { ContactPageComponent } from "./components/contact/contact-page/contact-page.component";
 import { FeedbackComponent } from "./components/contact/feedback/feedback.component";
+import { DayListItemComponent } from "./components/day-list-item/day-list-item.component";
+import { DayListComponent } from "./components/day-list/day-list.component";
 import { EditDayPageComponent } from "./components/edit-day-page/edit-day-page.component";
 import { EditDayComponent } from "./components/edit-day/edit-day.component";
 import { HomeComponent } from "./components/home-page/home/home.component";
+import { InputBoxComponent } from "./components/input-box/input-box.component";
 import { LoginComponent } from "./components/login/login.component";
 import { NavbarComponent } from "./components/navbar/navbar.component";
 import { ParserComponent } from "./components/parser/parser.component";

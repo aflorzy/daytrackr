@@ -31,6 +31,12 @@ export class AuthService {
     return this.storageService.getItemFromStorage(StorageKey.Token);
   }
 
+  public getTokenExpiration(token: AccessToken): number {
+    const decoded = this.getDecodedAccessToken(token.accessToken);
+
+    return (decoded.exp ?? 0) * 1000;
+  }
+
   public isAuthenticatedUser(token: AccessToken): boolean {
     return this.tokenValid(token);
   }
@@ -91,6 +97,12 @@ export class AuthService {
         this.setTokenInStorage(token);
       })
     );
+  }
+
+  public refreshToken(): Observable<AccessToken> {
+    console.log("Refreshing token");
+
+    return of(this.token);
   }
 
   public logout() {

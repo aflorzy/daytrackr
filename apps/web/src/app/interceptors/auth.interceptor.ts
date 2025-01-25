@@ -11,6 +11,7 @@ import { Store } from "@ngrx/store";
 import { Observable, throwError } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
 import { AuthService } from "../services/auth.service";
+import { AuthActions } from "../store/actions/auth.actions";
 import { selectToken } from "../store/selectors/auth.selector";
 
 @Injectable()
@@ -42,7 +43,7 @@ export class AuthInterceptor implements HttpInterceptor {
           catchError((error: HttpErrorResponse) => {
             if (error.status === 401) {
               // Unauthorized (token expired or invalid), log the user out and navigate to the login page
-              this.authService.logout();
+              this.store.dispatch(AuthActions.logout());
             }
             return throwError(() => error);
           })

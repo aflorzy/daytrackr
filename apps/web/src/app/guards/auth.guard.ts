@@ -1,39 +1,30 @@
-import { inject, Injectable } from "@angular/core";
-import { CanActivate, CanActivateChild } from "@angular/router";
+import { inject } from "@angular/core";
+import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
-import { map, Observable } from "rxjs";
-import { RouterActions } from "../store/actions/router.actions";
+import { map, Observable, tap } from "rxjs";
 import { selectIsAuthenticatedUser } from "../store/selectors/auth.selector";
 
-@Injectable()
-export class AuthGuard implements CanActivate, CanActivateChild {
-  private store = inject(Store);
+// Authenticated user cannot access /login or /register
+export const canActivateLoginRegisterGuard = (): Observable<boolean> => {
+  const store = inject(Store);
+  const router = inject(Router);
 
-  canActivate(): Observable<boolean> {
-    return this.store.select(selectIsAuthenticatedUser).pipe(
-      map((isAuthenticatedUser: boolean) => {
-        if (isAuthenticatedUser) {
-          return true;
-        } else {
-          this.store.dispatch(RouterActions.navigate({ route: "/login" }));
+  return store.select(selectIsAuthenticatedUser).pipe(
+    map(isAuthenticatedUser => !isAuthenticatedUser),
+    tap(canNavigate => {
+      if (!canNavigate) router.navigate([""]);
+    })
+  );
+};
 
-          return false;
-        }
-      })
-    );
-  }
+// Unuthenticated user cannot access home and child routes
+export const canActivateHomeGuard = (): Observable<boolean> => {
+  const store = inject(Store);
+  const router = inject(Router);
 
-  canActivateChild(): Observable<boolean> {
-    return this.store.select(selectIsAuthenticatedUser).pipe(
-      map((isAuthenticatedUser: boolean) => {
-        if (isAuthenticatedUser) {
-          return true;
-        } else {
-          this.store.dispatch(RouterActions.navigate({ route: "/login" }));
-
-          return false;
-        }
-      })
-    );
-  }
-}
+  return store.select(selectIsAuthenticatedUser).pipe(
+    tap(canNavigate => {
+      if (!canNavigate) router.navigate(["/login"]);
+    })
+  );
+};

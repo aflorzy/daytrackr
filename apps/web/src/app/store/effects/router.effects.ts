@@ -6,12 +6,12 @@ import { RouterActions } from "../actions/router.actions";
 
 @Injectable()
 export class RouterEffects {
-  private action$ = inject(Actions);
+  private actions$ = inject(Actions);
   private router = inject(Router);
 
   navigate$ = createEffect(
     () => {
-      return this.action$.pipe(
+      return this.actions$.pipe(
         ofType(RouterActions.navigate),
         exhaustMap(({ route }) => this.router.navigate([route]))
       );

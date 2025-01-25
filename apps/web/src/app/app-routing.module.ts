@@ -7,7 +7,7 @@ import { InputBoxComponent } from "./components/input-box/input-box.component";
 import { LoginComponent } from "./components/login/login.component";
 import { ProfilePageComponent } from "./components/profile-page/profile-page.component";
 import { RegisterComponent } from "./components/register/register.component";
-import { AuthGuard } from "./guards/auth.guard";
+import { canActivateHomeGuard, canActivateLoginRegisterGuard } from "./guards/auth.guard";
 import { DirtyCheckGuard } from "./guards/dirty-check.guard";
 
 const titlePrefix = "DayTrackr | ";
@@ -16,45 +16,57 @@ const routes: Routes = [
     path: "",
     pathMatch: "full",
     component: CalendarPageComponent,
-    title: titlePrefix + "Home",
-    canActivate: [AuthGuard]
+    canActivate: [canActivateHomeGuard],
+    title: titlePrefix + "Home"
   },
   {
     path: "contact",
     pathMatch: "full",
     component: ContactPageComponent,
-    title: titlePrefix + "Contact"
+    title: titlePrefix + "Contact",
+    canActivate: [canActivateHomeGuard]
   },
   {
     path: "parser",
     pathMatch: "full",
     component: InputBoxComponent,
     title: titlePrefix + "Parser",
-    canActivate: [AuthGuard]
+    canActivate: [canActivateHomeGuard]
   },
   {
     path: "edit/:date",
     pathMatch: "full",
     component: EditDayPageComponent,
     title: titlePrefix + "Edit",
-    canActivate: [AuthGuard]
+    canActivate: [canActivateHomeGuard]
   },
   {
     path: "profile",
     pathMatch: "full",
     component: ProfilePageComponent,
     title: titlePrefix + "Profile",
-    canActivate: [AuthGuard],
+    canActivate: [canActivateHomeGuard],
     canDeactivate: [DirtyCheckGuard]
   },
-  { path: "login", pathMatch: "full", component: LoginComponent, title: titlePrefix + "Login" },
-  { path: "register", pathMatch: "full", component: RegisterComponent, title: titlePrefix + "Register" },
+  {
+    path: "login",
+    pathMatch: "full",
+    component: LoginComponent,
+    canActivate: [canActivateLoginRegisterGuard],
+    title: titlePrefix + "Login"
+  },
+  {
+    path: "register",
+    pathMatch: "full",
+    component: RegisterComponent,
+    canActivate: [canActivateLoginRegisterGuard],
+    title: titlePrefix + "Register"
+  },
   { path: "**", redirectTo: "/" }
 ];
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [AuthGuard]
+  providers: []
 })
 export class AppRoutingModule {}

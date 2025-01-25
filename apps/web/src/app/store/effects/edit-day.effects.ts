@@ -13,12 +13,12 @@ import { selectRouteParam } from "../selectors/router.selectors";
 
 @Injectable()
 export class EditDayEffects {
-  private action$ = inject(Actions);
+  private actions$ = inject(Actions);
   private dayService = inject(DayService);
   private store = inject(Store);
 
   loadDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(EditDayActions.loadDay),
       concatLatestFrom(() =>
         this.store.select(selectRouteParam("date")).pipe(
@@ -34,21 +34,21 @@ export class EditDayEffects {
   });
 
   moveEventUp$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(EditDayActions.moveEventUp),
       switchMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx - 1 })))
     );
   });
 
   moveEventDown$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(EditDayActions.moveEventDown),
       switchMap(action => of(EditDayActions.moveEvent({ event: action.event, newIdx: action.event.idx + 1 })))
     );
   });
 
   saveEdits$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(EditDayActions.saveEdits),
       concatLatestFrom(() => this.store.select(selectEditingDay)),
       switchMap(([_, editingDay]: [any, Day]) => {
@@ -62,14 +62,14 @@ export class EditDayEffects {
   });
 
   navigateHome$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(EditDayActions.cancelEdits, EditDayApiActions.saveEditsSuccess),
       switchMap(() => of(RouterActions.navigate({ route: "" })))
     );
   });
 
   deleteDay$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(EditDayActions.deleteDay),
       switchMap(action =>
         this.dayService
@@ -81,7 +81,7 @@ export class EditDayEffects {
   });
 
   reset$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.logout),
       switchMap(() => of(EditDayActions.reset()))
     );

@@ -10,6 +10,7 @@ export const AuthActions = createActionGroup({
     "Check for Token": emptyProps(),
     "Set Token": props<{ token: AccessToken }>(),
     "Expire Token": emptyProps(),
+    "Extend Session": emptyProps(),
     "Login Success": props<{ token: AccessToken }>(),
     "Login Failure": props<{ errorMsg: string }>(),
     "Register Success": emptyProps(),

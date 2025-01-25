@@ -1,18 +1,18 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap, tap } from "rxjs";
+import { catchError, map, of, switchMap, takeUntil, tap, timer } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { AuthActions } from "../actions/auth.actions";
 import { RouterActions } from "../actions/router.actions";
 
 @Injectable()
 export class AuthEffects {
-  private action$ = inject(Actions);
+  private actions$ = inject(Actions);
   private authService = inject(AuthService);
 
   checkForToken$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.checkForToken),
       switchMap(() => {
         const tokenValid = this.authService.isTokenValid();
@@ -23,8 +23,42 @@ export class AuthEffects {
     );
   });
 
+  monitorTokenExpiration$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.setToken),
+      switchMap(({ token }) => {
+        const expirationTime = this.authService.getTokenExpiration(token);
+        const timeUntilExpiry = expirationTime - Date.now();
+
+        return timer(timeUntilExpiry).pipe(
+          map(() => AuthActions.logout()),
+          takeUntil(this.actions$.pipe(ofType(AuthActions.logout)))
+        );
+      })
+    );
+  });
+
+  refreshToken$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.extendSession),
+      switchMap(() =>
+        this.authService.refreshToken().pipe(
+          map(newToken => AuthActions.setToken({ token: newToken })),
+          catchError(() => of(AuthActions.logout()))
+        )
+      )
+    );
+  });
+
+  setToken$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.loginSuccess),
+      switchMap(({ token }) => of(AuthActions.setToken({ token })))
+    );
+  });
+
   register$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.register),
       switchMap(payload =>
         this.authService.register(payload.username, payload.password).pipe(
@@ -42,7 +76,7 @@ export class AuthEffects {
   });
 
   login$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.login),
       switchMap(({ username, password }) =>
         this.authService.login(username, password).pipe(
@@ -60,14 +94,14 @@ export class AuthEffects {
   });
 
   navigateToLogin$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.logout, AuthActions.registerSuccess),
       switchMap(() => of(RouterActions.navigate({ route: "login" })))
     );
   });
 
   navigateHome$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.loginSuccess),
       switchMap(() => of(RouterActions.navigate({ route: "" })))
     );
@@ -75,7 +109,7 @@ export class AuthEffects {
 
   logout$ = createEffect(
     () => {
-      return this.action$.pipe(
+      return this.actions$.pipe(
         ofType(AuthActions.logout),
         tap(() => {
           this.authService.logout();
@@ -86,7 +120,7 @@ export class AuthEffects {
   );
 
   reset$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.logout),
       switchMap(() => of(AuthActions.reset()))
     );
