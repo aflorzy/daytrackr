@@ -38,9 +38,10 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<ResponseMessage> saveProfile(Principal principal, @RequestBody ProfileDto profileDto) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        log.info("Updating profile for ", user.getUsername());
         user = profileService.updateUser(user, profileDto);
         try {
+            log.info("Updating profile for {}", user.getUsername());
+
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(new ResponseMessage("Profile updated", StatusType.SUCCESS));
         } catch (Exception e) {

@@ -22,6 +22,14 @@ public class JWTGenerator {
         this.securityConstants = securityConstants;
     }
 
+    public String getUsernameFromJWT(String token) {
+        return Jwts.parser()
+                .setSigningKey(securityConstants.getJWT_SECRET())
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
 
@@ -33,15 +41,34 @@ public class JWTGenerator {
                 .compact();
     }
 
-    public String getUsernameFromJWT(String token) {
-        return Jwts.parser()
-                .setSigningKey(securityConstants.getJWT_SECRET())
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + securityConstants.getJWT_REFRESH_EXPIRATION()))
+                .signWith(SignatureAlgorithm.HS512, securityConstants.getJWT_SECRET())
+                .compact();
+    }
+
+    public String generateTokenWithUsername(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + securityConstants.getJWT_EXPIRATION()))
+                .signWith(SignatureAlgorithm.HS512, securityConstants.getJWT_SECRET())
+                .compact();
     }
 
     public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(securityConstants.getJWT_SECRET()).parseClaimsJws(token);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
         try {
             Jwts.parser().setSigningKey(securityConstants.getJWT_SECRET()).parseClaimsJws(token);
             return true;

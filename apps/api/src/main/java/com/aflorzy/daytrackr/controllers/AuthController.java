@@ -3,6 +3,7 @@ package com.aflorzy.daytrackr.controllers;
 import java.security.Principal;
 import java.util.Collections;
 
+import com.aflorzy.daytrackr.domain.RefreshTokenRequest;
 import com.aflorzy.daytrackr.domain.responses.ResponseMessage;
 import com.aflorzy.daytrackr.dto.RegisterResponseDto;
 import com.aflorzy.daytrackr.enums.StatusType;
@@ -60,11 +61,12 @@ public class AuthController {
 
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
-      String token = jwtGenerator.generateToken(authentication);
+      String accessToken = jwtGenerator.generateToken(authentication);
+      String refreshToken = jwtGenerator.generateRefreshToken(authentication.getName());
 
       log.info("Successfully logged in user {}", loginDto.getUsername());
 
-      return ResponseEntity.ok(new AuthResponseDto(token));
+      return ResponseEntity.ok(new AuthResponseDto(accessToken, refreshToken));
     } catch (AuthenticationException e) {
       log.error("Failed login attempt by user {}", loginDto.getUsername());
 
@@ -93,14 +95,16 @@ public class AuthController {
     return new ResponseEntity<>(new RegisterResponseDto("User registered successfully!", null), HttpStatus.OK);
   }
 
-  @GetMapping("valid")
-  public ResponseEntity<?> tokenValid(Principal principal) {
-    if (principal == null) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    } else if (userRepository.findByUsername(principal.getName()).orElse(null) == null) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    } else {
-      return new ResponseEntity<>(HttpStatus.OK);
+  @PostMapping("refresh-token")
+  public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+    if (jwtGenerator.validateRefreshToken(request.getRefreshToken())) {
+      String username = jwtGenerator.getUsernameFromJWT(request.getRefreshToken());
+      String accessToken = jwtGenerator.generateTokenWithUsername(username);
+
+      return ResponseEntity.ok(new AuthResponseDto(accessToken, request.getRefreshToken()));
     }
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(new ResponseMessage("Invalid refresh token", StatusType.ERROR));
   }
 }
