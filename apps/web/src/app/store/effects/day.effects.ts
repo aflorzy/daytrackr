@@ -150,13 +150,13 @@ export class DayEffects {
   saveEvent$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(DayActions.saveEvent),
-      switchMap(action => {
-        if (!action.event.name) {
+      switchMap(({ event }) => {
+        if (!event.name) {
           // Dispatch removeEvent action for events with empty names
-          return of(DayActions.removeEvent({ event: action.event }));
+          return of(DayActions.removeEvent({ event }));
         } else {
           // Dispatch updateEvent action for events with non-empty names
-          return of(DayActions.updateEvent({ event: action.event }));
+          return of(DayActions.updateEvent({ event }));
         }
       })
     );

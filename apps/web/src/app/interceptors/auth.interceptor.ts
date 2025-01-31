@@ -1,15 +1,9 @@
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpResponse
-} from "@angular/common/http";
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable, throwError } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
+import { AccessToken } from "../interfaces";
 import { AuthService } from "../services/auth.service";
 import { AuthActions } from "../store/actions/auth.actions";
 import { selectToken } from "../store/selectors/auth.selector";
@@ -19,35 +13,47 @@ export class AuthInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
   private store = inject(Store);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Exclude login and register routes
-    const blacklistKeywords: string[] = ["/login", "/register"];
-    const matchingKeywords = blacklistKeywords.filter((keyword: string) => req.url.endsWith(keyword));
-
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return this.store.select(selectToken).pipe(
       switchMap(token => {
-        if (!matchingKeywords.length) {
-          req = req.clone({ headers: req.headers.set("Authorization", `${token?.tokenType}${token?.accessToken}`) });
+        if (token) {
+          request = this.addToken(request, token);
         }
 
-        req = req.clone({
-          headers: req.headers.set("Accept", "application/json; charset=utf-8").set("Content-Type", "application/json")
-        });
+        // request = request.clone({
+        //   setHeaders: { Accept: "application/json; charset=utf-8", "Content-Type": "application/json" }
+        // });
 
-        return next.handle(req).pipe(
-          tap((event: HttpEvent<any>) => {
-            if (event instanceof HttpResponse) {
-              // Successful response, do nothing
-            }
-          }),
+        return next.handle(request).pipe(
           catchError((error: HttpErrorResponse) => {
-            if (error.status === 401) {
-              // Unauthorized (token expired or invalid), log the user out and navigate to the login page
-              this.store.dispatch(AuthActions.logout());
+            if (error.status === 401 && token) {
+              return this.handleTokenExpired(request, next);
             }
-            return throwError(() => error);
+            return throwError(error);
           })
         );
+      })
+    );
+  }
+
+  private addToken(request: HttpRequest<any>, token: AccessToken | null): HttpRequest<any> {
+    return request.clone({ setHeaders: { Authorization: `${token?.tokenType}${token?.accessToken}` } });
+  }
+
+  private handleTokenExpired(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Call the refresh token endpoint to get a new access token
+    return this.authService.refreshAccessToken().pipe(
+      tap(newToken => {
+        this.store.dispatch(AuthActions.refreshTokenSuccess({ token: newToken }));
+      }),
+      switchMap(newToken => {
+        // Retry the original request with the new access token
+        return next.handle(this.addToken(request, newToken));
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.store.dispatch(AuthActions.logout());
+
+        return throwError(error);
       })
     );
   }

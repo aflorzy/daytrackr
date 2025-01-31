@@ -42,7 +42,7 @@ export class AuthEffects {
     return this.actions$.pipe(
       ofType(AuthActions.extendSession),
       switchMap(() =>
-        this.authService.refreshToken().pipe(
+        this.authService.refreshAccessToken().pipe(
           map(newToken => AuthActions.setToken({ token: newToken })),
           catchError(() => of(AuthActions.logout()))
         )
@@ -52,7 +52,10 @@ export class AuthEffects {
 
   setToken$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuthActions.loginSuccess),
+      ofType(AuthActions.loginSuccess, AuthActions.refreshTokenSuccess),
+      tap(({ token }) => {
+        this.authService.setTokenInStorage(token);
+      }),
       switchMap(({ token }) => of(AuthActions.setToken({ token })))
     );
   });
