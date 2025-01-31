@@ -11,12 +11,12 @@ import { selectResponseMsg } from "../selectors/profile.selectors";
 
 @Injectable()
 export class ProfileEffects {
-  private action$ = inject(Actions);
+  private actions$ = inject(Actions);
   private store = inject(Store);
   private profileService = inject(ProfileService);
 
   loadProfile$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(ProfileActions.getProfileDetails),
       switchMap(() =>
         this.profileService.fetchProfile().pipe(
@@ -30,7 +30,7 @@ export class ProfileEffects {
   });
 
   saveProfile$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(ProfileActions.saveProfileDetails),
       switchMap(payload =>
         this.profileService.save(payload.profileDto).pipe(
@@ -50,7 +50,7 @@ export class ProfileEffects {
 
   // Hide response message after timer
   hideResponseMsg$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(ProfileApiActions.saveProfileSuccess),
       concatLatestFrom(() => this.store.select(selectResponseMsg)),
       switchMap(([_, responseMsg]: [any, ResponseMessage]) => {
@@ -65,7 +65,7 @@ export class ProfileEffects {
   });
 
   reset$ = createEffect(() => {
-    return this.action$.pipe(
+    return this.actions$.pipe(
       ofType(AuthActions.logout),
       switchMap(() => of(ProfileActions.reset()))
     );

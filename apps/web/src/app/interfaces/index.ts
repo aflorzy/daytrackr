@@ -2,6 +2,7 @@ import { StatusType } from "../enums";
 
 export interface AccessToken {
   accessToken: string;
+  refreshToken: string;
   tokenType: string;
 }
 

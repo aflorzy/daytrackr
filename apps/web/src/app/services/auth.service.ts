@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import * as jwt_decode from "jwt-decode";
-import { delay, Observable, of, Subscription, take, tap } from "rxjs";
+import { Observable, take } from "rxjs";
 import { AccessToken } from "src/app/interfaces";
 import { BASE_URL, StorageKey } from "../constants";
 import { StorageService } from "./storage.service";
@@ -13,13 +13,11 @@ export class AuthService {
   private http = inject(HttpClient);
   private storageService = inject(StorageService);
 
-  private jwtExpirationSubscription = new Subscription();
-
   get token(): AccessToken {
     return this.getTokenFromStorage();
   }
 
-  private setTokenInStorage(token: AccessToken): void {
+  public setTokenInStorage(token: AccessToken): void {
     this.storageService.setItemInStorage(StorageKey.Token, token);
   }
 
@@ -31,8 +29,10 @@ export class AuthService {
     return this.storageService.getItemFromStorage(StorageKey.Token);
   }
 
-  public isAuthenticatedUser(token: AccessToken): boolean {
-    return this.tokenValid(token);
+  public getTokenExpiration(token: AccessToken): number {
+    const decoded = this.getDecodedAccessToken(token?.refreshToken);
+
+    return (decoded.exp ?? 0) * 1000;
   }
 
   public isTokenValid(): boolean {
@@ -56,17 +56,6 @@ export class AuthService {
     }
   }
 
-  private startJwtExpirationCounter(token: AccessToken) {
-    const decoded = this.getDecodedAccessToken(token.accessToken);
-    this.jwtExpirationSubscription.unsubscribe();
-    this.jwtExpirationSubscription = of(null)
-      .pipe(delay(decoded.exp))
-      .subscribe(() => {
-        console.log("Token expired, logging out...");
-        this.logout();
-      });
-  }
-
   public register(username: string, password: string) {
     const registerUrl = `${BASE_URL}/auth/register`;
 
@@ -75,7 +64,7 @@ export class AuthService {
       password: password
     };
 
-    return this.http.post<{ message: string | null; error: string | null }>(registerUrl, registerData);
+    return this.http.post<{ message: string | null; error: string | null }>(registerUrl, registerData).pipe(take(1));
   }
 
   public login(username: string, password: string): Observable<AccessToken> {
@@ -85,17 +74,17 @@ export class AuthService {
 
     // Check for existing VALID token in storage before making API call
 
-    return this.http.post<AccessToken>(loginUrl, loginData).pipe(
-      take(1),
-      tap(token => {
-        this.setTokenInStorage(token);
-      })
-    );
+    return this.http.post<AccessToken>(loginUrl, loginData).pipe(take(1));
+  }
+
+  public refreshAccessToken(): Observable<AccessToken> {
+    const refreshTokenUrl = `${BASE_URL}/auth/refresh-token`;
+    const refreshToken = this.token?.refreshToken ?? "";
+
+    return this.http.post<AccessToken>(refreshTokenUrl, { refreshToken }).pipe(take(1));
   }
 
   public logout() {
     this.removeTokenFromStorage();
-
-    this.jwtExpirationSubscription.unsubscribe();
   }
 }
