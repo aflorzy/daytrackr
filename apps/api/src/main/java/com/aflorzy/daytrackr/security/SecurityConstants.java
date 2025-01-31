@@ -13,4 +13,7 @@ public class SecurityConstants {
 
   @Value("${jwt.secret}")
   public String JWT_SECRET;
+
+  @Value("${jwt.refresh.expiration}")
+  public long JWT_REFRESH_EXPIRATION;
 }
