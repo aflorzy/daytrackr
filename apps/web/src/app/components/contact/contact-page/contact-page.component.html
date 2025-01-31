@@ -2,5 +2,6 @@
   <app-feedback
     [responseMessage]="responseMessage$ | async"
     [resetForm]="(resetForm$ | async) || false"
+    [sendFeedbackIsLoading]="(sendFeedbackIsLoading$ | async) || false"
     (submitForm)="handleSubmit($event)"></app-feedback>
 </div>

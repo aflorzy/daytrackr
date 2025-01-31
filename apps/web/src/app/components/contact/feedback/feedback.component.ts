@@ -11,6 +11,7 @@ export class FeedbackComponent {
   private fb = inject(FormBuilder);
 
   @Input() responseMessage!: ResponseMessage | null;
+  @Input() sendFeedbackIsLoading = false;
   @Input() set resetForm(shouldReset: boolean) {
     if (shouldReset) {
       this.feedbackForm.reset();

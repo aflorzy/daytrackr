@@ -1,6 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Subject, switchMap, tap, timer } from "rxjs";
+import { BehaviorSubject, catchError, concat, delay, of, Subject, switchMap, tap } from "rxjs";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 import { StatusType } from "../../../enums";
 import { FeedbackService } from "../../../services/feedback.service";
@@ -14,24 +14,42 @@ import { FeedbackService } from "../../../services/feedback.service";
 export class ContactPageComponent {
   private feedbackService = inject(FeedbackService);
 
-  responseMessage$ = new Subject<ResponseMessage | null>();
+  private response$ = new BehaviorSubject<ResponseMessage | null>(null);
+  public responseMessage$ = this.response$.pipe(
+    switchMap(message =>
+      message
+        ? concat(
+            of(message), // Emit message immediately
+            of(null).pipe(delay(5000)) // Emit null after 5 seconds
+          )
+        : of(null)
+    )
+  );
+
   resetForm$ = new Subject<boolean>();
+  sendFeedbackIsLoading$ = new BehaviorSubject(false);
 
   handleSubmit(payload: FeedbackMessage) {
+    this.sendFeedbackIsLoading$.next(true);
+
     this.feedbackService
       .sendFeedback(payload)
       .pipe(
-        untilDestroyed(this),
-        tap(() => this.responseMessage$.next({ message: "Sent successfully.", statusType: StatusType.SUCCESS })),
-        switchMap(() => timer(5000).pipe(tap(() => this.responseMessage$.next(null))))
-      )
-      .subscribe({
-        next: () => {
+        tap(() => {
+          this.sendFeedbackIsLoading$.next(false);
           this.resetForm$.next(true);
-        },
-        error: () => {
-          this.responseMessage$.next({ message: "Could not send feedback.", statusType: StatusType.ERROR });
-        }
-      });
+        }),
+        switchMap(() => of({ message: "Sent successfully.", statusType: StatusType.SUCCESS })),
+        catchError(() => {
+          this.sendFeedbackIsLoading$.next(false);
+
+          return of({ message: "Could not send feedback.", statusType: StatusType.ERROR });
+        }),
+        tap(responseMessage => {
+          this.response$.next(responseMessage);
+        }),
+        untilDestroyed(this)
+      )
+      .subscribe();
   }
 }

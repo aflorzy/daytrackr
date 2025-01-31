@@ -9,5 +9,10 @@
 </form>
 
 <ng-container *ngFor="let day of dayList$ | async">
-  <app-day-list-item [day]="day" [editable]="false"></app-day-list-item>
+  <app-day-list-item
+    [day]="day"
+    [editable]="false"
+    [hideAddEvent]="true"
+    [hideDeleteIcon]="true"
+    [hideEditIcon]="true"></app-day-list-item>
 </ng-container>
