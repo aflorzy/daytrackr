@@ -22,10 +22,10 @@ describe("ContactPageComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    declarations: [ContactPageComponent, FeedbackComponent, ButtonComponent, BannerComponent],
-    imports: [FormsModule, ReactiveFormsModule],
-    providers: [FeedbackService, provideHttpClient(withInterceptorsFromDi())]
-}).compileComponents();
+      declarations: [ContactPageComponent, FeedbackComponent, ButtonComponent, BannerComponent],
+      imports: [FormsModule, ReactiveFormsModule],
+      providers: [FeedbackService, provideHttpClient(withInterceptorsFromDi())]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ContactPageComponent);
 

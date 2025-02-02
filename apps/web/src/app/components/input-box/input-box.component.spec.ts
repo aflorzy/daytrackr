@@ -14,10 +14,10 @@ describe("InputBoxComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    declarations: [InputBoxComponent, ButtonComponent, DayListComponent, ParserComponent],
-    imports: [FormsModule, ReactiveFormsModule],
-    providers: [DatePipe, provideHttpClient(withInterceptorsFromDi())]
-}).compileComponents();
+      declarations: [InputBoxComponent, ButtonComponent, DayListComponent, ParserComponent],
+      imports: [FormsModule, ReactiveFormsModule],
+      providers: [DatePipe, provideHttpClient(withInterceptorsFromDi())]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(InputBoxComponent);
     component = fixture.componentInstance;

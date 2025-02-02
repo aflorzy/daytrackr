@@ -9,9 +9,9 @@ describe("FeedbackService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [DatePipe, provideHttpClient(withInterceptorsFromDi())]
-});
+      imports: [],
+      providers: [DatePipe, provideHttpClient(withInterceptorsFromDi())]
+    });
     service = TestBed.inject(FeedbackService);
   });
 

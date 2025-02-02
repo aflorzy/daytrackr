@@ -8,9 +8,9 @@ describe("AuthService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [provideHttpClient(withInterceptorsFromDi())]
-});
+      imports: [],
+      providers: [provideHttpClient(withInterceptorsFromDi())]
+    });
     service = TestBed.inject(AuthService);
   });
 
