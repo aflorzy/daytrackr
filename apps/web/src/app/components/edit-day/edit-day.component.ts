@@ -11,7 +11,7 @@ export class EditDayComponent {
   @Input() day!: Day;
   @Input() isChanged = false;
   @Output() saveEdits = new EventEmitter<Day>();
-  @Output() cancel = new EventEmitter<boolean>();
+  @Output() cancelEdits = new EventEmitter<boolean>();
   @Output() moveEventUp = new EventEmitter<Event>();
   @Output() moveEventDown = new EventEmitter<Event>();
   @Output() moveEvent = new EventEmitter<{ event: Event; newIdx: number }>();
