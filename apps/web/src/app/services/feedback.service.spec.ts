@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 
 import { DatePipe } from "@angular/common";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { FeedbackService } from "./feedback.service";
 
 describe("FeedbackService", () => {
@@ -9,9 +9,9 @@ describe("FeedbackService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
-      providers: [DatePipe]
-    });
+    imports: [],
+    providers: [DatePipe, provideHttpClient(withInterceptorsFromDi())]
+});
     service = TestBed.inject(FeedbackService);
   });
 

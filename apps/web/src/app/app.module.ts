@@ -1,6 +1,6 @@
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { DatePipe } from "@angular/common";
-import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -41,66 +41,57 @@ import { dayReducer } from "./store/reducers/day.reducer";
 import { editDayReducer } from "./store/reducers/edit-day.reducer";
 import { profileReducer } from "./store/reducers/profile.reducer";
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    InputBoxComponent,
-    DayListComponent,
-    DayListItemComponent,
-    CalendarPageComponent,
-    NavbarComponent,
-    CalendarComponent,
-    EditDayComponent,
-    LoginComponent,
-    RegisterComponent,
-    BannerComponent,
-    HomeComponent,
-    ButtonComponent,
-    FeedbackComponent,
-    ContactPageComponent,
-    ProfilePageComponent,
-    EditDayPageComponent,
-    DateInputComponent,
-    ParserComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    FontAwesomeModule,
-    HttpClientModule,
-    DragDropModule,
-    StoreModule.forRoot(
-      {
-        auth: authReducer,
-        days: dayReducer,
-        editDay: editDayReducer,
-        profile: profileReducer,
-        router: routerReducer
-      },
-      {
-        runtimeChecks: {
-          strictStateImmutability: true,
-          strictActionImmutability: true,
-          strictActionTypeUniqueness: true
-        }
-      }
-    ),
-    EffectsModule.forRoot(AuthEffects, DayEffects, EditDayEffects, ProfileEffects, RouterEffects),
-    StoreRouterConnectingModule.forRoot(),
-    environment.imports
-  ],
-  providers: [
-    DatePipe,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        InputBoxComponent,
+        DayListComponent,
+        DayListItemComponent,
+        CalendarPageComponent,
+        NavbarComponent,
+        CalendarComponent,
+        EditDayComponent,
+        LoginComponent,
+        RegisterComponent,
+        BannerComponent,
+        HomeComponent,
+        ButtonComponent,
+        FeedbackComponent,
+        ContactPageComponent,
+        ProfilePageComponent,
+        EditDayPageComponent,
+        DateInputComponent,
+        ParserComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        FontAwesomeModule,
+        DragDropModule,
+        StoreModule.forRoot({
+            auth: authReducer,
+            days: dayReducer,
+            editDay: editDayReducer,
+            profile: profileReducer,
+            router: routerReducer
+        }, {
+            runtimeChecks: {
+                strictStateImmutability: true,
+                strictActionImmutability: true,
+                strictActionTypeUniqueness: true
+            }
+        }),
+        EffectsModule.forRoot(AuthEffects, DayEffects, EditDayEffects, ProfileEffects, RouterEffects),
+        StoreRouterConnectingModule.forRoot(),
+        environment.imports], providers: [
+        DatePipe,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule {
   constructor(library: FaIconLibrary) {
     library.addIconPacks(fas);
