@@ -7,7 +7,10 @@ import { State as ProfileState } from "../reducers/profile.reducer";
 export const selectProfileState = createFeatureSelector<ProfileState>("profile");
 
 // Individual Selectors
-export const selectProfile = createSelector(selectProfileState, (state: ProfileState): ProfileDTO => state.profile);
+export const selectProfile = createSelector(
+  selectProfileState,
+  (state: ProfileState): ProfileDTO | null => state.profile
+);
 
 export const selectTouched = createSelector(selectProfileState, (state: ProfileState): boolean => state.touched);
 

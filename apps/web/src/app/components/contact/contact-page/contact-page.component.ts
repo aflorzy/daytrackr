@@ -1,6 +1,7 @@
 import { Component, inject } from "@angular/core";
+import { NonNullableFormBuilder } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { BehaviorSubject, catchError, concat, delay, of, Subject, switchMap, tap } from "rxjs";
+import { BehaviorSubject, catchError, concat, delay, of, switchMap, tap } from "rxjs";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 import { StatusType } from "../../../enums";
 import { FeedbackService } from "../../../services/feedback.service";
@@ -13,9 +14,12 @@ import { FeedbackService } from "../../../services/feedback.service";
 })
 export class ContactPageComponent {
   private feedbackService = inject(FeedbackService);
-
+  private fb = inject(NonNullableFormBuilder);
   private response$ = new BehaviorSubject<ResponseMessage | null>(null);
-  public responseMessage$ = this.response$.pipe(
+
+  contactForm = this.fb.group({});
+
+  responseMessage$ = this.response$.pipe(
     switchMap(message =>
       message
         ? concat(
@@ -26,7 +30,6 @@ export class ContactPageComponent {
     )
   );
 
-  resetForm$ = new Subject<boolean>();
   sendFeedbackIsLoading$ = new BehaviorSubject(false);
 
   handleSubmit(payload: FeedbackMessage) {
@@ -37,7 +40,7 @@ export class ContactPageComponent {
       .pipe(
         tap(() => {
           this.sendFeedbackIsLoading$.next(false);
-          this.resetForm$.next(true);
+          this.contactForm.reset();
         }),
         switchMap(() => of({ message: "Sent successfully.", statusType: StatusType.SUCCESS })),
         catchError(() => {

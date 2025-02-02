@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Component, inject } from "@angular/core";
+import { FormGroup, NonNullableFormBuilder, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
-import { Observable, tap } from "rxjs";
+import { filter, Observable, tap } from "rxjs";
 import { Profile, ProfileDTO } from "src/app/interfaces";
 import { ProfileActions } from "src/app/store/actions/profile.actions";
 import { selectProfile, selectResponseMsg } from "src/app/store/selectors/profile.selectors";
@@ -11,9 +11,9 @@ import { dirtyCheck } from "../../operators/dirty-check.operator";
   selector: "app-profile-page",
   templateUrl: "./profile-page.component.html"
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent {
   private store = inject(Store);
-  private fb = inject(FormBuilder);
+  private fb = inject(NonNullableFormBuilder);
 
   userForm = this.fb.group({
     firstName: [""],
@@ -22,13 +22,16 @@ export class ProfilePageComponent implements OnInit {
     email: ["", [Validators.email]],
     phone: ["", Validators.pattern(/^\d{10}$/)]
   });
+
   isDirty$: Observable<boolean> = this.userForm.valueChanges.pipe(dirtyCheck(this.store.select(selectProfile)));
   responseMsg$ = this.store.select(selectResponseMsg);
-  profile$ = this.store.select(selectProfile).pipe(tap((profile: ProfileDTO) => this.patchForm(profile)));
-
-  ngOnInit(): void {
-    this.store.dispatch(ProfileActions.getProfileDetails());
-  }
+  profile$ = this.store.select(selectProfile).pipe(
+    tap(profile => {
+      if (!profile) this.store.dispatch(ProfileActions.getProfileDetails());
+    }),
+    filter(Boolean),
+    tap(profile => this.patchForm(profile))
+  );
 
   // Overwrite some form values
   private patchForm(data: Partial<Profile>) {
@@ -52,21 +55,22 @@ export class ProfilePageComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.userForm.valid) {
-      // Form is valid, perform your action here
-      const formValue = this.userForm.value;
-      const profileDto: ProfileDTO = {
-        firstName: formValue.firstName ?? "",
-        lastName: formValue.lastName ?? "",
-        preferredName: formValue.preferredName ?? "",
-        email: formValue.email ?? "",
-        phone: formValue.phone ?? ""
-      };
-
-      this.store.dispatch(ProfileActions.saveProfileDetails({ profileDto }));
-    } else {
+    if (this.userForm.invalid) {
       // Form is invalid, show error messages
       this.validateAllFormFields(this.userForm);
+
+      return;
     }
+
+    const formValue = this.userForm.value;
+    const profileDto: ProfileDTO = {
+      firstName: formValue.firstName ?? "",
+      lastName: formValue.lastName ?? "",
+      preferredName: formValue.preferredName ?? "",
+      email: formValue.email ?? "",
+      phone: formValue.phone ?? ""
+    };
+
+    this.store.dispatch(ProfileActions.saveProfileDetails({ profileDto }));
   }
 }

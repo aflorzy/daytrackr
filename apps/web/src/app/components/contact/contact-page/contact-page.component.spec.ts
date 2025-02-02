@@ -1,11 +1,13 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule, HttpErrorResponse } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { of, throwError } from "rxjs";
+import { By } from "@angular/platform-browser";
+import { delay, of, throwError } from "rxjs";
 import { StatusType } from "../../../enums";
-import { FeedbackMessage } from "../../../interfaces";
+import { FeedbackMessage, ResponseMessage } from "../../../interfaces";
 import { FeedbackService } from "../../../services/feedback.service";
+import { BannerComponent } from "../../banner/banner.component";
 import { ButtonComponent } from "../../button/button.component";
 import { FeedbackComponent } from "../feedback/feedback.component";
 import { ContactPageComponent } from "./contact-page.component";
@@ -15,10 +17,14 @@ describe("ContactPageComponent", () => {
   let fixture: ComponentFixture<ContactPageComponent>;
   let feedbackService: FeedbackService;
 
+  const feedbackElement = (): FeedbackComponent =>
+    fixture.debugElement.query(By.css("app-feedback")).componentInstance as FeedbackComponent;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientModule, FormsModule, ReactiveFormsModule],
-      declarations: [ContactPageComponent, FeedbackComponent, ButtonComponent]
+      declarations: [ContactPageComponent, FeedbackComponent, ButtonComponent, BannerComponent],
+      providers: [FeedbackService]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ContactPageComponent);
@@ -29,60 +35,124 @@ describe("ContactPageComponent", () => {
   });
 
   it("should create", () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
-  it("should send feedback to the service upon submit", fakeAsync(() => {
-    spyOn(feedbackService, "sendFeedback").and.returnValue(of({}));
-    spyOn(component.resetForm$, "next");
-    spyOn(component.responseMessage$, "next");
-
-    const feedback: FeedbackMessage = {
-      subject: "Subject line",
-      body: "This is my message",
-      attachments: []
+  it("should set response message when send feedback succeeded", () => {
+    const feedbackApiResponse: ResponseMessage = {
+      message: "Feedback submitted successfully.",
+      statusType: StatusType.SUCCESS
     };
-
-    component.handleSubmit(feedback);
-
-    expect(feedbackService.sendFeedback).toHaveBeenCalledWith(feedback);
-
-    expect(component.responseMessage$.next).toHaveBeenCalledWith({
+    const expectedResponseMessage: ResponseMessage = {
       message: "Sent successfully.",
       statusType: StatusType.SUCCESS
-    });
-
-    // Simulate the passage of time
-    tick(5000);
-
-    // Verify the response message is cleared after 5 seconds
-    expect(component.responseMessage$.next).toHaveBeenCalledWith(null);
-  }));
-
-  // TODO: Fix failing test
-  xit("should handle a failed response", fakeAsync(() => {
-    spyOn(feedbackService, "sendFeedback").and.returnValue(throwError(() => new Error("Error")));
-    spyOn(component.responseMessage$, "next");
-
-    const feedback: FeedbackMessage = {
-      subject: "Subject line",
-      body: "This is my message",
-      attachments: []
     };
 
-    component.handleSubmit(feedback);
+    spyOn(feedbackService, "sendFeedback").and.returnValue(of(feedbackApiResponse));
 
-    expect(feedbackService.sendFeedback).toHaveBeenCalledWith(feedback);
+    fixture.detectChanges();
 
-    expect(component.responseMessage$.next).toHaveBeenCalledWith({
+    expect(feedbackElement().responseMessage).toBeNull();
+
+    component.handleSubmit(<FeedbackMessage>{});
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().responseMessage).toEqual(expectedResponseMessage);
+  });
+
+  it("should set response message when send feedback failed", () => {
+    const expectedResponseMessage: ResponseMessage = {
       message: "Could not send feedback.",
       statusType: StatusType.ERROR
-    });
+    };
+    const errorResponse = new HttpErrorResponse({ error: "Could not send feedback." });
 
-    // Simulate the passage of time
+    spyOn(feedbackService, "sendFeedback").and.returnValue(throwError(() => errorResponse));
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().responseMessage).toBeNull();
+
+    component.handleSubmit(<FeedbackMessage>{});
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().responseMessage).toEqual(expectedResponseMessage);
+  });
+
+  it("should dismiss response message after 5 seconds", fakeAsync(() => {
+    const feedbackApiResponse: ResponseMessage = {
+      message: "Feedback submitted successfully.",
+      statusType: StatusType.SUCCESS
+    };
+    const expectedResponseMessage: ResponseMessage = {
+      message: "Sent successfully.",
+      statusType: StatusType.SUCCESS
+    };
+
+    spyOn(feedbackService, "sendFeedback").and.returnValue(of(feedbackApiResponse));
+
+    fixture.detectChanges();
+
+    component.handleSubmit(<FeedbackMessage>{});
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().responseMessage).toEqual(expectedResponseMessage);
+
     tick(5000);
 
-    // Verify the response message is cleared after 5 seconds
-    expect(component.responseMessage$.next).toHaveBeenCalledWith(null);
+    fixture.detectChanges();
+
+    expect(feedbackElement().responseMessage).toBeNull();
   }));
+
+  it("should set loading while send feedback is in progress", fakeAsync(() => {
+    const feedbackApiResponse: ResponseMessage = {
+      message: "Feedback submitted successfully.",
+      statusType: StatusType.SUCCESS
+    };
+
+    spyOn(feedbackService, "sendFeedback").and.returnValue(of(feedbackApiResponse).pipe(delay(1000)));
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().sendFeedbackIsLoading).toBeFalse();
+
+    component.handleSubmit(<FeedbackMessage>{});
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().sendFeedbackIsLoading).toBeTrue();
+
+    // Factor in simulated API delay and message auto-dismiss timer
+    tick(1000 + 5000);
+
+    fixture.detectChanges();
+
+    expect(feedbackElement().sendFeedbackIsLoading).toBeFalse();
+  }));
+
+  it("should reset the contact form when send feedback succeeds", () => {
+    const feedbackApiResponse: ResponseMessage = {
+      message: "Feedback submitted successfully.",
+      statusType: StatusType.SUCCESS
+    };
+
+    spyOn(feedbackService, "sendFeedback").and.returnValue(of(feedbackApiResponse));
+    spyOn(component.contactForm, "reset").and.callThrough();
+
+    fixture.detectChanges();
+
+    expect(component.contactForm.reset).not.toHaveBeenCalled();
+
+    component.handleSubmit(<FeedbackMessage>{});
+
+    fixture.detectChanges();
+
+    expect(component.contactForm.reset).toHaveBeenCalled();
+  });
 });

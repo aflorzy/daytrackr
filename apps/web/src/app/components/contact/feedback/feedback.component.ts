@@ -1,5 +1,5 @@
-import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { Component, EventEmitter, inject, Input, OnInit, Output } from "@angular/core";
+import { FormGroup, NonNullableFormBuilder, Validators } from "@angular/forms";
 import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 
 @Component({
@@ -7,41 +7,31 @@ import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
   templateUrl: "./feedback.component.html",
   styleUrls: ["./feedback.component.scss"]
 })
-export class FeedbackComponent {
-  private fb = inject(FormBuilder);
+export class FeedbackComponent implements OnInit {
+  private fb = inject(NonNullableFormBuilder);
 
+  @Input() parentForm!: FormGroup;
   @Input() responseMessage!: ResponseMessage | null;
   @Input() sendFeedbackIsLoading = false;
-  @Input() set resetForm(shouldReset: boolean) {
-    if (shouldReset) {
-      this.feedbackForm.reset();
-    }
-  }
   @Output() submitForm = new EventEmitter<FeedbackMessage>();
 
+  subjectControl = this.fb.control("", [Validators.required]);
+  messageControl = this.fb.control("", [Validators.required]);
+  fileControl = this.fb.control<File | null>(null);
+
   feedbackForm = this.fb.group({
-    subject: new FormControl("", [Validators.required]),
-    message: new FormControl("", [Validators.required]),
-    file: new FormControl<File | null>(null)
+    subject: this.subjectControl,
+    message: this.messageControl,
+    file: this.fileControl
   });
+
+  ngOnInit(): void {
+    this.parentForm.addControl("feedback", this.feedbackForm);
+  }
 
   hasError(fieldName: string, error: string): boolean {
     const field = this.feedbackForm.get(fieldName);
     return !!(field?.touched && field?.hasError(error));
-  }
-
-  handleFileChange(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-
-    const files = inputElement.files;
-
-    if (!files?.length) {
-      this.feedbackForm.get("file")?.reset();
-
-      return;
-    }
-
-    this.feedbackForm.patchValue({ file: files[0] });
   }
 
   onSubmit() {
