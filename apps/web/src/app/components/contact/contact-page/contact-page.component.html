@@ -1,6 +1,7 @@
 <div class="content">
   <app-feedback
+    [parentForm]="contactForm"
     [responseMessage]="responseMessage$ | async"
-    [resetForm]="(resetForm$ | async) || false"
+    [sendFeedbackIsLoading]="(sendFeedbackIsLoading$ | async) || false"
     (submitForm)="handleSubmit($event)"></app-feedback>
 </div>

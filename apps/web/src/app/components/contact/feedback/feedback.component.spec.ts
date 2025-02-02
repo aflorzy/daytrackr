@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ButtonComponent } from "../../button/button.component";
 import { FeedbackComponent } from "./feedback.component";
 
@@ -16,10 +16,13 @@ describe("FeedbackComponent", () => {
 
     fixture = TestBed.createComponent(FeedbackComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    component.parentForm = new FormGroup({});
   });
 
   it("should create", () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 });

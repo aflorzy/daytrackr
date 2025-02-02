@@ -4,7 +4,7 @@ import { ProfileDTO, ResponseMessage } from "src/app/interfaces";
 import { ProfileActions, ProfileApiActions } from "../actions/profile.actions";
 
 export interface State {
-  profile: ProfileDTO;
+  profile: ProfileDTO | null;
   touched: boolean;
   loading: boolean;
   errorMsg: string;
@@ -12,13 +12,7 @@ export interface State {
 }
 
 export const initialState: State = {
-  profile: {
-    firstName: "",
-    lastName: "",
-    preferredName: "",
-    email: "",
-    phone: ""
-  },
+  profile: null,
   touched: false,
   loading: false,
   errorMsg: "",
