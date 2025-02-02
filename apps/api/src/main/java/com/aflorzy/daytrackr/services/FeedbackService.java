@@ -57,7 +57,7 @@ public class FeedbackService {
         return feedbackRepository.save(feedbackMessage);
     }
 
-    public ResponseMessage sendMail(UserEntity user, FeedbackMessageDto feedbackMessageDto) {
+    public ResponseEntity<ResponseMessage> sendMail(UserEntity user, FeedbackMessageDto feedbackMessageDto) {
         FeedbackMessage feedbackMessage = new FeedbackMessage();
         feedbackMessage.setMessage(feedbackMessageDto.getMessage());
         feedbackMessage.setSubject(feedbackMessageDto.getSubject());
@@ -73,19 +73,21 @@ public class FeedbackService {
 
             mailSender.send(prepareClientEmail(user, feedbackMessage));
 
-            log.info("Successfully sent email to " + user.getEmail());
+            log.info("Successfully sent email to {}", user.getEmail());
 
-            return new ResponseMessage("Feedback submitted successfully.", StatusType.SUCCESS);
-
+            return ResponseEntity.ok().body(new ResponseMessage("Feedback submitted successfully.", StatusType.SUCCESS));
         } catch (MailException ex) {
             log.error(ex.getMessage());
-            return new ResponseMessage("Could not send feedback.", StatusType.ERROR);
+
+            return ResponseEntity.status(500).body(new ResponseMessage("Could not send feedback.", StatusType.ERROR));
         }
     }
 
     public MimeMessagePreparator prepareServerEmail(UserEntity user, FeedbackMessage feedbackMessage) {
         return mimeMessage -> {
             mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress("tbillform@gmail.com"));
+            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress("andrewtflores@yahoo.com"));
+
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setFrom(new InternetAddress("DayTrackr Support <tbillform@gmail.com>"));
             helper.setSubject("DayTrackr | Feedback Received");

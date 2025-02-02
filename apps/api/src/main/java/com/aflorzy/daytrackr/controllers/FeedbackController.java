@@ -36,8 +36,7 @@ public class FeedbackController {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<ResponseMessage> sendEmail(Principal principal, @RequestBody FeedbackMessageDto feedbackMessage) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElse(null);
-        ResponseMessage responseMessage = this.feedbackService.sendMail(user, feedbackMessage);
 
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(responseMessage);
+        return this.feedbackService.sendMail(user, feedbackMessage);
     }
 }
