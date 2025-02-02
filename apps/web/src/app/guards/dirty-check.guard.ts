@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { CanDeactivate } from "@angular/router";
+
 import { Observable, of, switchMap, take } from "rxjs";
 
 export interface DirtyComponent {
@@ -7,7 +7,7 @@ export interface DirtyComponent {
 }
 
 @Injectable({ providedIn: "root" })
-export class DirtyCheckGuard implements CanDeactivate<DirtyComponent> {
+export class DirtyCheckGuard  {
   canDeactivate(component: DirtyComponent) {
     return component.isDirty$.pipe(
       switchMap(dirty => {

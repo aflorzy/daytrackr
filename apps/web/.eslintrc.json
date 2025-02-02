@@ -3,7 +3,9 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
-  "plugins": ["@ngrx"],
+  "plugins": [
+    "@ngrx"
+  ],
   "rules": {
     "@ngrx/good-action-hygiene": "error"
   },
