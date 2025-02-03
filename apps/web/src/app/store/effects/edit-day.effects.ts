@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { concatLatestFrom } from "@ngrx/operators";
 import { Store } from "@ngrx/store";
 import { catchError, filter, map, of, switchMap } from "rxjs";
 import { Day } from "../../interfaces";

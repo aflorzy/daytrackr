@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 
 import { DatePipe } from "@angular/common";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { DayService } from "./day.service";
 
 describe("DayService", () => {
@@ -9,8 +9,8 @@ describe("DayService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
-      providers: [DatePipe]
+      imports: [],
+      providers: [DatePipe, provideHttpClient(withInterceptorsFromDi())]
     });
     service = TestBed.inject(DayService);
   });

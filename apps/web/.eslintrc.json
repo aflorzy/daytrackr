@@ -63,7 +63,7 @@
         "*.ts"
       ],
       "extends": [
-        "plugin:@ngrx/strict-requiring-type-checking"
+        "plugin:@ngrx/all"
       ]
     }
   ]

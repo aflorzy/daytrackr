@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 
-import { HttpClientModule, HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { By } from "@angular/platform-browser";
 import { delay, of, throwError } from "rxjs";
@@ -22,9 +22,9 @@ describe("ContactPageComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientModule, FormsModule, ReactiveFormsModule],
       declarations: [ContactPageComponent, FeedbackComponent, ButtonComponent, BannerComponent],
-      providers: [FeedbackService]
+      imports: [FormsModule, ReactiveFormsModule],
+      providers: [FeedbackService, provideHttpClient(withInterceptorsFromDi())]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ContactPageComponent);
