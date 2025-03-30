@@ -1,4 +1,4 @@
-<div class="content">
+<div class="form-container form-container__lg">
   <ng-container *ngIf="selectedDay$ | async as selectedDay; else noData">
     <app-calendar
       [dayList]="(dayList$ | async) || []"
