@@ -6,6 +6,8 @@
 body {
   margin: 0;
   font-family: "Roboto", sans-serif;
+  // background-color: oklch(0.442 0.017 285.786);
+  background-color: #003c36;
 }
 
 /* Center the login form container */
@@ -16,6 +18,11 @@ body {
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Box shadow for a card-like effect */
   text-align: center;
+  background-color: #f4f4f4;
+
+  &__lg {
+    max-width: 865px;
+  }
 }
 
 /* Style the login form elements */

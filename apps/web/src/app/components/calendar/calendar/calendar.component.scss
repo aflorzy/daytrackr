@@ -31,20 +31,23 @@
       text-decoration: underline;
     }
 
-    form select {
-      appearance: none;
-      outline: none;
-      cursor: pointer;
-      border: none;
+    form {
       text-align: center;
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 20px;
-      text-decoration: underline;
-      width: 100%;
 
-      &:hover {
-        filter: brightness(0.95);
+      select {
+        outline: none;
+        cursor: pointer;
+        border: none;
+        text-align: center;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 20px;
+        text-decoration: underline;
+        width: fit-content;
+
+        &:hover {
+          filter: brightness(0.95);
+        }
       }
     }
 

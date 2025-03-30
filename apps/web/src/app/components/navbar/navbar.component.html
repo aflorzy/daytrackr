@@ -1,5 +1,9 @@
-<nav>
-  <h1>DayTrackr Parser</h1>
+<nav class="desktop">
+  <a class="logo" routerLink="/">
+    <img src="favicon.ico" alt="Logo" />
+
+    <h1>DayTrackr</h1>
+  </a>
 
   <ul class="tabs" *ngIf="isAuthenticatedUser$ | async">
     <li class="tab">

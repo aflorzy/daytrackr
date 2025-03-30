@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ButtonComponent } from "../button/button.component";
 import { EditDayComponent } from "./edit-day.component";
 
 describe("EditDayComponent", () => {
@@ -8,7 +10,8 @@ describe("EditDayComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditDayComponent]
+      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [EditDayComponent, ButtonComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditDayComponent);

@@ -4,18 +4,18 @@ import { AccessToken } from "../../interfaces";
 export const AuthActions = createActionGroup({
   source: "Auth",
   events: {
-    Login: props<{ username: string; password: string }>(),
-    Register: props<{ username: string; password: string }>(),
-    Logout: emptyProps(),
-    "Check for Token": emptyProps(),
-    "Set Token": props<{ token: AccessToken }>(),
-    "Expire Token": emptyProps(),
-    "Extend Session": emptyProps(),
-    "Refresh Token Success": props<{ token: AccessToken }>(),
-    "Login Success": props<{ token: AccessToken }>(),
-    "Login Failure": props<{ errorMsg: string }>(),
-    "Register Success": emptyProps(),
-    "Register Failure": props<{ errorMsg: string }>(),
-    Reset: emptyProps()
+    login: props<{ username: string; password: string }>(),
+    register: props<{ username: string; password: string }>(),
+    logout: emptyProps(),
+    checkForToken: emptyProps(),
+    setToken: props<{ token: AccessToken }>(),
+    expireToken: emptyProps(),
+    extendSession: emptyProps(),
+    refreshTokenSuccess: props<{ token: AccessToken }>(),
+    loginSuccess: props<{ token: AccessToken }>(),
+    loginFailure: props<{ errorMsg: string }>(),
+    registerSuccess: emptyProps(),
+    registerFailure: props<{ errorMsg: string }>(),
+    reset: emptyProps()
   }
 });
