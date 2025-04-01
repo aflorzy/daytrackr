@@ -33,16 +33,19 @@ nav {
       max-width: 500px;
       gap: 10px;
 
-      .tab a {
-        text-decoration: none;
-        color: oklch(0.21 0.006 285.885);
-        font-size: 1.2rem;
-        font-weight: 500;
-        text-decoration: underline;
-      
-        &:hover {
-          color: #444;
-          text-decoration-color: #444;
+      .tab {
+        text-align: center;
+
+        a {
+          color: oklch(0.21 0.006 285.885);
+          font-size: 1.2rem;
+          font-weight: 500;
+          text-decoration: none;
+        
+          &:hover {
+            color: #444;
+            text-decoration: underline;
+          }
         }
       }
     }
