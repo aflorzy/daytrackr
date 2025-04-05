@@ -63,11 +63,13 @@
     .event {
       display: inline;
       margin: 10px 0;
+      position: relative;
 
       .name {
         padding: 5px 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
+        position: relative;
 
         &:hover {
           background-color: #eee;
@@ -77,6 +79,17 @@
         &:focus {
           background-color: #eee;
         }
+      }
+
+      .note-indicator {
+        display: block;
+        position: absolute;
+        top: -0.6rem;
+        right: 1.1rem;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #f00;
       }
 
       .gap {

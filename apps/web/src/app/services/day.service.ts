@@ -1,7 +1,7 @@
 import { DatePipe, formatDate } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { map, Observable, take } from "rxjs";
+import { map, Observable, take, tap } from "rxjs";
 import { Day, Event } from "src/app/interfaces";
 import { BASE_URL } from "../constants";
 import { getTodayDate } from "../store/reducers/day.reducer";
@@ -97,7 +97,20 @@ export class DayService {
 
     return this.http.get<Day[]>(`${BASE_URL}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`).pipe(
       take(1),
-      map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day)))
+      map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day))),
+      map(dayList =>
+        dayList.map(day => {
+          const events = day.events.map(event => {
+            const note = event.name.match(/\(([^)]+)\)/)?.[1] ?? "";
+            const name = event.name.replace(/\s*\([^)]*\)/, "");
+
+            return { ...event, name, note };
+          });
+
+          return { ...day, events };
+        })
+      ),
+      tap(console.log)
     );
   }
 

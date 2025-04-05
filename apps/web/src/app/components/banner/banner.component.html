@@ -1,4 +1,7 @@
 <div class="banner" [ngClass]="getBannerClass()">
   {{ message }}
-  <app-button *ngIf="dismissable" (clicked)="dismissBanner()" class="dismiss-button">X</app-button>
+
+  @if (dismissable) {
+    <app-button (clicked)="dismissBanner()" class="dismiss-button">X</app-button>
+  }
 </div>

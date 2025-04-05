@@ -31,9 +31,10 @@ export interface CalendarDay {
 }
 
 export interface Event {
-  id?: string;
   name: string;
   idx: number;
+  id?: string;
+  note?: string;
 }
 
 export interface Day {
