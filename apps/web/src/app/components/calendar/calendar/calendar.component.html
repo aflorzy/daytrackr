@@ -1,6 +1,6 @@
 @if (selectedDate) {
   <div class="months">
-    @for (month of monthList; track month; let i = $index) {
+    @for (month of monthList; track month.name; let i = $index) {
       <div class="month">
         @if ((i > 0 && i < monthList.length - 1) || (i === 0 && monthList.length === 1)) {
           <form [formGroup]="monthDropdownForm">
@@ -25,9 +25,9 @@
             <th>Fri</th>
             <th>Sat</th>
           </tr>
-          @for (week of month.weeks; track week) {
+          @for (week of month.weeks; track week.weekOfYear) {
             <tr>
-              @for (day of week.days; track day) {
+              @for (day of week.days; track day.date) {
                 <td
                   [class.differentMonth]="month.monthOfYear !== day.month"
                   [class.isSelected]="

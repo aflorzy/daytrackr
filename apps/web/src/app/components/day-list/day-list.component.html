@@ -1,5 +1,5 @@
 <div class="content">
-  @for (day of days; track day; let i = $index) {
+  @for (day of days; track day.id; let i = $index) {
     <app-day-list-item [day]="day" [editable]="true" [hideEditIcon]="true" [hideAddEvent]="true"></app-day-list-item>
   }
 </div>

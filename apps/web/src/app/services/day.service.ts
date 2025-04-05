@@ -1,7 +1,7 @@
 import { DatePipe, formatDate } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { map, Observable, take, tap } from "rxjs";
+import { map, Observable, take } from "rxjs";
 import { Day, Event } from "src/app/interfaces";
 import { BASE_URL } from "../constants";
 import { getTodayDate } from "../store/reducers/day.reducer";
@@ -23,12 +23,30 @@ export class DayService {
 
   // Sorting events by index ASC
   private sortDayEvents(day: Day): Day {
-    if (!day) return day;
+    if (!day?.events) return day;
 
-    return {
+    const sortedDay = {
       ...day,
-      events: day?.events?.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
+      events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
     };
+
+    return this.processDayEventNotes(sortedDay);
+  }
+
+  private processDayEventNotes(day: Day): Day {
+    return day;
+
+    // TODO: Need to implement backend logic
+    // if (!day?.events) return day;
+
+    // const events = day.events.map(event => {
+    //   const note = event.name.match(/\(([^)]+)\)/)?.[1] ?? "";
+    //   const name = event.name.replace(/\s*\([^)]*\)/, "");
+
+    //   return { ...event, name, note };
+    // });
+
+    // return { ...day, events };
   }
 
   public getDayByDate(date: Date | string): Observable<Day> {
@@ -97,25 +115,12 @@ export class DayService {
 
     return this.http.get<Day[]>(`${BASE_URL}/daily-events/find/between?date1=${dateStr1}&date2=${dateStr2}`).pipe(
       take(1),
-      map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day))),
-      map(dayList =>
-        dayList.map(day => {
-          const events = day.events.map(event => {
-            const note = event.name.match(/\(([^)]+)\)/)?.[1] ?? "";
-            const name = event.name.replace(/\s*\([^)]*\)/, "");
-
-            return { ...event, name, note };
-          });
-
-          return { ...day, events };
-        })
-      ),
-      tap(console.log)
+      map((dayList: Day[]) => dayList.map((day: Day) => this.sortDayEvents(day)))
     );
   }
 
-  public saveDay(newDay: Day): Observable<Day> {
-    return this.http.post<Day>(`${BASE_URL}/daily-events/save`, newDay).pipe(
+  public saveDay(day: Day): Observable<Day> {
+    return this.http.post<Day>(`${BASE_URL}/daily-events/save`, day).pipe(
       take(1),
       map((day: Day) => this.sortDayEvents(day))
     );

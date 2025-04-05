@@ -17,7 +17,7 @@
     </div>
 
     <div class="events">
-      @for (event of day.events; track event; let i = $index) {
+      @for (event of day.events; track event.name; let i = $index) {
         <div class="event">
           <span
             class="name"
@@ -29,9 +29,11 @@
             [innerHTML]="event.name"
             title="Edit event">
           </span>
+
           @if (event.note) {
             <span class="note-indicator" [title]="event.note"></span>
           }
+
           @if (i !== day.events.length - 1) {
             <span
               class="gap"
