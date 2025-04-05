@@ -1,7 +1,7 @@
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { DatePipe } from "@angular/common";
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-import { NgModule } from "@angular/core";
+import { NgModule, inject } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { FaIconLibrary, FontAwesomeModule } from "@fortawesome/angular-fontawesome";
@@ -102,7 +102,9 @@ import { profileReducer } from "./store/reducers/profile.reducer";
   ]
 })
 export class AppModule {
-  constructor(library: FaIconLibrary) {
+  constructor() {
+    const library = inject(FaIconLibrary);
+
     library.addIconPacks(fas);
   }
 }

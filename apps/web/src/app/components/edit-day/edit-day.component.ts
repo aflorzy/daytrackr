@@ -21,8 +21,4 @@ export class EditDayComponent {
   eventForm = new FormGroup({
     eventInput: new FormControl("")
   });
-
-  identify(_: number, event: Event) {
-    return event.idx;
-  }
 }

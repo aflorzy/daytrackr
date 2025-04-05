@@ -1,8 +1,5 @@
 <div class="content">
-  <app-day-list-item
-    *ngFor="let day of days; let i = index"
-    [day]="day"
-    [editable]="true"
-    [hideEditIcon]="true"
-    [hideAddEvent]="true"></app-day-list-item>
+  @for (day of days; track day; let i = $index) {
+    <app-day-list-item [day]="day" [editable]="true" [hideEditIcon]="true" [hideAddEvent]="true"></app-day-list-item>
+  }
 </div>

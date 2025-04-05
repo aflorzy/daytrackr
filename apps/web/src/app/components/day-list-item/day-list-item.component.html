@@ -17,32 +17,32 @@
     </div>
 
     <div class="events">
-      <div class="event" *ngFor="let event of day.events; let i = index">
-        <span
-          class="name"
-          [contentEditable]="editable"
-          (focus)="focusCell(i)"
-          (input)="editEvent($event)"
-          (keydown.Enter)="submit($event, event, i)"
-          (blur)="submit($event, event, i)"
-          [innerHTML]="event.name"
-          title="Edit event">
-        </span>
-
-        @if (event.note) {
-          <span class="note-indicator" [title]="event.note"></span>
-        }
-
-        @if (i !== day.events.length - 1) {
+      @for (event of day.events; track event; let i = $index) {
+        <div class="event">
           <span
-            class="gap"
-            [class.hidden]="!editable"
-            (click)="combineEvents.emit({ event1: event, event2: day.events[i + 1] })"
-            title="Combine events">
-            <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
+            class="name"
+            [contentEditable]="editable"
+            (focus)="focusCell(i)"
+            (input)="editEvent($event)"
+            (keydown.Enter)="submit($event, event, i)"
+            (blur)="submit($event, event, i)"
+            [innerHTML]="event.name"
+            title="Edit event">
           </span>
-        }
-      </div>
+          @if (event.note) {
+            <span class="note-indicator" [title]="event.note"></span>
+          }
+          @if (i !== day.events.length - 1) {
+            <span
+              class="gap"
+              [class.hidden]="!editable"
+              (click)="combineEvents.emit({ event1: event, event2: day.events[i + 1] })"
+              title="Combine events">
+              <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
+            </span>
+          }
+        </div>
+      }
     </div>
 
     @if (!hideAddEvent) {

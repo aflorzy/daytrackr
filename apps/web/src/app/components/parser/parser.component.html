@@ -8,11 +8,11 @@
   <app-button type="submit" [disabled]="parserForm.invalid">Submit</app-button>
 </form>
 
-<ng-container *ngFor="let day of dayList$ | async">
+@for (day of dayList$ | async; track day) {
   <app-day-list-item
     [day]="day"
     [editable]="false"
     [hideAddEvent]="true"
     [hideDeleteIcon]="true"
     [hideEditIcon]="true"></app-day-list-item>
-</ng-container>
+}

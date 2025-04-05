@@ -1,4 +1,4 @@
-<ng-container *ngIf="day$ | async as day; else loading">
+@if (day$ | async; as day) {
   <div class="form-container form-container__lg">
     <app-edit-day
       [day]="day"
@@ -11,6 +11,6 @@
       (removeEvent)="removeEvent($event)"
       (addEvent)="addEvent($event)"></app-edit-day>
   </div>
-</ng-container>
-
-<ng-template #loading> Loading... </ng-template>
+} @else {
+  Loading...
+}

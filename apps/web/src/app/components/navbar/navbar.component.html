@@ -5,33 +5,31 @@
     <h1>DayTrackr</h1>
   </a>
 
-  <ul class="tabs" *ngIf="isAuthenticatedUser$ | async">
-    <li class="tab">
-      <a routerLink="/" routerLinkActive="active-item">
-        <fa-icon [icon]="['fas', 'house']"></fa-icon><span> Home</span></a
-      >
-    </li>
-
-    <li class="tab">
-      <a routerLink="/parser" routerLinkActive="active-item"
-        ><fa-icon [icon]="['fas', 'database']"></fa-icon><span>Parser</span></a
-      >
-    </li>
-
-    <li class="tab">
-      <a routerLink="/contact" routerLinkActive="active-item"
-        ><fa-icon [icon]="['fas', 'square-phone']"></fa-icon><span>Contact</span></a
-      >
-    </li>
-
-    <li class="tab user-icon">
-      <a routerLink="/profile"> <fa-icon [icon]="['fas', 'user-circle']"></fa-icon><span> Profile</span> </a>
-    </li>
-
-    <li class="tab">
-      <a routerLink="/login" routerLinkActive="active-item" (click)="logout()">
-        <fa-icon [icon]="['fas', 'arrow-right-from-bracket']"></fa-icon><span> Logout</span>
-      </a>
-    </li>
-  </ul>
+  @if (isAuthenticatedUser$ | async) {
+    <ul class="tabs">
+      <li class="tab">
+        <a routerLink="/" routerLinkActive="active-item">
+          <fa-icon [icon]="['fas', 'house']"></fa-icon><span> Home</span></a
+        >
+      </li>
+      <li class="tab">
+        <a routerLink="/parser" routerLinkActive="active-item"
+          ><fa-icon [icon]="['fas', 'database']"></fa-icon><span>Parser</span></a
+        >
+      </li>
+      <li class="tab">
+        <a routerLink="/contact" routerLinkActive="active-item"
+          ><fa-icon [icon]="['fas', 'square-phone']"></fa-icon><span>Contact</span></a
+        >
+      </li>
+      <li class="tab user-icon">
+        <a routerLink="/profile"> <fa-icon [icon]="['fas', 'user-circle']"></fa-icon><span> Profile</span> </a>
+      </li>
+      <li class="tab">
+        <a routerLink="/login" routerLinkActive="active-item" (click)="logout()">
+          <fa-icon [icon]="['fas', 'arrow-right-from-bracket']"></fa-icon><span> Logout</span>
+        </a>
+      </li>
+    </ul>
+  }
 </nav>

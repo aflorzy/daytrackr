@@ -1,49 +1,54 @@
 @if (selectedDate) {
   <div class="months">
-    <div class="month" *ngFor="let month of monthList; let i = index">
-      @if ((i > 0 && i < monthList.length - 1) || (i === 0 && monthList.length === 1)) {
-        <form [formGroup]="monthDropdownForm">
-          <select formControlName="data" class="name">
-            <ng-container *ngFor="let monthData of monthDropdownData; let i = index; trackBy: trackByIndex">
-              @if (formatMonthDropdownItem(monthData); as formattedMonth) {
-                <option [value]="+i">{{ formattedMonth }}</option>
+    @for (month of monthList; track month; let i = $index) {
+      <div class="month">
+        @if ((i > 0 && i < monthList.length - 1) || (i === 0 && monthList.length === 1)) {
+          <form [formGroup]="monthDropdownForm">
+            <select formControlName="data" class="name">
+              @for (monthData of monthDropdownData; track trackByIndex(i, monthData); let i = $index) {
+                @if (formatMonthDropdownItem(monthData); as formattedMonth) {
+                  <option [value]="+i">{{ formattedMonth }}</option>
+                }
               }
-            </ng-container>
-          </select>
-        </form>
-      } @else {
-        <p class="name">{{ month.name }} {{ month.year }}</p>
-      }
-
-      <table>
-        <tr>
-          <th>Sun</th>
-          <th>Mon</th>
-          <th>Tue</th>
-          <th>Wed</th>
-          <th>Thu</th>
-          <th>Fri</th>
-          <th>Sat</th>
-        </tr>
-        <tr *ngFor="let week of month.weeks">
-          <td
-            *ngFor="let day of week.days"
-            [class.differentMonth]="month.monthOfYear !== day.month"
-            [class.isSelected]="
-              +((selectedDate | date: 'dd') || '') === day.date && +((selectedDate | date: 'MM') || '') === day.month
-            "
-            [class.hasEvent]="day.day.events.length > 0"
-            matTooltipPosition="before"
-            matTooltipClass="custom-tooltip"
-            (click)="selectDay(day, month)">
-            <span>
-              <p>
-                {{ day.date }}
-              </p>
-            </span>
-          </td>
-        </tr>
-      </table>
-    </div>
+            </select>
+          </form>
+        } @else {
+          <p class="name">{{ month.name }} {{ month.year }}</p>
+        }
+        <table>
+          <tr>
+            <th>Sun</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+          </tr>
+          @for (week of month.weeks; track week) {
+            <tr>
+              @for (day of week.days; track day) {
+                <td
+                  [class.differentMonth]="month.monthOfYear !== day.month"
+                  [class.isSelected]="
+                    +((selectedDate | date: 'dd') || '') === day.date &&
+                    +((selectedDate | date: 'MM') || '') === day.month
+                  "
+                  [class.hasEvent]="day.day.events.length > 0"
+                  matTooltipPosition="before"
+                  matTooltipClass="custom-tooltip"
+                  (click)="selectDay(day, month)">
+                  <span>
+                    <p>
+                      {{ day.date }}
+                    </p>
+                  </span>
+                </td>
+              }
+            </tr>
+          }
+        </table>
+      </div>
+    }
   </div>
 }
