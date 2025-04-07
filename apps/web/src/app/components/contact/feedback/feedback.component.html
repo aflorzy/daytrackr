@@ -4,9 +4,9 @@
 
     <input type="text" id="subject" [formControl]="subjectControl" required />
 
-    <div *ngIf="subjectControl.touched && subjectControl.hasError('required')" class="error-message">
-      Subject is required.
-    </div>
+    @if (subjectControl.touched && subjectControl.hasError("required")) {
+      <div class="error-message">Subject is required.</div>
+    }
   </div>
 
   <div class="form-group">
@@ -14,9 +14,9 @@
 
     <textarea id="message" [formControl]="messageControl" required></textarea>
 
-    <div *ngIf="messageControl.touched && messageControl.hasError('required')" class="error-message">
-      Message is required.
-    </div>
+    @if (messageControl.touched && messageControl.hasError("required")) {
+      <div class="error-message">Message is required.</div>
+    }
   </div>
 
   <div class="form-group">
@@ -24,19 +24,21 @@
 
     <input #file type="file" id="file" accept="image/jpeg,image/png,image/gif" [formControl]="fileControl" />
 
-    <div *ngIf="hasError('file', 'required')" class="error-message">File is required.</div>
+    @if (hasError("file", "required")) {
+      <div class="error-message">File is required.</div>
+    }
 
-    <div *ngIf="hasError('file', 'invalidFileType')" class="error-message">
-      Invalid file type. Please upload an image.
-    </div>
+    @if (hasError("file", "invalidFileType")) {
+      <div class="error-message">Invalid file type. Please upload an image.</div>
+    }
   </div>
 
   <app-button type="submit" [widthPercent]="100" [disabled]="sendFeedbackIsLoading">Submit</app-button>
 
-  <ng-container *ngIf="responseMessage">
+  @if (responseMessage) {
     <app-banner
       [type]="responseMessage.statusType"
       [message]="responseMessage.message"
-      [dismissable]="false"></app-banner
-  ></ng-container>
+      [dismissable]="false"></app-banner>
+  }
 </form>

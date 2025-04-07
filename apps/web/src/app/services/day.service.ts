@@ -23,12 +23,30 @@ export class DayService {
 
   // Sorting events by index ASC
   private sortDayEvents(day: Day): Day {
-    if (!day) return day;
+    if (!day?.events) return day;
 
-    return {
+    const sortedDay = {
       ...day,
-      events: day?.events?.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
+      events: day.events.sort((curr: Event, prev: Event) => curr.idx - prev.idx)
     };
+
+    return this.processDayEventNotes(sortedDay);
+  }
+
+  private processDayEventNotes(day: Day): Day {
+    return day;
+
+    // TODO: Need to implement backend logic
+    // if (!day?.events) return day;
+
+    // const events = day.events.map(event => {
+    //   const note = event.name.match(/\(([^)]+)\)/)?.[1] ?? "";
+    //   const name = event.name.replace(/\s*\([^)]*\)/, "");
+
+    //   return { ...event, name, note };
+    // });
+
+    // return { ...day, events };
   }
 
   public getDayByDate(date: Date | string): Observable<Day> {
@@ -101,8 +119,8 @@ export class DayService {
     );
   }
 
-  public saveDay(newDay: Day): Observable<Day> {
-    return this.http.post<Day>(`${BASE_URL}/daily-events/save`, newDay).pipe(
+  public saveDay(day: Day): Observable<Day> {
+    return this.http.post<Day>(`${BASE_URL}/daily-events/save`, day).pipe(
       take(1),
       map((day: Day) => this.sortDayEvents(day))
     );

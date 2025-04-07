@@ -1,5 +1,5 @@
 <div class="form-container form-container__lg">
-  <ng-container *ngIf="selectedDay$ | async as selectedDay; else noData">
+  @if (selectedDay$ | async; as selectedDay) {
     <app-calendar
       [dayList]="(dayList$ | async) || []"
       [initialDate]="selectedDay.date"
@@ -34,9 +34,7 @@
         (addEvent)="addEvent($event)"
         (saveEvent)="saveEvent($event)"></app-day-list-item>
     </div>
-  </ng-container>
-
-  <ng-template #noData
-    ><app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner
-  ></ng-template>
+  } @else {
+    <app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner>
+  }
 </div>
