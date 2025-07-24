@@ -1,0 +1,38 @@
+<div class="form-container">
+  <h2>Login</h2>
+
+  <form [formGroup]="loginForm" (submit)="handleSubmitClicked()">
+    <div class="form-group">
+      <label for="username">Username</label>
+
+      <input type="text" id="username" formControlName="username" class="form-control" />
+
+      @if (username.hasError("required") && username.touched) {
+        <div class="error-message">Username is required.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+
+      <input type="password" id="password" formControlName="password" class="form-control" />
+
+      @if (password.hasError("required") && password.touched) {
+        <div class="error-message">Password is required.</div>
+      }
+    </div>
+
+    <app-button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || (loading$ | async) || false"
+      >Login</app-button
+    >
+  </form>
+
+  <p class="auth-alt">Don't have an account? <a routerLink="/register">Sign up!</a></p>
+
+  @if (responseMessage$ | async; as responseMessage) {
+    <app-banner
+      [type]="responseMessage.statusType"
+      [message]="responseMessage.message"
+      [dismissable]="false"></app-banner>
+  }
+</div>

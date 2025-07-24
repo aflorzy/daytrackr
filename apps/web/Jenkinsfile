@@ -1,0 +1,102 @@
+pipeline {
+    agent any
+
+    options {
+        ansiColor('xterm')
+    }
+
+    parameters {
+        // choice(name: 'ENV', choices: ['dev', 'prod'], description: 'Select the deployment environment')
+
+        string(name: 'MAJOR_MINOR', defaultValue: '1.0', description: 'Major and minor version of build. Patch number set after build.')
+    }
+
+    environment {
+        // VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}-${ENV}"
+        VERSION_IMAGE_LABEL = "${MAJOR_MINOR}.${BUILD_NUMBER}"
+        REGISTRY_URL="gitea.local.aflorzy.com"
+        REGISTRY_CREDENTIALS = credentials('gitea')
+        IMAGE_NAME="florzytech/daytrackr-frontend"
+        RUNNER_IMAGE_NAME="florzytech/runner:latest"
+        // ENV = "${ENV}"
+        BRANCH_NAME="${BRANCH_NAME}"
+    }
+
+    stages {
+        stage ('Install Dependencies') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm install --configuration=production --prefix /workspace"
+            }
+        }
+        stage ('Run Linting') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm run lint:ci --prefix /workspace"
+            }
+        }
+        stage ('Run Tests') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm run test:ci --prefix /workspace"
+            }
+        }
+        stage ('Compile') {
+            environment {
+                workspace = pwd()
+            }
+            steps {
+                sh "docker run --rm -v ${workspace}:/workspace ${REGISTRY_URL}/${RUNNER_IMAGE_NAME} npm run build --prefix /workspace"
+            }
+        }
+        stage ('Build Docker Image') {
+            when { equals expected: true, actual: BRANCH_NAME == 'main' }
+
+            steps {
+                // Tag with version and with latest
+                sh "docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL} -t ${REGISTRY_URL}/${IMAGE_NAME}:latest ."
+            }
+        }
+        stage ('Push Docker Image to Registry') {
+            when { equals expected: true, actual: BRANCH_NAME == 'main' }
+
+            steps {
+                script {
+                    // Log in to the Docker registry
+                    sh """
+                        echo ${REGISTRY_CREDENTIALS_PSW} | docker login ${REGISTRY_URL} -u ${REGISTRY_CREDENTIALS_USR} --password-stdin
+                    """
+
+                    def VERSIONED_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:${VERSION_IMAGE_LABEL}";
+
+                    sh "docker push ${VERSIONED_TAG}"
+
+                    // Remove image to save disk space
+                    sh "docker image rm -f ${VERSIONED_TAG}"
+
+                    def LATEST_TAG = "${REGISTRY_URL}/${IMAGE_NAME}:latest"
+
+                    sh "docker push ${LATEST_TAG}"
+
+                    // Remove image to save disk space
+                    sh "docker image rm -f ${LATEST_TAG}"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Log Out of Docker Registry'
+            sh "docker logout ${REGISTRY_URL}"
+
+            echo 'Prune Docker Images'
+            sh "docker system prune -af"
+        }
+    }
+}

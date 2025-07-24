@@ -1,0 +1,16 @@
+@if (day$ | async; as day) {
+  <div class="form-container form-container__lg">
+    <app-edit-day
+      [day]="day"
+      [isChanged]="!!(isChanged$ | async)"
+      (saveEdits)="saveEdits()"
+      (cancelEdits)="cancelEdit()"
+      (moveEventUp)="moveEventUp($event)"
+      (moveEventDown)="moveEventDown($event)"
+      (moveEvent)="moveEvent($event)"
+      (removeEvent)="removeEvent($event)"
+      (addEvent)="addEvent($event)"></app-edit-day>
+  </div>
+} @else {
+  Loading...
+}

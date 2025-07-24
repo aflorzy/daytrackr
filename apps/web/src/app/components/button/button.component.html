@@ -1,0 +1,8 @@
+<button
+  [type]="type"
+  [ngClass]="size + ' ' + color + ' ' + fill"
+  [style.width]="widthPercent + '%'"
+  (click)="!disabled && clicked.emit()"
+  [disabled]="disabled">
+  <ng-content></ng-content>
+</button>

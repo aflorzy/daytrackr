@@ -1,0 +1,9 @@
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+
+app-day-list-item:not(:last-child) {
+  border-bottom: 1px solid grey;
+}

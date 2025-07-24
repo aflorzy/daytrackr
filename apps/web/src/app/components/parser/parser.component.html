@@ -1,0 +1,18 @@
+<form [formGroup]="parserForm" (submit)="submit(parserForm.getRawValue())">
+  <label for="date">Initial Date</label>
+  <input type="date" name="date" formControlName="date" />
+
+  <label for="text">Text to Parse</label>
+  <textarea name="text" rows="15" formControlName="text"></textarea>
+
+  <app-button type="submit" [disabled]="parserForm.invalid">Submit</app-button>
+</form>
+
+@for (day of dayList$ | async; track day) {
+  <app-day-list-item
+    [day]="day"
+    [editable]="false"
+    [hideAddEvent]="true"
+    [hideDeleteIcon]="true"
+    [hideEditIcon]="true"></app-day-list-item>
+}

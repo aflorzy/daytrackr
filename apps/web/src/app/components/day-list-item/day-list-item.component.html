@@ -1,0 +1,69 @@
+@if (day) {
+  <div class="content">
+    <div class="date">
+      {{ day.date | date: "EEEE, MMMM d, y" }}
+
+      @if (!hideEditIcon) {
+        <span class="edit-day" (click)="enterEditMode.emit()"
+          ><fa-icon [icon]="['fas', 'arrow-down-up-across-line']"></fa-icon
+        ></span>
+      }
+
+      @if (!hideDeleteIcon) {
+        <span class="delete-day" (click)="delete()" tooltip="Reorder Events"
+          ><fa-icon [icon]="['fas', 'trash']"></fa-icon
+        ></span>
+      }
+    </div>
+
+    <div class="events">
+      @for (event of day.events; track event.name; let i = $index) {
+        <div class="event">
+          <span
+            class="name"
+            [contentEditable]="editable"
+            (focus)="focusCell(i)"
+            (input)="editEvent($event)"
+            (keydown.Enter)="submit($event, event, i)"
+            (blur)="submit($event, event, i)"
+            [innerHTML]="event.name"
+            title="Edit event">
+          </span>
+
+          @if (event.note) {
+            <span class="note-indicator" [title]="event.note"></span>
+          }
+
+          @if (i !== day.events.length - 1) {
+            <span
+              class="gap"
+              [class.hidden]="!editable"
+              (click)="combineEvents.emit({ event1: event, event2: day.events[i + 1] })"
+              title="Combine events">
+              <fa-icon [icon]="['fas', 'arrows-left-right-to-line']"></fa-icon>
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    @if (!hideAddEvent) {
+      <form
+        [formGroup]="eventForm"
+        (submit)="
+          addEvent.emit(eventForm.get('eventInput')?.value?.trim() || ''); eventForm.get('eventInput')?.setValue('')
+        ">
+        <input type="text" placeholder="Add event..." autocomplete="off" formControlName="eventInput" />
+
+        <app-button
+          type="submit"
+          size="md"
+          fill="fill"
+          color="primary"
+          [disabled]="!eventForm.get('eventInput')?.value?.trim()"
+          >Add</app-button
+        >
+      </form>
+    }
+  </div>
+}

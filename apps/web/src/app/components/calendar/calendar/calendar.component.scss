@@ -1,0 +1,137 @@
+/* Calendar table */
+* {
+  box-sizing: content-box;
+  font-family: serif;
+}
+
+.months {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+
+  .month {
+    height: 240px;
+    width: 235px;
+    background-color: #eee;
+    padding: 8px;
+    border-radius: 15px;
+
+    .name {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+
+      text-align: center;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 20px;
+      text-decoration: underline;
+    }
+
+    form {
+      text-align: center;
+
+      select {
+        outline: none;
+        cursor: pointer;
+        border: none;
+        text-align: center;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 20px;
+        text-decoration: underline;
+        width: fit-content;
+
+        &:hover {
+          filter: brightness(0.95);
+        }
+      }
+    }
+
+    table {
+      margin-top: 0;
+      padding-top: 0;
+
+      tr {
+        text-align: center;
+        width: 30px;
+        height: 30px;
+
+        td {
+          text-align: center;
+          width: 30px;
+          height: 30px;
+
+          span {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            p {
+              padding: 0;
+              margin: 0;
+              width: 80%;
+              height: 80%;
+              justify-content: center;
+              display: flex;
+              align-items: center;
+            }
+          }
+
+          &.differentMonth {
+            opacity: 30%;
+
+            &.hasEvent:hover span p {
+              background-color: #eee;
+              color: #000;
+            }
+          }
+
+          &.isSelected {
+            span p {
+              background-color: var(--primary-color);
+              color: #fff;
+            }
+
+            &.differentMonth:hover span p {
+              background-color: var(--primary-color);
+              color: #fff;
+            }
+          }
+
+          &.hasEvent {
+            span p {
+              border: 2px solid var(--primary-color);
+              border-radius: 50%;
+            }
+
+            :hover {
+              background-color: transparent;
+
+              span p {
+                background-color: var(--primary-color);
+                color: #fff;
+                cursor: pointer;
+              }
+            }
+          }
+
+          &:hover {
+            background-color: #ddd;
+            cursor: pointer;
+          }
+        }
+
+        &:first-child {
+          height: 15px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,120 @@
+.content {
+  padding: 10px 0;
+
+  .date {
+    font-size: 24px;
+    line-height: 36px;
+    font-weight: 600;
+    text-decoration: underline;
+    display: flex;
+    align-items: center;
+
+    .edit-day {
+      font-size: 18px;
+      margin-left: 5px;
+      padding: 0 8px;
+      border-radius: 5px;
+      color: #000;
+      border: 1px solid #000;
+
+      &:hover {
+        cursor: pointer;
+        color: #444;
+        background-color: #eee;
+        border-color: #444;
+      }
+
+      &:active {
+        color: #222;
+        background-color: #ddd;
+        border-color: #222;
+      }
+    }
+
+    .delete-day {
+      font-size: 18px;
+      margin-left: 5px;
+      padding: 0 8px;
+      border-radius: 5px;
+      color: #f00;
+      border: 1px solid #f00;
+
+      &:hover {
+        cursor: pointer;
+        color: #b00;
+        border-color: #b00;
+        background-color: #eee;
+      }
+
+      &:active {
+        color: #d00;
+        border-color: #d00;
+        background-color: #ddd;
+      }
+    }
+  }
+
+  .events {
+    padding: 5px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .event {
+      display: inline;
+      margin: 10px 0;
+      position: relative;
+
+      .name {
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        position: relative;
+
+        &:hover {
+          background-color: #eee;
+          cursor: pointer;
+        }
+
+        &:focus {
+          background-color: #eee;
+        }
+      }
+
+      .note-indicator {
+        display: block;
+        position: absolute;
+        top: -0.6rem;
+        left: -0.2rem;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #f00;
+      }
+
+      .gap {
+        padding: 6px 2px;
+        font-size: 14px;
+        color: transparent;
+
+        &:hover {
+          background-color: #bbb;
+          cursor: pointer;
+          color: #000;
+
+          &.hidden {
+            color: transparent;
+            cursor: default;
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+}

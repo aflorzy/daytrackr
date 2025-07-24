@@ -1,0 +1,40 @@
+<div class="form-container form-container__lg">
+  @if (selectedDay$ | async; as selectedDay) {
+    <app-calendar
+      [dayList]="(dayList$ | async) || []"
+      [initialDate]="selectedDay.date"
+      [monthDropdownData]="(monthDropdownData$ | async) || []"
+      (dayChange)="dayChange($event)"
+      (newDayClick)="newDayClick($event)"
+      (calendarDateRange)="setFirstLastCalendarDates($event)"
+      (monthChange)="monthChange($event)"></app-calendar>
+
+    <div class="buttons">
+      <app-button (clicked)="getPreviousDay()" [disabled]="(existsPreviousDay$ | async) === false">
+        <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon> Prev
+      </app-button>
+
+      <app-button (clicked)="getNextDay()" [disabled]="(existsNextDay$ | async) === false">
+        Next <fa-icon [icon]="['fas', 'arrow-right']"></fa-icon>
+      </app-button>
+    </div>
+
+    <!-- <app-date-input [initialDate]="selectedDay.date" (dateChanged)="handleDateInputChange($event)"></app-date-input> -->
+
+    <div class="day-list-item">
+      <app-day-list-item
+        [day]="selectedDay"
+        [hideEditIcon]="!selectedDay.events.length"
+        [hideDeleteIcon]="!selectedDay.id"
+        [hideAddEvent]="false"
+        [editable]="true"
+        (enterEditMode)="enterEditMode(selectedDay)"
+        (deleteDay)="deleteDay(selectedDay)"
+        (combineEvents)="combineEvents($event)"
+        (addEvent)="addEvent($event)"
+        (saveEvent)="saveEvent($event)"></app-day-list-item>
+    </div>
+  } @else {
+    <app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner>
+  }
+</div>
