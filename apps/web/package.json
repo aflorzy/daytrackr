@@ -12,6 +12,9 @@
     "lint:ci": "ng lint"
   },
   "private": true,
+  "overrides": {
+    "stylus": "0.0.1-security"
+  },
   "dependencies": {
     "@angular/animations": "^18.2.13",
     "@angular/cdk": "^18.2.14",
