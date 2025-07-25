@@ -1,0 +1,42 @@
+# Test profile configuration
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: localhost
+    port: 3025
+    username: test
+    password: test
+
+# H2 console for debugging tests
+h2:
+  console:
+    enabled: true
+    path: /h2-console
+
+# Test-specific logging
+logging:
+  level:
+    com.aflorzy.daytrackr: DEBUG
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+
+# Disable security for tests
+security:
+  basic:
+    enabled: false
+
+# JWT with fixed values for testing
+jwt:
+  secret: test-secret-key-for-junit-tests-only
+  expiration: 3600000

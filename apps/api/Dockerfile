@@ -1,41 +1,26 @@
-# Build stage
-FROM maven:3.8.3-openjdk-17-slim AS build
-WORKDIR /app
+FROM eclipse-temurin:17-jdk-jammy
 
-# Copy only pom.xml first to leverage Docker cache
-COPY pom.xml .
-RUN mvn dependency:go-offline
+WORKDIR /opt/app
 
-# Copy source code and build
-COPY src ./src
-RUN mvn clean package -DskipTests
+# The build context is the monorepo root. All paths are relative to that root.
 
-# Runtime stage
-FROM openjdk:17-jdk-slim
-WORKDIR /app
+# Copy the Maven wrapper and project files
+COPY apps/api/mvnw .
+COPY apps/api/.mvn ./.mvn
+COPY apps/api/pom.xml .
+COPY apps/api/src ./src
 
-# Create a non-root user
-RUN addgroup --system javauser && adduser --system --ingroup javauser javauser
+# Copy the pre-built application JAR. The CI pipeline builds this before running docker build.
+COPY apps/api/target/*.jar app.jar
 
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/daytrackr*.jar app.jar
+# Copy the entrypoint script and make it executable
+COPY apps/api/entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-# Set ownership of the app directory to the non-root user
-RUN chown -R javauser:javauser /app
-
-# Use the non-root user
-USER javauser
-
-# Expose the port your Spring Boot application is listening on
 EXPOSE 8080
 
-# Add labels
-# LABEL maintainer="Andrew Flores andrewtflores@yahoo.com"
-# LABEL version="1.0"
-# LABEL description="DayTrackr Backend"
+# Add health check for container orchestration platforms
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8080/actuator/health || exit 1
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s CMD wget -q --spider http://localhost:8080/actuator/health || exit 1
-
-# Command to run the Spring Boot application
-CMD ["java", "-jar", "app.jar"]
+# Run the entrypoint script on container start
+ENTRYPOINT ["./entrypoint.sh"]

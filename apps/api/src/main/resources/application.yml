@@ -1,0 +1,43 @@
+# Common configuration for all profiles
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 25
+    username: tbillform@gmail.com
+    password: tielpdtjhmdzpzdo
+    properties:
+      mail:
+        debug: false
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
+
+# Entity manager configuration
+entitymanager:
+  packagesToScan: com.aflorzy.daytrackr.domain
+
+# JWT Configuration
+jwt:
+  secret: secret
+  expiration: 3600000      # 1 hour
+  refresh:
+    expiration: 1210000000 # 14 days
+
+# Logging configuration
+logging:
+  file:
+    path: /var/log/tomcat

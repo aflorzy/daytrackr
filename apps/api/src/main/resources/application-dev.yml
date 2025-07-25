@@ -1,0 +1,29 @@
+# Development profile configuration
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/daytrackr?createDatabaseIfNotExist=true
+    username: aflorzy
+    password: password
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    debug: true
+
+# Development-specific logging
+logging:
+  level:
+    com.aflorzy.daytrackr: DEBUG
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+    # Comment out the next line to see bind parameter values
+    # org.hibernate.type.descriptor.sql: TRACE
+
+# Actuator endpoints for development
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
