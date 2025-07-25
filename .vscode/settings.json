@@ -20,5 +20,6 @@
     },
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "automatic"
 }

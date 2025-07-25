@@ -5,12 +5,20 @@ spring:
     username: aflorzy
     password: password
   jpa:
+    hibernate:
+      ddl-auto: update  # Keep 'update' for development convenience
     show-sql: true
     properties:
       hibernate:
         format_sql: true
   mail:
     debug: true
+  # Flyway specific settings for development
+  flyway:
+    # Set to false temporarily if you need to manually fix migrations during development
+    clean-disabled: true
+    # Uncomment to clean the database before migrations (CAUTION: removes all data!)
+    # clean-on-validation-error: true
 
 # Development-specific logging
 logging:
