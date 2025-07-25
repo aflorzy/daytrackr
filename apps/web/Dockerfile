@@ -9,8 +9,8 @@ RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the pre-built application artifacts from the Docker build context.
 # The CI pipeline should have built the 'web' app and its output
-# (e.g., dist/web/browser) will be part of the Docker build context.
-COPY ./dist/web/browser /usr/share/nginx/html
+# (e.g., dist/apps/web) will be part of the Docker build context.
+COPY ./dist/apps/web /usr/share/nginx/html
 
 # Expose port 80 for the web server
 EXPOSE 80

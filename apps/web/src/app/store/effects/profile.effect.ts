@@ -54,7 +54,7 @@ export class ProfileEffects {
     return this.actions$.pipe(
       ofType(ProfileApiActions.saveProfileSuccess),
       concatLatestFrom(() => this.store.select(selectResponseMsg)),
-      switchMap(([_, responseMsg]: [any, ResponseMessage]) => {
+      switchMap(([, responseMsg]) => {
         if (responseMsg.message)
           return of(
             ProfileActions.setResponseMessage({ responseMsg: { message: "", statusType: StatusType.NULL } })

@@ -52,7 +52,7 @@ export class EditDayEffects {
     return this.actions$.pipe(
       ofType(EditDayActions.saveEdits),
       concatLatestFrom(() => this.store.select(selectEditingDay)),
-      switchMap(([_, editingDay]: [any, Day]) => {
+      switchMap(([, editingDay]) => {
         // Delete day if last event removed
         if (!editingDay.events.length) return of(EditDayActions.deleteDay({ day: editingDay }));
 

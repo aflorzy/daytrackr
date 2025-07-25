@@ -100,7 +100,7 @@ export class CalendarComponent implements OnChanges {
     return formattedDate;
   }
 
-  trackByIndex(index: number, item: any) {
+  trackByIndex(index: number) {
     return index;
   }
 
@@ -130,7 +130,7 @@ export class CalendarComponent implements OnChanges {
     });
   }
 
-  selectDay(day: CalendarDay, month: CalendarMonth) {
+  selectDay(day: CalendarDay) {
     if (day.day.events.length <= 0) {
       this.newDayClick.emit(day);
       return;

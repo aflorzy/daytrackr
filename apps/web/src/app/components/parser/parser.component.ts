@@ -19,11 +19,12 @@ export class ParserComponent {
 
   dayList$: BehaviorSubject<Day[]> = new BehaviorSubject<Day[]>([]);
 
-  submit(formValue: any) {
+  submit() {
+    const formValue = this.parserForm.getRawValue();
     const hyphenRegex = /-/gi;
-    const initialDate: Date = new Date(formValue.date.replace(hyphenRegex, "/"));
+    const initialDate = formValue.date ? new Date(formValue.date.replace(hyphenRegex, "/")) : new Date();
     console.log("Converting date", formValue.date, initialDate);
-    const dayList: Day[] = this.parserService.parseDayText(formValue.text, initialDate);
+    const dayList: Day[] = this.parserService.parseDayText(formValue.text ?? "", initialDate);
 
     this.dayList$.next(dayList);
 

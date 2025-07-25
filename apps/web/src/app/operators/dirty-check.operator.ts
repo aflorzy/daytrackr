@@ -9,8 +9,8 @@ export function dirtyCheck<U>(source: Observable<U>) {
   const isDirty = false;
 
   return function <T>(valueChanges: Observable<T>): Observable<boolean> {
-    const isDirty$ = combineLatest(source, valueChanges).pipe(
-      map(([a, b]: [U, T]) => {
+    const isDirty$ = combineLatest([source, valueChanges]).pipe(
+      map(([a, b]) => {
         // Irrespective of key order
         return !_.isEqual(a, b);
 
@@ -26,7 +26,7 @@ export function dirtyCheck<U>(source: Observable<U>) {
     );
 
     subscription = fromEvent(window, "beforeunload").subscribe(event => {
-      isDirty && (event.returnValue = false);
+      if (isDirty) event.returnValue = false;
     });
 
     return isDirty$;

@@ -13,7 +13,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
   private store = inject(Store);
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return this.store.select(selectToken).pipe(
       switchMap(token => {
         if (token) {
@@ -36,11 +36,11 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-  private addToken(request: HttpRequest<any>, token: AccessToken | null): HttpRequest<any> {
+  private addToken(request: HttpRequest<unknown>, token: AccessToken | null): HttpRequest<unknown> {
     return request.clone({ setHeaders: { Authorization: `${token?.tokenType}${token?.accessToken}` } });
   }
 
-  private handleTokenExpired(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  private handleTokenExpired(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Call the refresh token endpoint to get a new access token
     return this.authService.refreshAccessToken().pipe(
       tap(newToken => {

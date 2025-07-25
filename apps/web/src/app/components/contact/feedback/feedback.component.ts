@@ -40,7 +40,7 @@ export class FeedbackComponent implements OnInit {
     const feedbackMessage: FeedbackMessage = {
       subject: feedbackFormValue.subject ?? "",
       body: feedbackFormValue.message ?? "",
-      attachments: [feedbackFormValue.file]
+      attachments: feedbackFormValue.file ? [feedbackFormValue.file] : []
     };
 
     this.submitForm.emit(feedbackMessage);

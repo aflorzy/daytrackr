@@ -5,7 +5,7 @@
         @if ((i > 0 && i < monthList.length - 1) || (i === 0 && monthList.length === 1)) {
           <form [formGroup]="monthDropdownForm">
             <select formControlName="data" class="name">
-              @for (monthData of monthDropdownData; track trackByIndex(i, monthData); let i = $index) {
+              @for (monthData of monthDropdownData; track trackByIndex(i); let i = $index) {
                 @if (formatMonthDropdownItem(monthData); as formattedMonth) {
                   <option [value]="+i">{{ formattedMonth }}</option>
                 }
@@ -37,7 +37,7 @@
                   [class.hasEvent]="day.day.events.length > 0"
                   matTooltipPosition="before"
                   matTooltipClass="custom-tooltip"
-                  (click)="selectDay(day, month)">
+                  (click)="selectDay(day)">
                   <span>
                     <p>
                       {{ day.date }}

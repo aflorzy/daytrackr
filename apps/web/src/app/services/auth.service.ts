@@ -48,11 +48,13 @@ export class AuthService {
     return !tokenExpired;
   }
 
-  private getDecodedAccessToken(token: string): any {
+  private getDecodedAccessToken(token: string): { exp: number } {
     try {
       return jwt_decode.jwtDecode(token);
-    } catch (Error) {
-      return null;
+    } catch (e) {
+      console.error(e);
+
+      return { exp: 0 };
     }
   }
 

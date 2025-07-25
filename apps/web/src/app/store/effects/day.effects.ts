@@ -71,7 +71,7 @@ export class DayEffects {
     return this.actions$.pipe(
       ofType(DayActions.getPreviousDay),
       concatLatestFrom(() => [this.store.select(selectPreviousDayFromDayList), this.store.select(selectSelectedDay)]),
-      switchMap(([_, previousDay, selectedDay]) => {
+      switchMap(([, previousDay, selectedDay]) => {
         if (previousDay) return of(DayApiActions.retrieveNextDaySuccess({ day: previousDay }));
 
         return this.dayService.getPrevious(selectedDay).pipe(
@@ -88,7 +88,7 @@ export class DayEffects {
     return this.actions$.pipe(
       ofType(DayActions.getNextDay),
       concatLatestFrom(() => [this.store.select(selectNextDayFromDayList), this.store.select(selectSelectedDay)]),
-      switchMap(([_, nextDay, selectedDay]) => {
+      switchMap(([, nextDay, selectedDay]) => {
         if (nextDay) return of(DayApiActions.retrieveNextDaySuccess({ day: nextDay }));
 
         return this.dayService.getNext(selectedDay).pipe(
@@ -174,7 +174,7 @@ export class DayEffects {
         DayActions.combineEvents
       ),
       concatLatestFrom(() => this.store.select(selectSelectedDay)),
-      switchMap(([_, selectedDay]) => {
+      switchMap(([, selectedDay]) => {
         // Delete day if last event removed
         if (!selectedDay.events.length) return of(DayActions.deleteDay({ day: selectedDay }));
 

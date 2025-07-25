@@ -1,4 +1,5 @@
 import { DatePipe } from "@angular/common";
+import { HttpErrorResponse } from "@angular/common/http";
 import { Component, inject, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
@@ -71,7 +72,7 @@ export class InputBoxComponent implements OnInit {
       }
 
       // Check if line starts with DAY_OF_WEEK
-      const dayOfWeek = DAYS_OF_WEEK.find((day, index) => line.startsWith(day + "-"));
+      const dayOfWeek = DAYS_OF_WEEK.find(day => line.startsWith(day + "-"));
 
       if (!dayOfWeek) {
         // Did not find 'Saturday-'... at beginning of line
@@ -152,7 +153,7 @@ export class InputBoxComponent implements OnInit {
         next: (result: Day[]) => {
           this.days = result;
         },
-        error: (e: any) => {
+        error: (e: HttpErrorResponse) => {
           console.error("Could not save days", e);
         }
       });

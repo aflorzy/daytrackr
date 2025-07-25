@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { Day, Event } from "src/app/interfaces";
+import { Day, Event as DailyEvent } from "src/app/interfaces";
 
 @Component({
   selector: "app-day-list-item",
@@ -15,9 +15,9 @@ export class DayListItemComponent {
   @Input() hideAddEvent!: boolean;
   @Output() enterEditMode = new EventEmitter<void>();
   @Output() deleteDay = new EventEmitter<void>();
-  @Output() combineEvents = new EventEmitter<{ event1: Event; event2: Event }>();
+  @Output() combineEvents = new EventEmitter<{ event1: DailyEvent; event2: DailyEvent }>();
   @Output() addEvent = new EventEmitter<string>();
-  @Output() saveEvent = new EventEmitter<Event>();
+  @Output() saveEvent = new EventEmitter<DailyEvent>();
 
   editingEvent = "";
   originalEvent = "";
@@ -26,9 +26,12 @@ export class DayListItemComponent {
     eventInput: new FormControl("")
   });
 
-  editEvent(event: any) {
+  editEvent(event: Event) {
     if (!this.editable) return;
-    this.editingEvent = event.target.innerHTML.trim();
+
+    const inputElement = event.target as HTMLInputElement;
+
+    this.editingEvent = inputElement.innerHTML.trim();
   }
 
   focusCell(index: number) {
@@ -43,7 +46,7 @@ export class DayListItemComponent {
     }
   }
 
-  submit(e: any, event: Event, index: number) {
+  submit(e: Event, event: DailyEvent, index: number) {
     if (!this.day || index >= this.day.events.length || !this.editable || this.editingEvent === this.originalEvent)
       return;
 

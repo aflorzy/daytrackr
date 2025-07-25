@@ -51,7 +51,7 @@ export interface ResponseMessage {
 export interface FeedbackMessage {
   subject: string;
   body: string;
-  attachments: any[];
+  attachments: File[];
 }
 
 export interface ProfileDTO {
