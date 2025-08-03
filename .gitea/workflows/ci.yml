@@ -57,6 +57,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.6
+
       # Using the provided merge base for PR comparison
       - name: Lint Affected Projects (PR)
         run: npx nx affected --target=lint --parallel=3 --base=${{ github.event.pull_request.base.sha }} --head=${{ github.event.pull_request.head.sha }}
@@ -120,6 +125,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.6
+
       - name: Lint Affected Projects
         run: npx nx affected --target=lint --configuration=ci --base=${{ github.event.before }} --head=${{ github.sha }}
 
@@ -169,3 +179,17 @@ jobs:
             ${{ vars.REGISTRY_URL }}/${{ github.repository }}/daytrackr-web:${{ steps.vars.outputs.sha_short }}.${{ github.run_number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # - name: Trigger Staging Deployment
+      #   run: |
+      #     # The body can be empty, but it must be present for the signature to be calculated.
+      #     BODY="{}"
+      #     # Calculate the signature using sed to format the hex output
+      #     SIGNATURE=$(echo -n "$BODY" | openssl dgst -sha256 -hmac "${{ secrets.WEBHOOK_SECRET }}" | sed 's/^.* //')
+          
+      #     # Send the webhook
+      #     curl -X POST \
+      #       -H "Content-Type: application/json" \
+      #       -H "X-Gitea-Signature: $SIGNATURE" \
+      #       -d "$BODY" \
+      #       "${{ secrets.DEPLOY_SERVER_URL }}/webhook/stg"

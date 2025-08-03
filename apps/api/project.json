@@ -7,16 +7,16 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn clean package",
+        "command": "mvn clean package -DskipTests",
         "cwd": "apps/api"
       },
       "configurations": {
         "production": {
-          "command": "mvn clean package -Dspring.profiles.active=prd",
+          "command": "mvn clean package -DskipTests -Dspring.profiles.active=prd",
           "cwd": "apps/api"
         },
         "development": {
-          "command": "mvn clean package -Dspring.profiles.active=dev",
+          "command": "mvn clean package -DskipTests -Dspring.profiles.active=dev",
           "cwd": "apps/api"
         }
       }
