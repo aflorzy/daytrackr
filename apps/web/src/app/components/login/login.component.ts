@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
-import { AuthActions } from "src/app/store/actions/auth.actions";
+import { AuthActions } from "../../store/actions/auth.actions";
 import { selectLoginIsLoading, selectResponseMsg } from "../../store/selectors/auth.selector";
 
 @Component({

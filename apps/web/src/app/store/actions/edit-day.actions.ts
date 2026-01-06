@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from "@ngrx/store";
-import { Day, Event } from "../../interfaces";
+import { Day, Event } from "@fzt/calendar";
 
 export const EditDayActions = createActionGroup({
   source: "Edit Day",

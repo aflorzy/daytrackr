@@ -2,7 +2,7 @@ import { DatePipe, formatDate } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { map, Observable, take } from "rxjs";
-import { Day, Event } from "src/app/interfaces";
+import { Day, Event } from "@fzt/calendar";
 import { BASE_URL } from "../constants";
 import { getTodayDate } from "../store/reducers/day.reducer";
 

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from "@angular/core";
+import { Day, Event } from "@fzt/calendar";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
-import { Day, Event } from "../../interfaces";
 import { EditDayActions } from "../../store/actions/edit-day.actions";
 import { selectEditingDay, selectIsChanged } from "../../store/selectors/edit-day.selector";
 

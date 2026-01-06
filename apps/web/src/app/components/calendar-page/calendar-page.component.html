@@ -37,4 +37,11 @@
   } @else {
     <app-banner [type]="StatusType.WARNING" message="No days to display!" [dismissable]="false"></app-banner>
   }
+
+  @if (selectedDay$ | async; as selectedDay) {
+    <fzt-calendar
+      [initialDate]="selectedDay.date"
+      [dayList]="(dayList$ | async) || []"
+    ></fzt-calendar>
+  }
 </div>

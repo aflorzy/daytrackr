@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
-import { StatusType } from "src/app/enums";
-import { AccessToken, ResponseMessage } from "src/app/interfaces";
+import { StatusType } from "../../enums";
+import { AccessToken, ResponseMessage } from "../../interfaces";
 import { AuthActions } from "../actions/auth.actions";
 
 export interface Loading {

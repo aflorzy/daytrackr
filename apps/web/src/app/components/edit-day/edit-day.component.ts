@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { Day, Event } from "src/app/interfaces";
+import { Day, Event } from "@fzt/calendar";
 
 @Component({
   selector: "app-edit-day",

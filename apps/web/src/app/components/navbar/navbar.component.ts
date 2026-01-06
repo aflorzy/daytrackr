@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { Store } from "@ngrx/store";
-import { AuthActions } from "src/app/store/actions/auth.actions";
-import { selectIsAuthenticatedUser } from "src/app/store/selectors/auth.selector";
+import { AuthActions } from "../../store/actions/auth.actions";
+import { selectIsAuthenticatedUser } from "../../store/selectors/auth.selector";
 
 @Component({
   selector: "app-navbar",

@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
-import { StatusType } from "src/app/enums";
-import { ProfileDTO, ResponseMessage } from "src/app/interfaces";
+import { StatusType } from "../../enums";
+import { ProfileDTO, ResponseMessage } from "../../interfaces";
 import { ProfileActions, ProfileApiActions } from "../actions/profile.actions";
 
 export interface State {

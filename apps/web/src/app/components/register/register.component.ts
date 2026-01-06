@@ -2,8 +2,8 @@ import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { combineLatest, map, Observable } from "rxjs";
-import { AuthActions } from "src/app/store/actions/auth.actions";
 import { ResponseMessage } from "../../interfaces";
+import { AuthActions } from "../../store/actions/auth.actions";
 import { selectResponseMsg } from "../../store/selectors/auth.selector";
 
 @Component({

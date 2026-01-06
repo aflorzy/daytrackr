@@ -2,8 +2,8 @@ import { Component, inject } from "@angular/core";
 import { NonNullableFormBuilder } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, catchError, concat, delay, of, switchMap, tap } from "rxjs";
-import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
 import { StatusType } from "../../../enums";
+import { FeedbackMessage, ResponseMessage } from "../../../interfaces";
 import { FeedbackService } from "../../../services/feedback.service";
 
 @UntilDestroy()

@@ -1,12 +1,12 @@
 import { DatePipe } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, inject, OnInit } from "@angular/core";
+import { Day } from "@fzt/calendar";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
-import { DAYS_OF_WEEK } from "src/app/constants";
-import { Day } from "src/app/interfaces";
-import { DayService } from "src/app/services/day.service";
-import { ParserService } from "src/app/services/parser.service";
+import { DAYS_OF_WEEK } from "../../constants";
+import { DayService } from "../../services/day.service";
+import { ParserService } from "../../services/parser.service";
 
 @UntilDestroy()
 @Component({

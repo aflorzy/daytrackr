@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { Day, Event as DailyEvent } from "src/app/interfaces";
+import { Event as DailyEvent, Day } from "@fzt/calendar";
 
 @Component({
   selector: "app-day-list-item",

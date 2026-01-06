@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { Day, Event } from "../../interfaces";
+import { Day, Event } from "@fzt/calendar";
 import { EditDayActions, EditDayApiActions } from "../actions/edit-day.actions";
 
 export interface State {

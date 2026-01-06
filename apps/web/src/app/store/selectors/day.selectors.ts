@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { Day } from "../../interfaces";
+import { Day } from "@fzt/calendar";
 import { State as DayState } from "../reducers/day.reducer";
 
 // Feature Selector

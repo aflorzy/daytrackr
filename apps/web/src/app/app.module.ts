@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { FaIconLibrary, FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { CalendarComponent as FztCalendarComponent } from "@fzt/calendar";
 import { EffectsModule } from "@ngrx/effects";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { StoreModule } from "@ngrx/store";
@@ -89,7 +90,8 @@ import { profileReducer } from "./store/reducers/profile.reducer";
     ),
     EffectsModule.forRoot(AuthEffects, DayEffects, EditDayEffects, ProfileEffects, RouterEffects),
     StoreRouterConnectingModule.forRoot(),
-    environment.imports
+    environment.imports,
+    FztCalendarComponent
   ],
   providers: [
     DatePipe,

@@ -2,10 +2,10 @@ import { Component, inject } from "@angular/core";
 import { FormGroup, NonNullableFormBuilder, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { filter, Observable, tap } from "rxjs";
-import { Profile, ProfileDTO } from "src/app/interfaces";
-import { ProfileActions } from "src/app/store/actions/profile.actions";
-import { selectProfile, selectResponseMsg } from "src/app/store/selectors/profile.selectors";
+import { Profile, ProfileDTO } from "../../interfaces";
 import { dirtyCheck } from "../../operators/dirty-check.operator";
+import { ProfileActions } from "../../store/actions/profile.actions";
+import { selectProfile, selectResponseMsg } from "../../store/selectors/profile.selectors";
 
 @Component({
   selector: "app-profile-page",

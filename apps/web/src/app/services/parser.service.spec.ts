@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 
-import { Day, Event } from "../interfaces";
+import { Day, Event } from "@fzt/calendar";
 import { ParserService } from "./parser.service";
 
 describe("ParserService", () => {

@@ -1,8 +1,8 @@
 import { Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { Day } from "@fzt/calendar";
 import { BehaviorSubject } from "rxjs";
-import { Day } from "src/app/interfaces";
-import { ParserService } from "src/app/services/parser.service";
+import { ParserService } from "../../services/parser.service";
 
 @Component({
   selector: "app-parser",

@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { Day, Event } from "src/app/interfaces";
+import { Day, Event } from "@fzt/calendar";
 import { DayActions, DayApiActions } from "../actions/day.actions";
 
 export interface State {
@@ -61,7 +61,7 @@ export const dayReducer = createReducer(
     (state, { id }): State => ({
       ...state,
       selectedDay:
-        state.dayList.find((day: Day) => day.id === id) ?? state.dayList.length
+        (state.dayList.find((day: Day) => day.id === id) ?? state.dayList.length)
           ? state.dayList[state.dayList.length - 1]
           : { date: state.currentDate, events: [] }
     })

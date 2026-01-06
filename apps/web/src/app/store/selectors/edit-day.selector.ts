@@ -1,7 +1,7 @@
 "@ngrx/store";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { isEqual } from "lodash";
-import { Day } from "../../interfaces";
+import { Day } from "@fzt/calendar";
 import { State as EditDayState } from "../reducers/edit-day.reducer";
 
 // Feature Selector

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { days_of_week } from "src/app/constants";
-import { Day, Event } from "../interfaces";
+import { Day, Event } from "@fzt/calendar";
+import { days_of_week } from "../constants";
 
 @Injectable({
   providedIn: "root"

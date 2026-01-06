@@ -1,16 +1,16 @@
-import { DatePipe } from "@angular/common";
-import { inject, Injectable } from "@angular/core";
-import { CalendarDay, CalendarMonth, CalendarWeek, Day } from "src/app/interfaces";
+import { DatePipe } from '@angular/common';
+import { inject, Injectable } from '@angular/core';
+import { CalendarDay, CalendarMonth, CalendarWeek, Day } from '../interfaces';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class CalendarService {
   private datePipe = inject(DatePipe);
 
   private readonly INITIAL_DAY_OBJ: Day = {
     date: new Date(),
-    events: []
+    events: [],
   };
 
   private readonly INITIAL_DAY: CalendarDay = {
@@ -18,53 +18,53 @@ export class CalendarService {
     month: -1,
     year: -1,
     dayOfWeek: -1,
-    dayOfWeekStr: "",
+    dayOfWeekStr: '',
     weekOfMonth: -1,
     weekOfYear: -1,
-    monthStrAbbv: "",
-    monthStr: "",
-    day: this.INITIAL_DAY_OBJ
+    monthStrAbbv: '',
+    monthStr: '',
+    day: this.INITIAL_DAY_OBJ,
   };
 
   private readonly INITIAL_WEEK: CalendarWeek = {
     days: Array(7).fill(this.INITIAL_DAY),
     weekOfYear: -1,
-    weekOfMonth: -1
+    weekOfMonth: -1,
   };
 
   private readonly INITIAL_MONTH: CalendarMonth = {
     weeks: Array(6).fill(this.INITIAL_WEEK),
-    name: "",
+    name: '',
     monthOfYear: -1,
-    year: -1
+    year: -1,
   };
 
   /* Calendar Methods */
   dayFromDate(dateObj: Date): CalendarDay {
-    const date = this.datePipe.transform(dateObj, "d");
-    const month = this.datePipe.transform(dateObj, "M");
-    const year = this.datePipe.transform(dateObj, "y");
-    const dayOfWeek = this.datePipe.transform(dateObj, "c");
-    const dayOfWeekStr = this.datePipe.transform(dateObj, "ccc");
-    const weekOfMonth = this.datePipe.transform(dateObj, "W");
-    const weekOfYear = this.datePipe.transform(dateObj, "w");
-    const monthStr = this.datePipe.transform(dateObj, "LLL");
-    const monthStrAbbv = this.datePipe.transform(dateObj, "LLLL");
+    const date = this.datePipe.transform(dateObj, 'd');
+    const month = this.datePipe.transform(dateObj, 'M');
+    const year = this.datePipe.transform(dateObj, 'y');
+    const dayOfWeek = this.datePipe.transform(dateObj, 'c');
+    const dayOfWeekStr = this.datePipe.transform(dateObj, 'ccc');
+    const weekOfMonth = this.datePipe.transform(dateObj, 'W');
+    const weekOfYear = this.datePipe.transform(dateObj, 'w');
+    const monthStr = this.datePipe.transform(dateObj, 'LLL');
+    const monthStrAbbv = this.datePipe.transform(dateObj, 'LLLL');
 
     const day: CalendarDay = {
       date: date ? +date : -1,
       month: month ? +month : -1,
       year: year ? +year : -1,
       dayOfWeek: dayOfWeek ? +dayOfWeek : -1,
-      dayOfWeekStr: dayOfWeekStr ? dayOfWeekStr : "",
+      dayOfWeekStr: dayOfWeekStr ? dayOfWeekStr : '',
       weekOfMonth: weekOfMonth ? +weekOfMonth : -1,
       weekOfYear: weekOfYear ? +weekOfYear : -1,
-      monthStr: monthStr ? monthStr : "",
-      monthStrAbbv: monthStrAbbv ? monthStrAbbv : "",
+      monthStr: monthStr ? monthStr : '',
+      monthStrAbbv: monthStrAbbv ? monthStrAbbv : '',
       day: {
         ...this.INITIAL_DAY_OBJ,
-        date: new Date(`${year}-${month}-${date}`)
-      }
+        date: new Date(`${year}-${month}-${date}`),
+      },
     };
 
     day.day.date = new Date(`${day.year}/${day.month}/${day.date}`);
@@ -76,7 +76,9 @@ export class CalendarService {
     const day: CalendarDay = this.dayFromDate(dateObj);
 
     const firstDayOfWeekObj: Date = new Date(dateObj);
-    firstDayOfWeekObj.setUTCDate(firstDayOfWeekObj.getUTCDate() - day.dayOfWeek);
+    firstDayOfWeekObj.setUTCDate(
+      firstDayOfWeekObj.getUTCDate() - day.dayOfWeek,
+    );
 
     const week: CalendarWeek = this.INITIAL_WEEK;
     week.days = week.days.map((_: CalendarDay, dayOfWeek: number) => {
@@ -113,7 +115,8 @@ export class CalendarService {
 
   initializeCalendar(date: Date, selectedDate?: Date): CalendarMonth[] | void {
     const monthChanged: boolean =
-      this.datePipe.transform(selectedDate, "yyyy-MM") !== this.datePipe.transform(date, "yyyy-MM");
+      this.datePipe.transform(selectedDate, 'yyyy-MM') !==
+      this.datePipe.transform(date, 'yyyy-MM');
 
     const shouldEmitFirstLast: boolean = !selectedDate || monthChanged;
 
@@ -124,14 +127,14 @@ export class CalendarService {
     date.setUTCDate(15);
 
     const currentMonth: CalendarMonth = {
-      ...this.monthFromDate(date)
+      ...this.monthFromDate(date),
     };
 
     const previousMonthDate: Date = new Date(date);
     previousMonthDate.setUTCMonth(previousMonthDate.getUTCMonth() - 1);
     previousMonthDate.setUTCDate(15);
     const previousMonth: CalendarMonth = {
-      ...this.monthFromDate(previousMonthDate)
+      ...this.monthFromDate(previousMonthDate),
     };
 
     const nextMonthDate: Date = new Date(date);
@@ -143,36 +146,50 @@ export class CalendarService {
   }
 
   setDay(monthListInitial: CalendarMonth[], day: Day): CalendarMonth[] {
-    return this.setDayEvents(monthListInitial, day, "set");
+    return this.setDayEvents(monthListInitial, day, 'set');
   }
 
   removeDay(monthListInitial: CalendarMonth[], day: Day): CalendarMonth[] {
-    return this.setDayEvents(monthListInitial, day, "remove");
+    return this.setDayEvents(monthListInitial, day, 'remove');
   }
 
-  private setDayEvents(monthListInitial: CalendarMonth[], day: Day, mode: string): CalendarMonth[] {
+  private setDayEvents(
+    monthListInitial: CalendarMonth[],
+    day: Day,
+    mode: string,
+  ): CalendarMonth[] {
     return monthListInitial.map((calendarMonth: CalendarMonth) => ({
       ...calendarMonth,
       weeks: calendarMonth.weeks.map((calendarWeek: CalendarWeek) => ({
         ...calendarWeek,
         days: calendarWeek.days.map((calendarDay: CalendarDay) => {
-          const yearNum: number = +(this.datePipe.transform(day.date, "yyyy") ?? "");
-          const monthNum: number = +(this.datePipe.transform(day.date, "MM") ?? "");
-          const dayNum: number = +(this.datePipe.transform(day.date, "dd") ?? "");
-          if (calendarDay.year == yearNum && calendarDay.month == monthNum && calendarDay.date == dayNum) {
+          const yearNum: number = +(
+            this.datePipe.transform(day.date, 'yyyy') ?? ''
+          );
+          const monthNum: number = +(
+            this.datePipe.transform(day.date, 'MM') ?? ''
+          );
+          const dayNum: number = +(
+            this.datePipe.transform(day.date, 'dd') ?? ''
+          );
+          if (
+            calendarDay.year == yearNum &&
+            calendarDay.month == monthNum &&
+            calendarDay.date == dayNum
+          ) {
             switch (mode) {
-              case "set":
+              case 'set':
                 calendarDay.day = day;
                 break;
-              case "remove":
+              case 'remove':
                 calendarDay.day.events = [];
                 break;
             }
           }
 
           return calendarDay;
-        })
-      }))
+        }),
+      })),
     }));
   }
 }

@@ -1,4 +1,7 @@
 # Development profile configuration
+server:
+  port: ${SERVER_PORT:8082}
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/daytrackr?createDatabaseIfNotExist=true

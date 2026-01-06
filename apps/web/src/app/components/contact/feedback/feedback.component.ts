@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from "@angular/core";
 import { FormGroup, NonNullableFormBuilder, Validators } from "@angular/forms";
-import { FeedbackMessage, ResponseMessage } from "src/app/interfaces";
+import { FeedbackMessage, ResponseMessage } from "../../../interfaces";
 
 @Component({
   selector: "app-feedback",

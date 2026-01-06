@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from "@angular/core";
+import { CalendarDay, Day, Event } from "@fzt/calendar";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
-import { RouterActions } from "src/app/store/actions/router.actions";
 import { StatusType } from "../../enums";
-import { CalendarDay, Day, Event } from "../../interfaces";
 import { DayActions } from "../../store/actions/day.actions";
+import { RouterActions } from "../../store/actions/router.actions";
 import {
   selectCalendarMonthDropdownData,
   selectDayList,

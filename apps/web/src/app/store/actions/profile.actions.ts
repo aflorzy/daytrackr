@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from "@ngrx/store";
-import { ProfileDTO, ResponseMessage } from "src/app/interfaces";
+import { ProfileDTO, ResponseMessage } from "../../interfaces";
 
 export const ProfileActions = createActionGroup({
   source: "Profile",

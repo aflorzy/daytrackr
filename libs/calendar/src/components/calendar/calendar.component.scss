@@ -1,0 +1,42 @@
+table {
+  width: 100%;
+
+  td + td {
+    border-left: 1px solid #666;
+  }
+
+  td, th {
+    border-bottom: 1px solid #666;
+  }
+
+  tr td:first-of-type {
+    border-left: 1px solid #666;
+  }
+
+  tr td:last-of-type {
+    border-right: 1px solid #666;
+  }
+
+  td {
+    width: 14%;
+    padding: 0;
+
+    .day-content {
+      height: 5rem;
+      position: relative;
+
+      .date-label {
+        position: absolute;
+        top: 0.3rem;
+        left: 0.3rem;
+        color: #aaa;
+        font-size: 11px;
+      }
+
+      &.has-event {
+        background-color: rgba(255,0,0,.1);
+      }
+    }
+
+  }
+}

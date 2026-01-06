@@ -1,0 +1,28 @@
+<div class="month">
+  <table>
+    <tr>
+      <th>Sun</th>
+      <th>Mon</th>
+      <th>Tue</th>
+      <th>Wed</th>
+      <th>Thu</th>
+      <th>Fri</th>
+      <th>Sat</th>
+    </tr>
+
+    @for (week of month().weeks; track week.weekOfYear) {
+      <tr>
+        @for (day of week.days; track day.date) {
+          <td (click)="selectDay(day)">
+            <div
+              class="day-content"
+              [ngClass]="{ 'has-event': !!day.day.events.length }"
+            >
+              <span class="date-label">{{ day.date }}</span>
+            </div>
+          </td>
+        }
+      </tr>
+    }
+  </table>
+</div>

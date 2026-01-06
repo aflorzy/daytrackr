@@ -35,8 +35,6 @@
                     +((selectedDate | date: 'MM') || '') === day.month
                   "
                   [class.hasEvent]="day.day.events.length > 0"
-                  matTooltipPosition="before"
-                  matTooltipClass="custom-tooltip"
                   (click)="selectDay(day)">
                   <span>
                     <p>

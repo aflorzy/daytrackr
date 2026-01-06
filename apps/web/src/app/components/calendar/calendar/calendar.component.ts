@@ -10,9 +10,8 @@ import {
   SimpleChanges
 } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
+import { CalendarDay, CalendarMonth, CalendarService, Day as DayObj } from "@fzt/calendar";
 import { defer, filter, map, Observable } from "rxjs";
-import { CalendarDay, CalendarMonth, Day as DayObj } from "src/app/interfaces";
-import { CalendarService } from "../../../services/calendar.service";
 
 @Component({
   selector: "app-calendar",
